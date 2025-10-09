@@ -72,7 +72,7 @@
                 $v['photo']
                 ) !!}
                 <span class="absolute inset-0 grid place-items-center bg-black/0 hover:bg-black/30 rounded-lg transition">
-                    <span class="text-white text-xl font-bold">▶</span>
+                    <span class="text-white text-xl font-bold"></span>
                 </span>
             </label>
 
