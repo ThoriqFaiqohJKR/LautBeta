@@ -13,11 +13,11 @@ return new class extends Migration
     {
         //
         schema::create('abouts', function (Blueprint $table) {
-            $table->string('id');
-            $table->string('title_id')->nullable();
-            $table->string('title_en')->nullable();
-            $table->text('description_id')->nullable();
-            $table->text('description_en')->nullable();
+            $table->id();
+            $table->string('title_id')->required();
+            $table->string('title_en')->required();
+            $table->text('description_id')->required();
+            $table->text('description_en')->required();
             $table->timestamps();
         });
     }

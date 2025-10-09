@@ -5,14 +5,9 @@
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>@yield('title', 'Dashboard')</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;1,100&display=swap');
+  <script src="{{ asset('tinymce/tinymce.min.js') }}"></script>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    p {
-      font-family: "Poppins", sans-serif;
-      font-style: normal;
-    }
-  </style>
   @vite('resources/css/app.css')
   @livewireStyles
 
@@ -22,20 +17,27 @@
   <!-- NAVBAR -->
   <nav x-data="{ mobileOpen:false, open:null, lang:'EN | ID' }">
     <div class="bg-white shadow-md fixed w-full z-30">
-      <div class="px-4 sm:px-6 lg:max-w-6xl mx-auto h-20 flex items-center justify-between">
+      <div class="lg:max-w-6xl mx-auto h-20 flex items-center justify-between">
         <!-- MOBILE BAR: Hamburger — Logo — EN | ID -->
-        <div class="flex md:hidden items-center justify-between w-full">
-          <!-- Hamburger button -->
-          <button @click="mobileOpen = true" class="p-2 border  " aria-label="Open menu">
+        <div class="relative md:hidden flex items-center w-full h-[60px]">
+          <button @click="mobileOpen = true" class="p-2 border absolute left-0" aria-label="Open menu">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <!-- Logo -->
-          <img src="{{asset('img/Logo.png') }}" alt="Logo Auriga" class="h-20 w-auto" />
-          <!-- Language switch -->
-          <button @click="lang = (lang==='EN | ID') ? 'ID | EN' : 'EN | ID'" class="text-sm font-medium" x-text="lang"></button>
+
+          <img src="{{ asset('img/Logo.png') }}" alt="Logo Auriga" class="h-[48px] w-auto mx-auto" />
+
+          <div class="absolute right-0">
+            <div class="inline-flex items-center rounded-full border p-[2px]">
+              <a href="{{ url('en' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                class="px-2 py-1 rounded-full text-xs font-medium {{ request()->segment(1)==='en' ? 'bg-green-600 text-white' : 'text-slate-700 hover:bg-green-50' }}">EN</a>
+              <a href="{{ url('id' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                class="px-2 py-1 rounded-full text-xs font-medium {{ request()->segment(1)==='id' ? 'bg-green-600 text-white' : 'text-slate-700 hover:bg-green-50' }}">ID</a>
+            </div>
+          </div>
         </div>
+
 
         <!-- DESKTOP BAR (unchanged layout) -->
         <div class="hidden md:flex items-stretch justify-between w-full h-full poppins-regular" x-data="{ desktopOpen:null }">
@@ -43,7 +45,9 @@
           <div class="flex items-center justify-between h-full gap-16 w-full ">
             <!-- Logo -->
             <div class="flex items-center h-full">
-              <img src="{{asset('img/Logo.png') }}" alt="Logo Auriga" class="h-14 w-auto object-contain" />
+              <a href="{{ '/' . app()->getLocale() }}">
+                <img src="{{asset('img/Logo.png') }}" alt="Logo Auriga" class="h-14 w-auto object-contain" />
+              </a>
             </div>
 
             <!-- Menu -->
@@ -51,8 +55,8 @@
               <!-- ABOUT dropdown -->
               <div class="relative">
                 <a href="">
-             {{ __('About') }}   
-             </a>
+                  {{ __('Tentang') }}
+                </a>
               </div>
 
               <!-- INSIGHT dropdown -->
@@ -70,8 +74,8 @@
                 </button>
                 <div x-show="desktopOpen==='insight'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                   <ul class="text-sm">
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Analisis') }}</a></li>
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Fitur') }}</a></li>
+                    <li class="px-4 py-2 cursor-pointer"><a href="{{ route('analysis') }}">{{ __('Analisis') }}</a></li>
+                    <li class="px-4 py-2 cursor-pointer"><a href="{{ route('feature') }}">{{ __('Fitur') }}</a></li>
                   </ul>
                 </div>
               </div>
@@ -92,15 +96,15 @@
                 <div x-show="desktopOpen==='literasi'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                   <ul class="text-sm">
                     <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Grafik') }}</a></li>
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Jurnal') }}</a></li>
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Laporan') }}</a></li>
+                    <li class="px-4 py-2 cursor-pointer"><a href="{{ route('journal') }}">{{ __('Jurnal') }}</a></li>
+                    <li class="px-4 py-2 cursor-pointer"><a href="{{ route('report') }}">{{ __('Laporan') }}</a></li>
                   </ul>
                 </div>
               </div>
 
               <!-- EVENT dropdown -->
               <div class="relative">
-                <button @click="desktopOpen = (desktopOpen==='event' ? null : 'event')" class="hover:text-green-900 flex items-center focus:outline-none">{{ __('Peristiwa') }}<template x-if="desktopOpen!=='event'">
+                <button @click="desktopOpen = (desktopOpen==='event' ? null : 'event')" class="hover:text-green-900 flex items-center focus:outline-none">{{ __('Agenda') }}<template x-if="desktopOpen!=='event'">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                       <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                     </svg>
@@ -113,8 +117,8 @@
                 </button>
                 <div x-show="desktopOpen==='event'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                   <ul class="text-sm">
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Peristiwa') }}</a></li>
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Aktifitas') }}</a></li>
+                    <li class="px-4 py-2 cursor-pointer"><a href="{{ route('event') }}">{{ __('Event') }}</a></li>
+                    <li class="px-4 py-2 cursor-pointer"><a href="{{ route('activity') }}">{{ __('Aktifitas') }}</a></li>
                   </ul>
                 </div>
               </div>
@@ -134,9 +138,9 @@
                 </button>
                 <div x-show="desktopOpen==='galeri'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                   <ul class="text-sm">
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Report') }}</a></li>
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Database') }}</a></li>
-                    <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Galeri') }}</a></li>
+                    <li class="px-4 py-2 cursor-pointer"><a href="{{ route('reportresource') }}"">{{ __('Report') }}</a></li>
+                    <li class=" px-4 py-2 cursor-pointer"><a href="{{ route('database') }}">{{ __('Database') }}</a></li>
+                    <li class="px-4 py-2 cursor-pointer"><a href="{{ route('gallery') }}">{{ __('Galeri') }}</a></li>
                   </ul>
                 </div>
               </div>
@@ -159,14 +163,23 @@
               <div x-show="open" @click.outside="open=false" class="absolute left-0 mt-2 w-40 bg-white border shadow-lg z-50">
                 <ul class="py-1 text-sm">
                   <li>
-                    <a href="{{ '/en' . (request()->segment(2) ? '/' . request()->segment(2) : '') }}" class="block px-4 py-2 hover:bg-green-100 {{ request()->segment(1)==='en' ? 'font-bold text-green-900' : 'text-slate-700' }}">ENGLISH</a>
+                    <a
+                      href="{{ url('en' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                      class="block px-4 py-2 hover:bg-green-100 {{ request()->segment(1)==='en' ? 'font-bold text-green-900' : 'text-slate-700' }}">
+                      ENGLISH
+                    </a>
                   </li>
                   <li>
-                    <a href="{{ '/id' . (request()->segment(2) ? '/' . request()->segment(2) : '') }}" class="block px-4 py-2 hover:bg-green-100 {{ request()->segment(1)==='id' ? 'font-bold text-green-900' : 'text-slate-700' }}">INDONESIA</a>
+                    <a
+                      href="{{ url('id' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                      class="block px-4 py-2 hover:bg-green-100 {{ request()->segment(1)==='id' ? 'font-bold text-green-900' : 'text-slate-700' }}">
+                      INDONESIA
+                    </a>
                   </li>
                 </ul>
               </div>
             </div>
+
 
             <div class="flex items-center gap-2 text-sm cursor-pointer hover:text-green-900 h-full">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

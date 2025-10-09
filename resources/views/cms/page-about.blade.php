@@ -1,5 +1,4 @@
-@extends('layouts.cms')
-
+@extends('layouts.admin')
 @section('content')
-    <livewire:cms.PageAbout/>
+        <livewire:cms.PageAbout /> 
 @endsection

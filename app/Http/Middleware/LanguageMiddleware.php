@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\URL;
 
 class LanguageMiddleware
 {
@@ -16,15 +17,13 @@ class LanguageMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // ambil locale dari segment pertama, bukan kedua
-        $locale = $request->segment(1);
+        $locale = $request->segment(1, 'en');
+        if (! in_array($locale, ['en', 'id'])) $locale = 'en';
 
-        if (!in_array($locale, ['en', 'id'])) {
-            $locale = session('locale', 'en'); // default English
-        }
+        App::setLocale($locale);
 
-        app()->setLocale($locale);
-        session(['locale' => $locale]);
+        
+        URL::defaults(['locale' => $locale]);
 
         return $next($request);
     }
