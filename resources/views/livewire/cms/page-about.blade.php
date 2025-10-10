@@ -1,20 +1,28 @@
-<div x-data="{lang:@js($lang),saved:false,setEditorContent(c){window.dispatchEvent(new CustomEvent('setEditor',{detail:{content:c}}))}}"
-    x-init="window.addEventListener('saved',()=>{saved=true;setTimeout(()=>saved=false,2200)})"
-    class="space-y-6 max-w-4xl mx-auto p-8">
-    <div>
-        <p class="text-2xl">Page About</p>
-    </div>
-    <div class="border border-gray-200 px-6 py-6 bg-white">
-        <div class="flex items-center gap-2 mb-6">
+<div class="p-4">
+    <div x-data="{
+  lang:@entangle('lang'),
+  en:@entangle('contentEN'),
+  id:@entangle('contentID'),
+  set(c){window.dispatchEvent(new CustomEvent('setEditor',{detail:{content:c||''}}))}
+}"
+        class="max-w-4xl mx-auto p-4 border bg-white space-y-6">
+
+        <div class="flex items-center gap-2 mb-6 ">
             <button type="button"
-                @click="lang='en';$wire.set('lang','en');setEditorContent(@js($contentEN ?? ''))"
-                :class="lang==='en'?'bg-emerald-600 text-white':'bg-gray-100 text-gray-700'"
-                class="px-4 py-2 border">ENGLISH</button>
+                @click="lang='en'; set(en)"
+                class="px-4 py-2 border"
+                :class="{'bg-emerald-600 text-white':lang==='en','bg-gray-100 text-gray-700':lang!=='en'}">
+                ENGLISH
+            </button>
             <button type="button"
-                @click="lang='id';$wire.set('lang','id');setEditorContent(@js($contentID ?? ''))"
-                :class="lang==='id'?'bg-emerald-600 text-white':'bg-gray-100 text-gray-700'"
-                class="px-4 py-2 border">INDONESIA</button>
+                @click="lang='id'; set(id)"
+                class="px-4 py-2 border"
+                :class="{'bg-emerald-600 text-white':lang==='id','bg-gray-100 text-gray-700':lang!=='id'}">
+                INDONESIA
+            </button>
         </div>
+
+
 
         <div class="mb-5">
             <label class="block text-sm font-medium text-slate-700 mb-2">Title (<span class="uppercase" x-text="lang.toUpperCase()"></span>)</label>

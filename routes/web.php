@@ -26,17 +26,12 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => [MustLogin::cla
 
 
 Route::get('/', function () {
-    $locale = app()->getLocale(); // ambil locale aktif
+    $locale = app()->getLocale(); 
     return redirect("/{$locale}");
 });
 
 
-Route::get('/{page}', function ($page) {
-    if (in_array($page, ['insight', 'news', 'about'])) {
-        return redirect("/id/{$page}");
-    }
-    abort(404);
-})->where('page', 'insight|news|about');
+
 
 Route::pattern('locale', 'en|id');
 
@@ -47,7 +42,7 @@ Route::middleware([LanguageMiddleware::class])
         Route::get('/', [PageController::class, 'home'])->name('home');
 
         //ini about
-        Route::get('/Pageabout', [PageController::class, 'about'])->name('pageabout');
+        Route::get('/Pageabout', [PageController::class, 'about'])->name('about');
         //ini insight
         //ini Analysis
         Route::get('/PageAnalysis', [PageController::class, 'analysis'])->name('analysis');
@@ -56,14 +51,14 @@ Route::middleware([LanguageMiddleware::class])
         //ini ngopini
         Route::get('/PageDetailNgopini/{id}/{slug?}', [PageController::class, 'detailngopini'])->name('ngopini.detail');
 
-        //ini Feature 
+        //ini Feature
         Route::get('/PageFeature', [PageController::class, 'feature'])->name('feature');
         Route::get('/PageDetailFeature/{id}/{slug?}', [PageController::class, 'detailfeature'])->name('feature.detail');
 
         //ini Detail Insight
         Route::get('/PageDetailInsight/{id}/{slug?}', [PageController::class, 'detailinsight'])->name('insight.detail');
 
-        //ini literacy 
+        //ini literacy
         Route::get('/Pagegrafik', [PageController::class, 'grafik'])->name('grafik');
         Route::get('/Pagejournal', [PageController::class, 'journal'])->name('journal');
 
@@ -72,7 +67,7 @@ Route::middleware([LanguageMiddleware::class])
         Route::get('/Pagedetailreport/{id}/{slug?}', [PageController::class, 'detailreport'])->name('report.detail');
 
 
-        //ini agenda 
+        //ini agenda
         //ini Event
         Route::get('/Pageevent', [PageController::class, 'event'])->name('event');
         Route::get('/Pagedetailevent/{id}/{slug?}', [PageController::class, 'detailevent'])->name('event.detail');
