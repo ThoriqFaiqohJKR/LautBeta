@@ -2,6 +2,9 @@
     {{-- Stop trying to control. --}}
     <div>
         <div class="max-w-6xl mx-auto p-6 sm:p-10 space-y-8">
+            <div class="gap-2 flex mb-4">
+                    <p class="text-xl">Page Resource </p>
+            </div>
             <div class="flex justify-between">
                 <h2 class="text-2xl font-semibold">Resources</h2>
                 <a href="{{ route('cms.page.add.resource')}}"><button class="px-3 py-1.5 border bg-green-600 text-white  ">Tambah</button></a>

@@ -57,35 +57,57 @@
 
                 </div>
                 <div class="flex items-center gap-1">
-                    <a href="/cms/{{ app()->getLocale() }}/pageabout"
-                        class="px-3 py-2 text-sm font-medium rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">
+                    @php $locale = app()->getLocale(); @endphp
+
+                    <a href="{{ url('/') }}"
+                        class="px-3 py-2 text-sm font-medium
+          {{ request()->is('/')
+              ? 'text-slate-900 border-b-2 border-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' }}">
                         Home
                     </a>
 
-                    <a href="{{ route('cms.page.about', ['locale' => app()->getLocale()]) }}"
-                        class="px-3 py-2 text-sm font-medium rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">
+                    <a href="{{ route('cms.page.about', ['locale' => $locale]) }}"
+                        class="px-3 py-2 text-sm font-medium
+          {{ request()->routeIs('cms.page.about')
+              ? 'text-slate-900 border-b-2 border-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' }}">
                         About
                     </a>
 
-                    <a href="{{ route('cms.page.index.insight', ['locale' => app()->getLocale()]) }}"
-                        class="px-3 py-2 text-sm font-medium rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">
+                    <a href="{{ route('cms.page.index.insight', ['locale' => $locale]) }}"
+                        class="px-3 py-2 text-sm font-medium
+          {{ request()->routeIs('cms.page.index.insight')
+              ? 'text-slate-900 border-b-2 border-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' }}">
                         Insight
                     </a>
 
-                    <a href="{{ route('cms.page.index.literacy', ['locale' => app()->getLocale()]) }}"
-                        class="px-3 py-2 text-sm font-medium rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">
+                    <a href="{{ route('cms.page.index.literacy', ['locale' => $locale]) }}"
+                        class="px-3 py-2 text-sm font-medium
+          {{ request()->routeIs('cms.page.index.literacy')
+              ? 'text-slate-900 border-b-2 border-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' }}">
                         Literacy
                     </a>
 
-                    <a href="{{ route('cms.page.index.agenda', ['locale' => app()->getLocale()]) }}"
-                        class="px-3 py-2 text-sm font-medium rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">
+                    <a href="{{ route('cms.page.index.agenda', ['locale' => $locale]) }}"
+                        class="px-3 py-2 text-sm font-medium
+          {{ request()->routeIs('cms.page.index.agenda')
+              ? 'text-slate-900 border-b-2 border-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' }}">
                         Agenda
                     </a>
 
-                    <a href="{{ route('cms.page.index.resource', ['locale' => app()->getLocale()]) }}"
-                        class="px-3 py-2 text-sm font-medium rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100">
+                    <a href="{{ route('cms.page.index.resource', ['locale' => $locale]) }}"
+                        class="px-3 py-2 text-sm font-medium
+          {{ request()->routeIs('cms.page.index.resource')
+              ? 'text-slate-900 border-b-2 border-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' }}">
                         Resource
                     </a>
+
+
                 </div>
 
 
@@ -94,18 +116,18 @@
                     <div x-data="{ locale: window.location.pathname.includes('/id/') ? 'id' : 'en' }">
                         <template x-if="locale === 'id'">
                             <a :href="window.location.pathname.replace('/id/', '/en/')"
-                                class="px-3 py-2 border rounded-md text-sm hover:bg-slate-50">EN</a>
+                                class="px-3 py-2 border   text-sm hover:bg-slate-50">EN</a>
                         </template>
                         <template x-if="locale === 'en'">
                             <a :href="window.location.pathname.replace('/en/', '/id/')"
-                                class="px-3 py-2 border rounded-md text-sm hover:bg-slate-50">ID</a>
+                                class="px-3 py-2 border   text-sm hover:bg-slate-50">ID</a>
                         </template>
                     </div>
 
 
                     <div class="relative hidden md:block" @click.outside="user=false">
                         <button @click="user=!user"
-                            class="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 hover:bg-slate-50">
+                            class="inline-flex items-center gap-2 px-3 py-2   border border-slate-200 hover:bg-slate-50">
 
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
@@ -118,7 +140,7 @@
                             </svg>
                         </button>
                         <div x-show="user" x-transition
-                            class="absolute right-0 mt-2 w-48 rounded-md border border-slate-200 bg-white shadow-md overflow-hidden">
+                            class="absolute right-0 mt-2 w-48   border border-slate-200 bg-white shadow-md overflow-hidden">
 
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf

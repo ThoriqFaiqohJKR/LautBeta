@@ -4,16 +4,23 @@
     <div>
         {{-- resources/views/livewire/cms/edit-literacy.blade.php --}}
         <div class="max-w-4xl mx-auto p-6 sm:p-10">
-            <div class="bg-white rounded-2xl border p-6 sm:p-10">
+            <div class="gap-2 flex mb-4">
+                <a href="{{ route('cms.page.index.literacy', ['locale' => app()->getLocale()]) }}">
+                    <p class="text-xl hover:underline">Page Literacy </p>
+                </a>
+                <p> > </p>
+                <p class="text-xl text-blue-700">Edit {{ ucfirst($type) }}</p>
+            </div>
+            <div class="bg-white  border p-6 sm:p-10">
                 <h2 class="text-2xl font-semibold mb-6">Edit Literacy ({{ ucfirst($type) }})</h2>
 
                 {{-- Switch Language (EN / ID) --}}
-                <div class="flex gap-2 mb-6"> 
+                <div class="flex gap-2 mb-6">
                     <button type="button"
-                        class="px-3 py-1 rounded border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        class="px-3 py-1   border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
                         wire:click="$set('lang','en')">EN</button>
                     <button type="button"
-                        class="px-3 py-1 rounded border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        class="px-3 py-1   border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
                         wire:click="$set('lang','id')">ID</button>
                 </div>
 
@@ -23,8 +30,8 @@
                         <label class="block text-sm font-medium text-slate-700 mb-2">
                             Title (<span class="uppercase" x-text="lang.toUpperCase()"></span>)
                         </label>
-                        <input x-show="lang==='en'" x-cloak type="text" wire:model.defer="title_en" class="w-full border rounded p-2">
-                        <input x-show="lang==='id'" x-cloak type="text" wire:model.defer="title_id" class="w-full border rounded p-2">
+                        <input x-show="lang==='en'" x-cloak type="text" wire:model.defer="title_en" class="w-full border   p-2">
+                        <input x-show="lang==='id'" x-cloak type="text" wire:model.defer="title_id" class="w-full border   p-2">
                         @error('title_en') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                         @error('title_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
@@ -59,7 +66,7 @@
                        });
                      },
                      file_picker_types:'image',
-                     file_picker_callback:(cb)=>{ 
+                     file_picker_callback:(cb)=>{
                        const routePrefix='/laravel-filemanager?type=image';
                        const open=(url,w=980,h=600)=>{const W=innerWidth,H=innerHeight,L=(W-w)/2,T=(H-h)/2;const features=['toolbar=no','location=no','status=no','menubar=no','scrollbars=yes','resizable=yes',`width=${w}`,`height=${h}`,`top=${T}`,`left=${L}`].join(',');const win=window.open(url,'LFM_Popup',features); if(win&&win.focus)win.focus(); return win;};
                        const old=window.SetUrl; let pop=null,done=false,iv=null;
@@ -257,11 +264,11 @@
                     <div class="grid sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-sm font-medium mb-1">Tanggal Publikasi</label>
-                            <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border rounded p-2">
+                            <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border   p-2">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Publikasi</label>
-                            <select wire:model.defer="publikasi" class="w-full border rounded p-2">
+                            <select wire:model.defer="publikasi" class="w-full border   p-2">
                                 <option value="draf">Draf</option>
                                 <option value="publish">Publish</option>
                             </select>
@@ -269,7 +276,7 @@
                         @if($type==='case_report')
                         <div>
                             <label class="block text-sm font-medium mb-1">Status</label>
-                            <select wire:model.defer="status" class="w-full border rounded p-2">
+                            <select wire:model.defer="status" class="w-full border   p-2">
                                 <option value="on">On</option>
                                 <option value="off">Off</option>
                             </select>
@@ -280,9 +287,9 @@
                     {{-- Image Upload --}}
                     <div>
                         <label class="block text-sm font-medium mb-1">Gambar</label>
-                        <input type="file" accept="image/*" wire:model="image" class="w-full border rounded p-2">
+                        <input type="file" accept="image/*" wire:model="image" class="w-full border   p-2">
                         @if($imagePreview)
-                        <div class="mt-3"><img src="{{ $imagePreview }}" class="max-h-52 rounded border"></div>
+                        <div class="mt-3"><img src="{{ $imagePreview }}" class="max-h-52   border"></div>
                         @endif
                     </div>
 
@@ -290,17 +297,17 @@
                     @if($type==='journal')
                     <div>
                         <label class="block text-sm font-medium mb-1">File (PDF/DOC/PPT)</label>
-                        <input type="file" wire:model="file" class="w-full border rounded p-2">
+                        <input type="file" wire:model="file" class="w-full border   p-2">
                     </div>
                     @endif
 
                     {{-- Actions --}}
                     <div class="pt-2">
-                        <button type="button" wire:click="update" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update</button>
+                        <button type="button" wire:click="update" class="px-4 py-2 bg-blue-600 text-white   hover:bg-blue-700">Update</button>
                     </div>
 
                     @if (session()->has('success'))
-                    <div class="p-3 bg-green-100 text-green-700 rounded mt-3">{{ session('success') }}</div>
+                    <div class="p-3 bg-green-100 text-green-700   mt-3">{{ session('success') }}</div>
                     @endif
                 </div>
             </div>

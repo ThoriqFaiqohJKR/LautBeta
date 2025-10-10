@@ -2,12 +2,17 @@
     {{-- If you look to others for fulfillment, you will never truly be fulfilled. --}}
     <div>
         <div class="px-4 sm:px-6 lg:px-8 py-8 max-w-5xl mx-auto">
+            <div class="gap-2 flex mb-4">
+
+                <p class="text-xl">Page Agenda </p>
+
+            </div>
             {{-- Tabs & Tambah --}}
             <div class="flex justify-between items-center mb-6">
                 <div class="flex gap-2">
-                    <button wire:click="$set('type','all')" class="px-3 py-1.5 rounded-full border {{ $type==='all' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700' }}">All</button>
-                    <button wire:click="$set('type','event')" class="px-3 py-1.5 rounded-full border {{ $type==='event' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700' }}">event</button>
-                    <button wire:click="$set('type','activity')" class="px-3 py-1.5 rounded-full border {{ $type==='activity' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700' }}">activity</button>
+                    <button wire:click="$set('type','all')" class="px-3 py-1.5  border {{ $type==='all' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700' }}">All</button>
+                    <button wire:click="$set('type','event')" class="px-3 py-1.5  border {{ $type==='event' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700' }}">event</button>
+                    <button wire:click="$set('type','activity')" class="px-3 py-1.5  border {{ $type==='activity' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700' }}">activity</button>
                 </div>
                 <div>
                     <a href="{{ route('cms.page.add.agenda',['locale' => app()->getLocale()])}}"><button class="px-3 py-1.5 border bg-green-600 text-white  ">Tambah</button></a>
@@ -18,7 +23,7 @@
             <div class="flex flex-col md:flex-row md:items-end gap-3 md:gap-4 mb-6">
                 <div>
                     <label class="block text-xs text-slate-500 mb-1">Publikasi</label>
-                    <select wire:model.live="publikasi" class="border rounded px-3 py-2">
+                    <select wire:model.live="publikasi" class="border   px-3 py-2">
                         <option value="publish">Publish</option>
                         <option value="draf">Draf</option>
                         <option value="all">All</option>
@@ -30,13 +35,13 @@
                     <input
                         wire:model.live.debounce.400ms="q"
                         type="text"
-                        class="w-full border rounded px-3 py-2"
+                        class="w-full border   px-3 py-2"
                         placeholder="Cari judul / slug / deskripsi..." />
                 </div>
 
                 <div>
                     <label class="block text-xs text-slate-500 mb-1">Sort</label>
-                    <select wire:model.live="sort" class="border rounded px-3 py-2">
+                    <select wire:model.live="sort" class="border   px-3 py-2">
                         <option value="latest">Terbaru</option>
                         <option value="oldest">Terlama</option>
                         <option value="az">A → Z</option>
@@ -47,7 +52,7 @@
 
             {{-- "Table" Desktop --}}
             <div class="hidden md:block">
-                <div class="border rounded-lg overflow-hidden">
+                <div class="border  -lg overflow-hidden">
                     <div class="grid grid-cols-12 gap-3 bg-slate-100 px-4 py-3 text-xs font-semibold text-slate-600">
                         <div class="col-span-1">No</div>
                         <div class="col-span-2">Image</div>
@@ -62,9 +67,9 @@
 
                         <div class="col-span-2">
                             @if($it->image)
-                            <img src="{{ Storage::url($it->image) }}" class="w-14 h-14 object-cover rounded border" alt="">
+                            <img src="{{ Storage::url($it->image) }}" class="w-14 h-14 object-cover   border" alt="">
                             @else
-                            <div class="w-14 h-14 bg-slate-100 rounded border"></div>
+                            <div class="w-14 h-14 bg-slate-100   border"></div>
                             @endif
                         </div>
 
@@ -74,7 +79,7 @@
 
 
                         <div class="col-span-2">
-                            <span class="inline-flex px-2 py-0.5 rounded-full border text-xs">{{ $it->publikasi ?? '-' }}</span>
+                            <span class="inline-flex px-2 py-0.5  border text-xs">{{ $it->publikasi ?? '-' }}</span>
                         </div>
 
                         <div class="col-span-2 flex gap-2">
@@ -91,19 +96,19 @@
             {{-- Mobile Cards --}}
             <div class="md:hidden space-y-4">
                 @forelse($agendas as $idx => $it)
-                <div class="border rounded-lg p-4">
+                <div class="border  -lg p-4">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-xs text-slate-500">#{{ ($page - 1) * $perPage + $idx + 1 }}</span>
                         <div class="flex gap-2">
-                            <a href="#" class="px-2 py-1 text-xs border rounded">Edit</a>
-                            <a href="#" class="px-2 py-1 text-xs border rounded">Preview</a>
+                            <a href="#" class="px-2 py-1 text-xs border  ">Edit</a>
+                            <a href="#" class="px-2 py-1 text-xs border  ">Preview</a>
                         </div>
                     </div>
                     <div class="flex gap-3">
                         @if($it->image)
-                        <img src="{{ Storage::url($it->image) }}" class="w-20 h-20 object-cover rounded border" alt="">
+                        <img src="{{ Storage::url($it->image) }}" class="w-20 h-20 object-cover   border" alt="">
                         @else
-                        <div class="w-20 h-20 bg-slate-100 rounded border"></div>
+                        <div class="w-20 h-20 bg-slate-100   border"></div>
                         @endif
                         <div class="min-w-0">
                             <div class="font-semibold truncate">{{ $it->title ?? '-' }}</div>
@@ -119,9 +124,9 @@
             {{-- Pagination --}}
             @if($lastPage > 1)
             <div class="mt-8 flex justify-center items-center gap-2">
-                <button wire:click="prevPage" class="px-3 py-1 border rounded {{ $page==1?'opacity-50 cursor-not-allowed':'' }}">‹ Prev</button>
+                <button wire:click="prevPage" class="px-3 py-1 border   {{ $page==1?'opacity-50 cursor-not-allowed':'' }}">‹ Prev</button>
                 <span class="px-3 py-1">Halaman {{ $page }} / {{ $lastPage }}</span>
-                <button wire:click="nextPage" class="px-3 py-1 border rounded {{ $page==$lastPage?'opacity-50 cursor-not-allowed':'' }}">Next ›</button>
+                <button wire:click="nextPage" class="px-3 py-1 border   {{ $page==$lastPage?'opacity-50 cursor-not-allowed':'' }}">Next ›</button>
             </div>
             @endif
         </div>

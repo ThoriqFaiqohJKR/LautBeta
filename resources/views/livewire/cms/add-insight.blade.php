@@ -1,80 +1,87 @@
-<div class="max-w-4xl mx-auto p-6 sm:p-10">
-  <div class="bg-white  -2xl border p-6 sm:p-10">
-    <h2 class="text-2xl font-semibold mb-6">Tambah Insight</h2>
-
-     
-
-    <div class="flex gap-2 mb-4">
-      <button type="button"
-        class="px-3 py-1   border {{ $type==='feature' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-        wire:click="$set('type','feature')">Feature</button>
-      <button type="button"
-        class="px-3 py-1   border {{ $type==='analysis' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-        wire:click="$set('type','analysis')">Analysis</button>
-      <button type="button"
-        class="px-3 py-1   border {{ $type==='ngopini' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-        wire:click="$set('type','ngopini')">Ngopini</button>
+<div class="max-w-4xl mx-auto p-8 sm:p-10">
+    <div class="gap-2 flex mb-4">
+        <a href="{{ route('cms.page.index.insight', ['locale' => app()->getLocale()]) }}">
+            <p class="text-xl hover:underline">Page Insight </p>
+        </a>
+        <p> > </p>
+        <p class="text-xl text-blue-700">Tambah Insight</p>
     </div>
 
+    <div class="bg-white border p-6 sm:p-10">
 
-    <div class="flex gap-2 mb-6">
-      <button type="button"
-        class="px-3 py-1   border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-        wire:click="$set('lang','en')">EN</button>
-      <button type="button"
-        class="px-3 py-1   border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-        wire:click="$set('lang','id')">ID</button>
-    </div>
 
-    
-    <div class="space-y-6">
 
-      
-      <div>
-        <label class="block text-sm font-medium text-slate-700 mb-2">
-          Title ({{ strtoupper($lang) }})
-        </label>
+        <div class="flex gap-2 mb-4">
+            <button type="button"
+                class="px-3 py-1   border {{ $type==='feature' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                wire:click="$set('type','feature')">Feature</button>
+            <button type="button"
+                class="px-3 py-1   border {{ $type==='analysis' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                wire:click="$set('type','analysis')">Analysis</button>
+            <button type="button"
+                class="px-3 py-1   border {{ $type==='ngopini' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                wire:click="$set('type','ngopini')">Ngopini</button>
+        </div>
 
-        @if($lang === 'en')
-        <input
-          wire:key="title-input-en"
-          id="title_en"
-          name="title_en"
-          type="text"
-          autocomplete="off"
-          wire:model.defer="title_en"
-          class="w-full border   p-2"
-          placeholder="English title">
-        @error('title_en')
-        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-        @enderror
-        @else
-        <input
-          wire:key="title-input-id"
-          id="title_id"
-          name="title_id"
-          type="text"
-          autocomplete="off"
-          wire:model.defer="title_id"
-          class="w-full border   p-2"
-          placeholder="Judul Indonesia">
-        @error('title_id')
-        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-        @enderror
-        @endif
 
-      </div>
+        <div class="flex gap-2 mb-6">
+            <button type="button"
+                class="px-3 py-1   border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                wire:click="$set('lang','en')">EN</button>
+            <button type="button"
+                class="px-3 py-1   border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                wire:click="$set('lang','id')">ID</button>
+        </div>
 
-      
-      <div class="mb-5">
-        <label class="block text-sm font-medium text-slate-700 mb-2">Description ({{ strtoupper($lang) }})</label>
-        <div
-          wire:ignore
-          wire:key="desc-{{ $lang }}"
-          x-data
-          data-base="{{ asset('tinymce') }}"
-          data-initial="{{ $lang==='id' ? ($description_id ?? '') : ($description_en ?? '') }}"
-          x-init="
+
+        <div class="space-y-6">
+
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Title ({{ strtoupper($lang) }})
+                </label>
+
+                @if($lang === 'en')
+                <input
+                    wire:key="title-input-en"
+                    id="title_en"
+                    name="title_en"
+                    type="text"
+                    autocomplete="off"
+                    wire:model.defer="title_en"
+                    class="w-full border   p-2"
+                    placeholder="English title">
+                @error('title_en')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+                @else
+                <input
+                    wire:key="title-input-id"
+                    id="title_id"
+                    name="title_id"
+                    type="text"
+                    autocomplete="off"
+                    wire:model.defer="title_id"
+                    class="w-full border   p-2"
+                    placeholder="Judul Indonesia">
+                @error('title_id')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+                @endif
+
+            </div>
+
+
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Description ({{ strtoupper($lang) }})</label>
+                <div
+                    wire:ignore
+                    wire:key="desc-{{ $lang }}"
+                    x-data
+                    data-base="{{ asset('tinymce') }}"
+                    data-initial="{{ $lang==='id' ? ($description_id ?? '') : ($description_en ?? '') }}"
+                    x-init="
         const base=$el.dataset.base, initial=$el.dataset.initial||'';
         if (window.tinymce && tinymce.get('desc_editor')) tinymce.get('desc_editor').remove();
 
@@ -195,22 +202,22 @@
           const ed=tinymce.get('desc_editor'); if(ed) ed.setContent(e.detail?.content||'');
         });
       ">
-          <textarea id="desc_editor"></textarea>
-        </div>
-        @error('description_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
-        @error('description_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
-      </div>
+                    <textarea id="desc_editor"></textarea>
+                </div>
+                @error('description_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+                @error('description_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+            </div>
 
-      
-      <div class="mb-5">
-        <label class="block text-sm font-medium text-slate-700 mb-2">Content ({{ strtoupper($lang) }})</label>
-        <div
-          wire:ignore
-          wire:key="content-{{ $lang }}"
-          x-data
-          data-base="{{ asset('tinymce') }}"
-          data-initial="{{ $lang==='id' ? ($content_id ?? '') : ($content_en ?? '') }}"
-          x-init="
+
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Content ({{ strtoupper($lang) }})</label>
+                <div
+                    wire:ignore
+                    wire:key="content-{{ $lang }}"
+                    x-data
+                    data-base="{{ asset('tinymce') }}"
+                    data-initial="{{ $lang==='id' ? ($content_id ?? '') : ($content_en ?? '') }}"
+                    x-init="
         const base=$el.dataset.base, initial=$el.dataset.initial||'';
         if (window.tinymce && tinymce.get('content_editor')) tinymce.get('content_editor').remove();
 
@@ -324,55 +331,55 @@
           const ed=tinymce.get('content_editor'); if(ed) ed.setContent(e.detail?.content||'');
         });
       ">
-          <textarea id="content_editor"></textarea>
+                    <textarea id="content_editor"></textarea>
+                </div>
+                @error('content_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+                @error('content_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+            </div>
+
+
+            <div class="grid sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tanggal Publikasi</label>
+                    <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border   p-2">
+                    @error('tanggal_publikasi') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Publikasi</label>
+                    <select wire:model.defer="publikasi" class="w-full border   p-2">
+                        <option value="draf">Draf</option>
+                        <option value="publish">Publish</option>
+                    </select>
+                    @error('publikasi') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+                </div>
+
+            </div>
+
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Gambar</label>
+                <input type="file" accept="image/*" wire:model="image" class="w-full border   p-2">
+                <div wire:loading wire:target="image" class="text-sm text-slate-500 mt-1">Uploading…</div>
+                @error('image') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+
+                @if($image && method_exists($image,'temporaryUrl'))
+                <div class="mt-3"><img src="{{ $image->temporaryUrl() }}" alt="Preview" class="max-h-52   border"></div>
+                @elseif($imagePreview)
+                <div class="mt-3"><img src="{{ $imagePreview }}" alt="Preview" class="max-h-52   border"></div>
+                @endif
+            </div>
+
+
+            <div class="pt-2">
+                <button type="button" wire:click="save" class="px-4 py-2 bg-green-600 text-white   hover:bg-green-700">Simpan</button>
+            </div>
+
+
+            @if (session()->has('success'))
+            <div class="p-3 bg-green-100 text-green-700  ">{{ session('success') }}</div>
+            @endif
         </div>
-        @error('content_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
-        @error('content_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
-      </div>
 
-      
-      <div class="grid sm:grid-cols-3 gap-3">
-        <div>
-          <label class="block text-sm font-medium mb-1">Tanggal Publikasi</label>
-          <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border   p-2">
-          @error('tanggal_publikasi') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Publikasi</label>
-          <select wire:model.defer="publikasi" class="w-full border   p-2">
-            <option value="draf">Draf</option>
-            <option value="publish">Publish</option>
-          </select>
-          @error('publikasi') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-        </div>
-      
-      </div>
 
-      
-      <div>
-        <label class="block text-sm font-medium mb-1">Gambar</label>
-        <input type="file" accept="image/*" wire:model="image" class="w-full border   p-2">
-        <div wire:loading wire:target="image" class="text-sm text-slate-500 mt-1">Uploading…</div>
-        @error('image') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-
-        @if($image && method_exists($image,'temporaryUrl'))
-        <div class="mt-3"><img src="{{ $image->temporaryUrl() }}" alt="Preview" class="max-h-52   border"></div>
-        @elseif($imagePreview)
-        <div class="mt-3"><img src="{{ $imagePreview }}" alt="Preview" class="max-h-52   border"></div>
-        @endif
-      </div>
-
-      
-      <div class="pt-2">
-        <button type="button" wire:click="save" class="px-4 py-2 bg-green-600 text-white   hover:bg-green-700">Simpan</button>
-      </div>
-
-      
-      @if (session()->has('success'))
-      <div class="p-3 bg-green-100 text-green-700  ">{{ session('success') }}</div>
-      @endif
     </div>
-     
-
-  </div>
 </div>

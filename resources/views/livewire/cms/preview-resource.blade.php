@@ -2,7 +2,14 @@
     {{-- Close your eyes. Count to one. That is how long forever feels. --}}
     {{-- resources/views/livewire/cms/preview-resource.blade.php --}}
     <div class="max-w-4xl mx-auto p-6 sm:p-10">
-        <div class="bg-white border rounded-2xl p-6 sm:p-10">
+        <div class="gap-2 flex mb-4">
+            <a href="{{ route('cms.page.index.resource', ['locale' => app()->getLocale()]) }}">
+                <p class="text-xl hover:underline">Page Resource </p>
+            </a>
+            <p> > </p>
+            <p class="text-xl text-blue-700">Preview Resource</p>
+        </div>
+        <div class="bg-white border  p-6 sm:p-10">
             @php
             $locale = app()->getLocale();
             $title = $locale === 'id' ? ($item->title_id ?? '') : ($item->title_en ?? '');
@@ -17,10 +24,10 @@
                     <h1 class="text-2xl sm:text-3xl font-semibold mt-1">{{ $title ?: '—' }}</h1>
                 </div>
                 <div class="flex flex-col items-end gap-2">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full border text-xs">
+                    <span class="inline-flex items-center px-2 py-0.5   border text-xs">
                         {{ $item->publikasi ?? 'draf' }}
                     </span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full border text-xs">
+                    <span class="inline-flex items-center px-2 py-0.5   border text-xs">
                         {{ $item->status ?? 'on' }}
                     </span>
                 </div>
@@ -34,34 +41,33 @@
                 @endif
             </div>
 
-            {{-- Cover image (kalau ada kolom image) --}}
+
             @if(!empty($item->image))
             <div class="mb-6">
                 <img src="{{ Storage::url($item->image) }}" alt="cover" class="w-full max-h-[420px] object-cover rounded-lg border">
             </div>
             @endif
 
-            {{-- Description --}}
+
             @if(!empty($desc))
             <div class="prose max-w-none mb-6">
                 {!! $desc !!}
             </div>
             @endif
 
-            {{-- Content (untuk report & database kamu simpan content_en/id, jadi aman ditampilkan) --}}
+
             @if(!empty($content))
             <div class="prose max-w-none">
                 {!! $content !!}
             </div>
             @endif
 
-            {{-- Aksi --}}
+
             <div class="mt-8 flex items-center gap-3">
                 <a href="javascript:history.back()" class="px-4 py-2 border rounded hover:bg-slate-50">Kembali</a>
-                {{-- Contoh tombol khusus per tipe, kalau nanti butuh --}}
+
                 @if(($type ?? 'report') === 'database')
-                {{-- Jika nanti ada kolom link di tabel database, tinggal ganti $item->link --}}
-                {{-- <a href="{{ $item->link }}" target="_blank" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Buka Database</a> --}}
+
                 @endif
             </div>
         </div>

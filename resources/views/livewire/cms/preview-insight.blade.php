@@ -7,6 +7,13 @@
         @endif
 
         <div class="px-4 sm:px-6 lg:max-w-2xl mx-auto py-12">
+            <div class="gap-2 flex mb-4">
+                <a href="{{ route('cms.page.index.insight', ['locale' => app()->getLocale()]) }}">
+                    <p class="text-xl hover:underline">Page Insight </p>
+                </a>
+                <p> > </p>
+                <p class="text-xl text-blue-700">Preview Insight</p>
+            </div>
             <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 leading-snug">
                 {{ $lang==='id' ? ($title_id ?? 'Tanpa Judul') : ($title_en ?? 'Untitled') }}
             </h1>

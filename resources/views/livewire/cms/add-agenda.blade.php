@@ -1,34 +1,42 @@
 <div>
     {{-- Knowing others is intelligence; knowing yourself is true wisdom. --}}
-    
+
     <div class="max-w-4xl mx-auto p-6 sm:p-10">
-        <div class="bg-white rounded-2xl border p-6 sm:p-10">
+        <div class="gap-2 flex mb-4">
+            <a href="{{ route('cms.page.index.agenda', ['locale' => app()->getLocale()]) }}">
+                <p class="text-xl hover:underline">Page Agenda </p>
+            </a>
+            <p> > </p>
+            <p class="text-xl text-blue-700">Tambah Agenda</p>
+        </div>
+        <div class="bg-white  border p-6 sm:p-10">
+
             <h2 class="text-2xl font-semibold mb-6">Tambah agenda</h2>
 
-            
+
             <div class="flex gap-2 mb-4">
                 <button type="button"
-                    class="px-3 py-1 rounded border {{ $type==='event' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                    class="px-3 py-1   border {{ $type==='event' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
                     wire:click="$set('type','event')">event</button>
                 <button type="button"
-                    class="px-3 py-1 rounded border {{ $type==='activity' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                    class="px-3 py-1   border {{ $type==='activity' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
                     wire:click="$set('type','activity')">activity</button>
             </div>
 
-            
+
             <div class="flex gap-2 mb-6">
                 <button type="button"
-                    class="px-3 py-1 rounded border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                    class="px-3 py-1   border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
                     wire:click="$set('lang','en')">EN</button>
                 <button type="button"
-                    class="px-3 py-1 rounded border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                    class="px-3 py-1   border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
                     wire:click="$set('lang','id')">ID</button>
             </div>
 
-            
+
             <div class="space-y-6">
 
-                
+
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-2">
                         Title ({{ strtoupper($lang) }})
@@ -42,7 +50,7 @@
                         type="text"
                         autocomplete="off"
                         wire:model.defer="title_en"
-                        class="w-full border rounded p-2"
+                        class="w-full border   p-2"
                         placeholder="English title">
                     @error('title_en')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -55,7 +63,7 @@
                         type="text"
                         autocomplete="off"
                         wire:model.defer="title_id"
-                        class="w-full border rounded p-2"
+                        class="w-full border   p-2"
                         placeholder="Judul Indonesia">
                     @error('title_id')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -65,7 +73,7 @@
 
                 </div>
 
-                
+
                 <div class="mb-5">
                     <label class="block text-sm font-medium text-slate-700 mb-2">Description ({{ strtoupper($lang) }})</label>
                     <div
@@ -114,13 +122,13 @@
                 });
               },
 
-              
+
               file_picker_types:'image',
               file_picker_callback:(cb,value,meta)=>{
                 if(meta.filetype!=='image') return;
                 const routePrefix='/laravel-filemanager?type=image';
 
-                
+
                 const openPopup=(url,w=980,h=600)=>{
                   const sl = window.screenLeft ?? window.screenX;
                   const st = window.screenTop ?? window.screenY;
@@ -166,7 +174,7 @@
                 };
                 window.addEventListener('message', onMessage, false);
 
-                
+
                 window.SetUrl=(items)=>{
                   try{
                     const arr=Array.isArray(items)?items:(items?[items]:[]);
@@ -180,10 +188,10 @@
 
                 popupRef=openPopup(routePrefix,980,600);
 
-                
+
                 poll=setInterval(()=>{ if(!popupRef || popupRef.closed){ restore(); } }, 700);
 
-                
+
                 setTimeout(()=>restore(), 180000);
               },
 
@@ -205,7 +213,7 @@
                     @error('description_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                 </div>
 
-                
+
                 <div class="mb-5">
                     <label class="block text-sm font-medium text-slate-700 mb-2">Content ({{ strtoupper($lang) }})</label>
                     <div
@@ -332,16 +340,16 @@
                     @error('content_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                 </div>
 
-                
+
                 <div class="grid sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-sm font-medium mb-1">Tanggal Publikasi</label>
-                        <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border rounded p-2">
+                        <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border   p-2">
                         @error('tanggal_publikasi') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Publikasi</label>
-                        <select wire:model.defer="publikasi" class="w-full border rounded p-2">
+                        <select wire:model.defer="publikasi" class="w-full border   p-2">
                             <option value="draf">Draf</option>
                             <option value="publish">Publish</option>
                         </select>
@@ -349,28 +357,28 @@
                     </div>
                 </div>
 
-                
+
                 <div>
                     <label class="block text-sm font-medium mb-1">Gambar</label>
-                    <input type="file" accept="image/*" wire:model="image" class="w-full border rounded p-2">
+                    <input type="file" accept="image/*" wire:model="image" class="w-full border   p-2">
                     <div wire:loading wire:target="image" class="text-sm text-slate-500 mt-1">Uploading…</div>
                     @error('image') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
 
                     @if($image && method_exists($image,'temporaryUrl'))
-                    <div class="mt-3"><img src="{{ $image->temporaryUrl() }}" alt="Preview" class="max-h-52 rounded border"></div>
+                    <div class="mt-3"><img src="{{ $image->temporaryUrl() }}" alt="Preview" class="max-h-52   border"></div>
                     @elseif($imagePreview)
-                    <div class="mt-3"><img src="{{ $imagePreview }}" alt="Preview" class="max-h-52 rounded border"></div>
+                    <div class="mt-3"><img src="{{ $imagePreview }}" alt="Preview" class="max-h-52   border"></div>
                     @endif
                 </div>
 
-                
+
                 <div class="pt-2">
-                    <button type="button" wire:click="save" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Simpan</button>
+                    <button type="button" wire:click="save" class="px-4 py-2 bg-green-600 text-white   hover:bg-green-700">Simpan</button>
                 </div>
 
-                
+
                 @if (session()->has('success'))
-                <div class="p-3 bg-green-100 text-green-700 rounded">{{ session('success') }}</div>
+                <div class="p-3 bg-green-100 text-green-700  ">{{ session('success') }}</div>
                 @endif
             </div>
         </div>

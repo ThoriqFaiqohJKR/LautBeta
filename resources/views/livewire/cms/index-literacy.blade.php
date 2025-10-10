@@ -2,7 +2,13 @@
     {{-- Stop trying to control. --}}
     <div>
         <div class="max-w-6xl mx-auto p-6 sm:p-10 space-y-8">
+            <div class="gap-2 flex mb-4">
+
+                <p class="text-xl ">Page Literacy </p>
+
+            </div>
             <div class="flex justify-between items-center">
+
                 <h2 class="text-2xl font-semibold">Literacy</h2>
                 <a href="{{ route('cms.page.add.literacy', ['locale' => app()->getLocale()]) }}">
                     <button class="px-3 py-1.5 border bg-green-600 text-white">Tambah</button>

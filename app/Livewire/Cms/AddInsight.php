@@ -52,7 +52,7 @@ class AddInsight extends Component
             'image'             => ['required', File::image()->max(5 * 1024)],
         ];
     }
- 
+
     public function save(): void
     {
         $this->validate();

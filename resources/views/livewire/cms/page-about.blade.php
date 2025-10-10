@@ -1,35 +1,38 @@
 <div x-data="{lang:@js($lang),saved:false,setEditorContent(c){window.dispatchEvent(new CustomEvent('setEditor',{detail:{content:c}}))}}"
-  x-init="window.addEventListener('saved',()=>{saved=true;setTimeout(()=>saved=false,2200)})"
-  class="space-y-6 max-w-4xl mx-auto py-8">
-  <div class="border border-gray-200 px-6 py-6 bg-white">
-    <div class="flex items-center gap-2 mb-6">
-      <button type="button"
-        @click="lang='en';$wire.set('lang','en');setEditorContent(@js($contentEN ?? ''))"
-        :class="lang==='en'?'bg-emerald-600 text-white':'bg-gray-100 text-gray-700'"
-        class="px-4 py-2 border">ENGLISH</button>
-      <button type="button"
-        @click="lang='id';$wire.set('lang','id');setEditorContent(@js($contentID ?? ''))"
-        :class="lang==='id'?'bg-emerald-600 text-white':'bg-gray-100 text-gray-700'"
-        class="px-4 py-2 border">INDONESIA</button>
+    x-init="window.addEventListener('saved',()=>{saved=true;setTimeout(()=>saved=false,2200)})"
+    class="space-y-6 max-w-4xl mx-auto p-8">
+    <div>
+        <p class="text-2xl">Page About</p>
     </div>
+    <div class="border border-gray-200 px-6 py-6 bg-white">
+        <div class="flex items-center gap-2 mb-6">
+            <button type="button"
+                @click="lang='en';$wire.set('lang','en');setEditorContent(@js($contentEN ?? ''))"
+                :class="lang==='en'?'bg-emerald-600 text-white':'bg-gray-100 text-gray-700'"
+                class="px-4 py-2 border">ENGLISH</button>
+            <button type="button"
+                @click="lang='id';$wire.set('lang','id');setEditorContent(@js($contentID ?? ''))"
+                :class="lang==='id'?'bg-emerald-600 text-white':'bg-gray-100 text-gray-700'"
+                class="px-4 py-2 border">INDONESIA</button>
+        </div>
 
-    <div class="mb-5">
-      <label class="block text-sm font-medium text-slate-700 mb-2">Title (<span class="uppercase" x-text="lang.toUpperCase()"></span>)</label>
-      <input type="text" wire:model.defer="titleEN" x-show="lang==='en'" class="w-full border px-3 py-2 focus:ring-2 focus:ring-emerald-500" />
-      <input type="text" wire:model.defer="titleID" x-show="lang==='id'" class="w-full border px-3 py-2 focus:ring-2 focus:ring-emerald-500" />
-      @error('titleEN') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-      @error('titleID') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-    </div>
+        <div class="mb-5">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Title (<span class="uppercase" x-text="lang.toUpperCase()"></span>)</label>
+            <input type="text" wire:model.defer="titleEN" x-show="lang==='en'" class="w-full border px-3 py-2 focus:ring-2 focus:ring-emerald-500" />
+            <input type="text" wire:model.defer="titleID" x-show="lang==='id'" class="w-full border px-3 py-2 focus:ring-2 focus:ring-emerald-500" />
+            @error('titleEN') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+            @error('titleID') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+        </div>
 
-    <div class="mb-5">
-      <label class="block text-sm font-medium text-slate-700 mb-2">Description (<span class="uppercase" x-text="lang.toUpperCase()"></span>)</label>
+        <div class="mb-5">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Description (<span class="uppercase" x-text="lang.toUpperCase()"></span>)</label>
 
-      <!-- TinyMCE -->
-      <div wire:ignore
-        x-data
-        data-base="{{ asset('tinymce') }}"
-        data-initial="{{ $lang==='id' ? ($contentID ?? '') : ($contentEN ?? '') }}"
-        x-init="
+            <!-- TinyMCE -->
+            <div wire:ignore
+                x-data
+                data-base="{{ asset('tinymce') }}"
+                data-initial="{{ $lang==='id' ? ($contentID ?? '') : ($contentEN ?? '') }}"
+                x-init="
             const base = $el.dataset.base;
             const initial = $el.dataset.initial || '';
 
@@ -89,14 +92,14 @@
                 });
               },
 
-              
+
               file_picker_types: 'image',
               file_picker_callback: (cb, value, meta) => {
                 if (meta.filetype !== 'image') return;
 
                 const routePrefix = '/laravel-filemanager?type=image';
 
-                
+
                 const openPopup = (url, w=980, h=600) => {
                   const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
                   const dualScreenTop  = window.screenTop  !== undefined ? window.screenTop  : window.screenY;
@@ -137,9 +140,9 @@
                   window.removeEventListener('message', onMessage, false);
                 };
 
-                
+
                 const onMessage = (ev) => {
-                
+
                   const data = ev?.data || {};
                   const action = data.mceAction || ev?.mceAction;
                   if (action === 'fileSelected') {
@@ -153,7 +156,7 @@
                 };
                 window.addEventListener('message', onMessage, false);
 
-                
+
                 window.SetUrl = (items) => {
                   try {
                     const a = Array.isArray(items) ? items : (items ? [items] : []);
@@ -165,17 +168,17 @@
                   }
                 };
 
-                
+
                 popupRef = openPopup(routePrefix, 980, 600);
 
-                
+
                 closedPoll = setInterval(() => {
                   if (!popupRef || popupRef.closed) {
                     restore();
                   }
                 }, 700);
 
-                
+
                 setTimeout(() => restore(), 180000);
               },
 
@@ -190,25 +193,25 @@
 
             });
 
-            
+
             window.addEventListener('setEditor', (e) => {
               const ed = tinymce.get('about_desc');
               if (ed) ed.setContent(e.detail?.content || '');
             });
            ">
-        <textarea id="about_desc"></textarea>
-      </div>
+                <textarea id="about_desc"></textarea>
+            </div>
 
-      @error('contentEN') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
-      @error('contentID') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
-    </div>
+            @error('contentEN') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+            @error('contentID') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+        </div>
 
-    <div class="mt-6">
-      <button type="button" wire:click="save" wire:loading.attr="disabled" class="px-6 py-2 bg-emerald-600 text-white hover:bg-emerald-700">
-        <span wire:loading.remove wire:target="save">Save</span>
-        <span wire:loading wire:target="save">Menyimpan…</span>
-      </button>
-      <div x-show="saved" x-transition class="mt-3 text-green-700 bg-green-100 px-4 py-2">Berhasil disimpan.</div>
+        <div class="mt-6">
+            <button type="button" wire:click="save" wire:loading.attr="disabled" class="px-6 py-2 bg-emerald-600 text-white hover:bg-emerald-700">
+                <span wire:loading.remove wire:target="save">Save</span>
+                <span wire:loading wire:target="save">Menyimpan…</span>
+            </button>
+            <div x-show="saved" x-transition class="mt-3 text-green-700 bg-green-100 px-4 py-2">Berhasil disimpan.</div>
+        </div>
     </div>
-  </div>
 </div>

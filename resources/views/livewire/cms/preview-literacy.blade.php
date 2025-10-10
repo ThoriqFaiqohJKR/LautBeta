@@ -6,6 +6,13 @@
         </div>
 
         <div class="px-4 sm:px-6 lg:max-w-2xl mx-auto py-10">
+            <div class="gap-2 flex mb-4">
+                <a href="{{ route('cms.page.index.literacy', ['locale' => app()->getLocale()]) }}">
+                    <p class="text-xl hover:underline">Page Literacy </p>
+                </a>
+                <p> > </p>
+                <p class="text-xl text-blue-700">Edit Literacy</p>
+            </div>
             <h1 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-4">
                 {{ $item['title'] }}
             </h1>

@@ -2,24 +2,31 @@
     {{-- Be like water. --}}
     <div>
         <div class="max-w-4xl mx-auto p-6 sm:p-10">
-            <div class="bg-white rounded-2xl border p-6 sm:p-10 space-y-6">
+            <div class="gap-2 flex mb-4">
+                <a href="{{ route('cms.page.index.resource', ['locale' => app()->getLocale()]) }}">
+                    <p class="text-xl hover:underline">Page Resource </p>
+                </a>
+                <p> > </p>
+                <p class="text-xl text-blue-700">Tambah Resource</p>
+            </div>
+            <div class="bg-white  border p-6 sm:p-10 space-y-6">
                 <h2 class="text-2xl font-semibold">Add Resource</h2>
 
                 <div class="flex gap-2">
-                    <button type="button" class="px-3 py-1 rounded border {{ $source==='report' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('source','report')">Report</button>
-                    <button type="button" class="px-3 py-1 rounded border {{ $source==='database' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('source','database')">Database</button>
-                    <button type="button" class="px-3 py-1 rounded border {{ $source==='gallery' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('source','gallery')">Gallery</button>
+                    <button type="button" class="px-3 py-1   border {{ $source==='report' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('source','report')">Report</button>
+                    <button type="button" class="px-3 py-1   border {{ $source==='database' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('source','database')">Database</button>
+                    <button type="button" class="px-3 py-1   border {{ $source==='gallery' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('source','gallery')">Gallery</button>
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="button" class="px-3 py-1 rounded border {{ $lang==='en' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('lang','en')">EN</button>
-                    <button type="button" class="px-3 py-1 rounded border {{ $lang==='id' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('lang','id')">ID</button>
+                    <button type="button" class="px-3 py-1   border {{ $lang==='en' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('lang','en')">EN</button>
+                    <button type="button" class="px-3 py-1   border {{ $lang==='id' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300' }}" wire:click="$set('lang','id')">ID</button>
                 </div>
 
                 <div x-data>
                     <label class="block text-sm font-medium text-slate-700 mb-2">Title ({{ strtoupper($lang) }})</label>
-                    <input type="text" class="w-full border rounded p-2" wire:model.defer="title_en" wire:key="title-en" x-show="$wire.get('lang')==='en'">
-                    <input type="text" class="w-full border rounded p-2" wire:model.defer="title_id" wire:key="title-id" x-show="$wire.get('lang')==='id'">
+                    <input type="text" class="w-full border   p-2" wire:model.defer="title_en" wire:key="title-en" x-show="$wire.get('lang')==='en'">
+                    <input type="text" class="w-full border   p-2" wire:model.defer="title_id" wire:key="title-id" x-show="$wire.get('lang')==='id'">
                     @if($lang==='en')
                     @error('title_en') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                     @else
@@ -68,44 +75,44 @@
                 <div class="grid sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-sm font-medium mb-1">Tanggal Publikasi</label>
-                        <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border rounded p-2">
+                        <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border   p-2">
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Publikasi</label>
-                        <select wire:model.defer="publikasi" class="w-full border rounded p-2">
+                        <select wire:model.defer="publikasi" class="w-full border   p-2">
                             <option value="draf">Draf</option>
                             <option value="publish">Publish</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Status</label>
-                        <select wire:model.defer="status" class="w-full border rounded p-2">
+                        <select wire:model.defer="status" class="w-full border   p-2">
                             <option value="on">On</option>
                             <option value="off">Off</option>
                         </select>
                     </div>
-                </div> 
+                </div>
 
                 <div x-show="$wire.get('source')!=='gallery'">
                     <label class="block text-sm font-medium mb-1">Gambar</label>
-                    <input type="file" accept="image/*" wire:model="image" class="w-full border rounded p-2">
+                    <input type="file" accept="image/*" wire:model="image" class="w-full border   p-2">
                     <div class="mt-2 text-sm text-slate-500" wire:loading wire:target="image">Mengunggah…</div>
 
                     @if($image)
-                    <div class="mt-3"><img src="{{ $image->temporaryUrl() }}" class="max-h-52 rounded border"></div>
+                    <div class="mt-3"><img src="{{ $image->temporaryUrl() }}" class="max-h-52   border"></div>
                     @elseif($imagePreview)
-                    <div class="mt-3"><img src="{{ $imagePreview }}" class="max-h-52 rounded border"></div>
+                    <div class="mt-3"><img src="{{ $imagePreview }}" class="max-h-52   border"></div>
                     @endif
                     @error('image') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                 </div>
 
-                
+
                 <div x-show="$wire.get('source')==='gallery'" x-cloak wire:key="gallery-fields" class="space-y-4">
 
                     <div class="grid sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-sm font-medium mb-1">Type</label>
-                            <select wire:model.defer="gallery_type" class="w-full border rounded p-2">
+                            <select wire:model.defer="gallery_type" class="w-full border   p-2">
                                 <option value="photo">Photo</option>
                                 <option value="video">Video</option>
                             </select>
@@ -114,7 +121,7 @@
 
                         <div>
                             <label class="block text-sm font-medium mb-1">Database</label>
-                            <select wire:model.defer="database_id" class="w-full border rounded p-2">
+                            <select wire:model.defer="database_id" class="w-full border   p-2">
                                 <option value="">Pilih database…</option>
                                 @foreach($databaseOptions as $opt)
                                 <option value="{{ $opt['id'] }}">{{ $opt['label'] }}</option>
@@ -129,7 +136,7 @@
                         <div>
                             <label class="block text-sm font-medium mb-1">Link File (ID)</label>
                             <input type="url" wire:model.defer="file_id"
-                                class="w-full border rounded p-2"
+                                class="w-full border   p-2"
                                 placeholder="https://drive.google.com/..., https://example.com/file-id">
                             @error('file_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
@@ -137,7 +144,7 @@
                         <div>
                             <label class="block text-sm font-medium mb-1">Link File (EN)</label>
                             <input type="url" wire:model.defer="file_en"
-                                class="w-full border rounded p-2"
+                                class="w-full border   p-2"
                                 placeholder="https://drive.google.com/..., https://example.com/file-en">
                             @error('file_en') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
@@ -149,13 +156,13 @@
                         @if($file_id)
                         <div>
                             <div class="text-xs text-slate-500 mb-1">Preview (ID)</div>
-                            <img src="{{ $file_id }}" onerror="this.style.display='none'" class="max-h-52 rounded border w-full object-cover">
+                            <img src="{{ $file_id }}" onerror="this.style.display='none'" class="max-h-52   border w-full object-cover">
                         </div>
                         @endif
                         @if($file_en)
                         <div>
                             <div class="text-xs text-slate-500 mb-1">Preview (EN)</div>
-                            <img src="{{ $file_en }}" onerror="this.style.display='none'" class="max-h-52 rounded border w-full object-cover">
+                            <img src="{{ $file_en }}" onerror="this.style.display='none'" class="max-h-52   border w-full object-cover">
                         </div>
                         @endif
                     </div>
@@ -174,11 +181,11 @@
 
 
                 <div class="pt-2">
-                    <button type="button" wire:click="save" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Simpan</button>
+                    <button type="button" wire:click="save" class="px-4 py-2 bg-blue-600 text-white   hover:bg-blue-700">Simpan</button>
                 </div>
 
                 @if (session()->has('success'))
-                <div class="p-3 bg-green-100 text-green-700 rounded mt-3">{{ session('success') }}</div>
+                <div class="p-3 bg-green-100 text-green-700   mt-3">{{ session('success') }}</div>
                 @endif
             </div>
         </div>
