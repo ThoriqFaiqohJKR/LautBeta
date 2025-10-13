@@ -164,11 +164,16 @@
                 :class="mobile ? 'translate-x-0' : '-translate-x-full'">
                 <div class="pt-4 pb-3 space-y-1">
                     <a href="#" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Home</a>
-                    <a href="#" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">About</a>
-                    <a href="#" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Insight</a>
-                    <a href="#" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Literacy</a>
-                    <a href="#" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Agenda</a>
-                    <a href="#" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Resource</a>
+
+
+                    <a href="{{ route('cms.page.about') }}" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">About</a>
+                    <a href="{{ route('cms.page.index.insight', ['locale' => $locale]) }}"
+                        class="block px-4 py-2 rounded-md text-base">
+                        Insight
+                    </a>
+                    <a href="{{ route('cms.page.index.literacy') }}" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Literacy</a>
+                    <a href="{{ route('cms.page.index.agenda') }}" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Agenda</a>
+                    <a href="{{ route('cms.page.index.resource') }}" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Resource</a>
                 </div>
 
                 <div class="border-t border-slate-200 pt-2 pb-3">

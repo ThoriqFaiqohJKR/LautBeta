@@ -63,7 +63,7 @@
 
 
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='insight' ? null : 'insight')" class="hover:text-green-900 flex items-center focus:outline-none">{{ __('Wawasan') }}<template x-if="desktopOpen!=='insight'">
+                                <button @click="desktopOpen = (desktopOpen==='insight' ? null : 'insight')" class="hover:text-green-900 flex items-center focus:outline-none cursor-pointer">{{ __('Wawasan') }}<template x-if="desktopOpen!=='insight'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
@@ -84,7 +84,7 @@
 
                             <!-- LITERASI dropdown -->
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='literasi' ? null : 'literasi')" class="hover:text-green-900 flex items-center focus:outline-none">{{ __('Literasi') }}<template x-if="desktopOpen!=='literasi'">
+                                <button @click="desktopOpen = (desktopOpen==='literasi' ? null : 'literasi')" class="hover:text-green-900 flex items-center focus:outline-none cursor-pointer">{{ __('Literasi') }}<template x-if="desktopOpen!=='literasi'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
@@ -106,7 +106,7 @@
 
                             <!-- EVENT dropdown -->
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='event' ? null : 'event')" class="hover:text-green-900 flex items-center focus:outline-none">{{ __('Agenda') }}<template x-if="desktopOpen!=='event'">
+                                <button @click="desktopOpen = (desktopOpen==='event' ? null : 'event')" class="hover:text-green-900 flex items-center focus:outline-none cursos-pointer">{{ __('Agenda') }}<template x-if="desktopOpen!=='event'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
@@ -127,7 +127,7 @@
 
                             <!-- GALERI dropdown -->
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='galeri' ? null : 'galeri')" class="hover:text-green-900 flex items-center focus:outline-none">{{ __('Sumber Daya') }}<template x-if="desktopOpen!=='galeri'">
+                                <button @click="desktopOpen = (desktopOpen==='galeri' ? null : 'galeri')" class="hover:text-green-900 flex items-center focus:outline-none cursor-pointer">{{ __('Sumber Daya') }}<template x-if="desktopOpen!=='galeri'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
