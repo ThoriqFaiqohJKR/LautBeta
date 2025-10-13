@@ -1,5 +1,5 @@
 @extends('layouts.base')
 
 @section('content')
-    <livewire:pagegallery/>
+    <livewire:page-gallery />
 @endsection

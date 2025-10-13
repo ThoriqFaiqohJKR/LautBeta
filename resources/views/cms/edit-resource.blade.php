@@ -1,4 +1,4 @@
 @extends('layouts.admin')
 @section('content')
-<livewire:cms.Editresource :id="$id"/>
+<livewire:cms.EditResource :id="$id"/>
 @endsection

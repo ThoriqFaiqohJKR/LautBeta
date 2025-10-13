@@ -1,5 +1,5 @@
 @extends('layouts.base')
 
 @section('content')
-    <livewire:pagengopinidetail :id="$id" />
+    <livewire:page-ngopini-detail :id="$id" />
 @endsection

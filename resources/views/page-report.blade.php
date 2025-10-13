@@ -1,5 +1,5 @@
 @extends('layouts.base')
 
 @section('content')
-    <livewire:pagereport/>
+    <livewire:page-report />
 @endsection

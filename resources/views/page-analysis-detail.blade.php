@@ -1,5 +1,5 @@
 @extends('layouts.base')
 
 @section('content')
-<livewire:pageanalysisdetail :id="$id" />
+<livewire:page-analysis-detail :id="$id" />
 @endsection

@@ -1,4 +1,4 @@
 @extends('layouts.admin')
 @section('content')
-<livewire:cms.Addresource />
+<livewire:cms.AddResource />
 @endsection

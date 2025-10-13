@@ -19,21 +19,23 @@
         <div class="bg-white shadow-md fixed w-full z-30">
             <div class="lg:max-w-6xl mx-auto h-20 flex items-center justify-between">
                 <!-- MOBILE BAR: Hamburger — Logo — EN | ID -->
-                <div class="relative md:hidden flex items-center w-full h-[60px]">
-                    <button @click="mobileOpen = true" class="p-2 border absolute left-0" aria-label="Open menu">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+                <div class=" md:hidden flex items-center justify-between w-full h-[60px] px-4">
+                    <div class="relative md:hidden flex items-center w-full h-[60px]">
+                        <button @click="mobileOpen = true" class="p-2 border absolute left-0" aria-label="Open menu">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
 
-                    <img src="{{ asset('img/logos/logo.png') }}" alt="Logo Auriga" class="h-[48px] w-auto mx-auto" />
+                        <img src="{{ asset('img/logos/logo.png') }}" alt="Logo Auriga" class="h-[48px] w-auto mx-auto" />
 
-                    <div class="absolute right-0">
-                        <div class="inline-flex items-center rounded-full border p-[2px]">
-                            <a href="{{ url('en' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
-                                class="px-2 py-1 rounded-full text-xs font-medium {{ request()->segment(1)==='en' ? 'bg-green-600 text-white' : 'text-slate-700 hover:bg-green-50' }}">EN</a>
-                            <a href="{{ url('id' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
-                                class="px-2 py-1 rounded-full text-xs font-medium {{ request()->segment(1)==='id' ? 'bg-green-600 text-white' : 'text-slate-700 hover:bg-green-50' }}">ID</a>
+                        <div class="absolute right-0">
+                            <div class="inline-flex items-center rounded-full border p-[2px]">
+                                <a href="{{ url('en' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                                    class="px-2 py-1 rounded-full text-xs font-medium {{ request()->segment(1)==='en' ? 'bg-green-600 text-white' : 'text-slate-700 hover:bg-green-50' }}">EN</a>
+                                <a href="{{ url('id' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
+                                    class="px-2 py-1 rounded-full text-xs font-medium {{ request()->segment(1)==='id' ? 'bg-green-600 text-white' : 'text-slate-700 hover:bg-green-50' }}">ID</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,7 +127,7 @@
 
                             <!-- GALERI dropdown -->
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='galeri' ? null : 'galeri')" class="hover:text-green-900 flex items-center focus:outline-none">{{ __('Resources') }}<template x-if="desktopOpen!=='galeri'">
+                                <button @click="desktopOpen = (desktopOpen==='galeri' ? null : 'galeri')" class="hover:text-green-900 flex items-center focus:outline-none">{{ __('Sumber Daya') }}<template x-if="desktopOpen!=='galeri'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
@@ -139,7 +141,7 @@
                                 <div x-show="desktopOpen==='galeri'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                                     <ul class="text-sm">
                                         <li class="px-4 py-2 cursor-pointer"><a href="{{ route('reportresource') }}"">{{ __('Report') }}</a></li>
-                    <li class=" px-4 py-2 cursor-pointer"><a href="{{ route('database') }}">{{ __('Database') }}</a></li>
+                                        <li class=" px-4 py-2 cursor-pointer"><a href="{{ route('database') }}">{{ __('Database') }}</a></li>
                                         <li class="px-4 py-2 cursor-pointer"><a href="{{ route('gallery') }}">{{ __('Galeri') }}</a></li>
                                     </ul>
                                 </div>
@@ -213,38 +215,38 @@
                 </label>
                 <!-- Menu list with collapsible submenus (mobile: bisa buka beberapa sekaligus) -->
                 <ul class="space-y-3">
+                    <a href="{{ route('about') }}" class="block font-medium py-2">
+                        {{ __('Tentang') }}
+                    </a>
+
                     <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">ABOUT</button>
+                        <button @click="open = !open" class="w-full text-left font-medium py-2">{{ __('Wawasan') }}</button>
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
-                            <li><a href="#" class="block py-1">{{ __('Who we are') }}</a></li>
-                            <li><a href="#" class="block py-1">#</a></li>
+                            <li><a href="{{ route('analysis') }}" class="block py-1">{{ __('Analisis') }}</a></li>
+                            <li><a href="{{ route('feature') }}" class="block py-1">{{ __('Fitur') }}</a></li>
                         </ul>
                     </li>
                     <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">INSIGHT</button>
+                        <button @click="open = !open" class="w-full text-left font-medium py-2">{{ __('Literasi') }}</button>
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
-                            <li><a href="#" class="block py-1">{{ __('Analisis') }}</a></li>
-                            <li><a href="#" class="block py-1">{{ __('Feature') }}</a></li>
+                            <li><a href="#" class="block py-1">{{ __('Grafik') }}</a></li>
+                            <li><a href="{{ route('journal') }}" class="block py-1">{{ __('Jurnal') }}</a></li>
+                            <li><a href="{{ route('report') }}" class="block py-1">{{ __('Laporan') }}</a></li>
                         </ul>
                     </li>
                     <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">LITERASI</button>
+                        <button @click="open = !open" class="w-full text-left font-medium py-2">{{ __('Agenda') }}</button>
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
-                            <li><a href="#" class="block py-1">#</a></li>
+                            <li><a href="{{ route('event') }}" class="block py-1">{{ __('Event') }}</a></li>
+                            <li><a href="{{ route('activity') }}" class="block py-1">{{ __('Activites') }}</a></li>
                         </ul>
                     </li>
                     <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">EVENT</button>
+                        <button @click="open = !open" class="w-full text-left font-medium py-2">{{ __('Galeri') }}</button>
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
-                            <li><a href="#" class="block py-1">{{ __('Event') }}</a></li>
-                            <li><a href="#" class="block py-1">{{ __('Activites') }}</a></li>
-                        </ul>
-                    </li>
-                    <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">GALERI</button>
-                        <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
-                            <li><a href="#" class="block py-1">#</a></li>
-                            <li><a href="#" class="block py-1">#</a></li>
+                            <li><a href="{{ route('reportresource') }}" class="block py-1">{{ __('Laporan') }}</a></li>
+                            <li><a href="{{ route('database') }}" class="block py-1">{{ __('Basis Data') }}</a></li>
+                            <li><a href="{{ route('gallery') }}" class="block py-1">{{ __('Galeri') }}</a></li>
                         </ul>
                     </li>
                 </ul>

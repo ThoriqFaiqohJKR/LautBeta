@@ -1,4 +1,4 @@
 @extends('layouts.admin')
 @section('content')
-<livewire:cms.Previewresource :id="$id" />
+<livewire:cms.PreviewResource :id="$id" />
 @endsection

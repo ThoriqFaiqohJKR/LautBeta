@@ -1,5 +1,5 @@
 @extends('layouts.base')
 
 @section('content')
-    <livewire:pageactivity/>
+    <livewire:page-activity />
 @endsection
