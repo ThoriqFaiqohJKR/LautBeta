@@ -17,7 +17,7 @@ class ControllerCms extends Controller
         session()->invalidate();
         session()->regenerateToken();
 
-        return redirect()->to('/'); 
+        return redirect()->to('/');
     }
 
     public function pageabout()

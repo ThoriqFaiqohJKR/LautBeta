@@ -16,7 +16,7 @@ class Index extends Component
     public array $infographics = [];
 
     public int $limitInsights = 2;
-    public int $limitEvents = 5;
+    public int $limitEvents = 4;
     public int $limitInfographics = 6;
 
     public function mount(): void
@@ -93,7 +93,7 @@ class Index extends Component
                 'title' => $title,
                 'date'  => $date,
                 'image' => $img,
-                'url'   => url(app()->getLocale() . '/event/' . $r->id . '/' . $r->slug),
+                'url'   => url(app()->getLocale() . '/Pagedetailevent/' . $r->id . '/' . $r->slug),
             ];
         })->toArray();
     }

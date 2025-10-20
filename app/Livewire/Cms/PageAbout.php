@@ -10,8 +10,6 @@ class PageAbout extends Component
     public string $lang = 'en';
     public bool $editMode = false;
     public ?int $aboutId = null;
-
-    // Fields
     public string $titleEN = '';
     public string $contentEN = '';
     public string $titleID = '';
@@ -26,7 +24,7 @@ class PageAbout extends Component
 
     public function mount(): void
     {
-        // Ambil satu baris abouts (kalau multi-row, sesuaikan)
+
         $row = DB::table('abouts')->first();
         if ($row) {
             $this->aboutId   = (int) $row->id;
@@ -37,13 +35,13 @@ class PageAbout extends Component
         }
     }
 
-    /** Masuk ke mode edit */
+
     public function startEdit(): void
     {
         $this->editMode = true;
     }
 
-    /** Batal edit (kembalikan nilai dari DB + kembali ke view mode) */
+
     public function cancelEdit(): void
     {
         $this->resetValidation();
@@ -58,12 +56,12 @@ class PageAbout extends Component
                 $this->contentID = (string) ($row->description_id ?? '');
             }
         } else {
-            // kosongkan jika belum ada data
+            
             $this->titleEN = $this->contentEN = $this->titleID = $this->contentID = '';
         }
     }
 
-    /** Simpan (insert/update) lalu kembali ke view mode */
+
     public function save(): void
     {
         $this->validate();

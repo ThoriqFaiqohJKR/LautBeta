@@ -10,92 +10,95 @@
         </div>
 
 
-        <section class="max-w-6xl mx-auto py-12  px-4 sm:px-0">
-            <div class="flex flex-col lg:flex-row lg:items-stretch lg:justify-between gap-8 ">
+        <section class="max-w-6xl mx-auto py-10 px-4 sm:px-10  ">
 
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 min-h-90 border">
 
-
+                <!-- INSIGHT -->
                 <div class="flex-[8]">
                     <h2 class="text-slate-500 text-sm font-semibold tracking-wider mb-3">INSIGHT</h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        @forelse($insights as $item)
-                        <a href="{{ $item['url'] }}" class="block group">
-                            <article class="relative h-full flex flex-col bg-[#bfbfbf] transition hover:scale-[1.02] duration-200">
-                                <div class="w-full aspect-[16/9] overflow-hidden">
-                                    @if(!empty($item['image']))
-                                    <img src="{{ $item['image'] }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-                                    @else
-                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                        <span class="text-slate-400 text-sm">No Image</span>
-                                    </div>
-                                    @endif
-                                </div>
 
-                                <div class="mt-4 mb-8 px-2 flex-1 flex flex-col">
-                                    <p class="text-[#2a5fa0] font-semibold tracking-wide text-lg sm:text-xl">
-                                        {{ ucfirst(strtolower($item['type'])) }}
-                                    </p>
-                                    <p class="mt-2 text-base sm:text-xl text-white leading-snug line-clamp-3">
-                                        {{ $item['title'] }}
-                                    </p>
-                                    <span class="absolute right-0 bottom-0 w-0 h-0 border-l-[28px] border-b-[28px] border-l-transparent border-b-gray-500"></span>
+                    <div class="flex flex-wrap gap-4">
+                        @foreach($insights as $item)
+                        <article class="w-full md:w-1/2 lg:max-w-sm bg-[#bfbfbf] flex flex-col overflow-hidden min-h-90">
+
+                            <!-- Gambar dibikin lebih tinggi -->
+                            <div class="w-full aspect-[16/9] overflow-hidden">
+                                @if(!empty($item['image']))
+                                <img src="{{ $item['image'] }}" class="w-full h-full object-cover">
+                                @else
+                                <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                    <span class="text-slate-400 text-sm">No Image</span>
                                 </div>
-                            </article>
-                        </a>
-                        @empty
-                        <p class="text-slate-500">Belum ada insight terpublish.</p>
-                        @endforelse
+                                @endif
+                            </div>
+
+                            <!-- Isi teks -->
+                            <div class="p-4 min-h-[140px] flex flex-col">
+                                <p class="text-[#2a5fa0] font-semibold text-xl">
+                                    {{ ucfirst(strtolower($item['type'])) }}
+                                </p>
+                                <p class="mt-1 text-xl text-white leading-snug line-clamp-3">
+                                    {{ $item['title'] }}
+                                </p>
+                            </div>
+
+                        </article>
+
+                        @endforeach
                     </div>
+
+
                 </div>
 
+                <!-- EVENT -->
+                <aside class="flex-[2] h-full self-stretch bg-white p-2">
 
-
-
-                <div class="flex-[2]">
                     <h2 class="text-slate-500 text-sm font-semibold tracking-wider mb-3">EVENT</h2>
 
                     @if(!empty($events))
                     @php($first = $events[0])
                     <a href="{{ $first['url'] }}" class="block group">
                         @if($first['image'])
-                        <img src="{{ $first['image'] }}" alt="{{ $first['title'] }}" class="w-full object-cover" />
+                        <div class="w-full h-28 bg-white overflow-hidden shadow-sm">
+                            <img src="{{ $first['image'] }}" alt="{{ $first['title'] }}" class="w-full h-full object-cover" />
+                        </div>
                         @else
                         <div class="w-full aspect-[16/9] bg-gray-200 flex items-center justify-center">
                             <span class="text-slate-400 text-sm">No Image</span>
                         </div>
                         @endif
-                        <p class="text-[#2a5fa0] font-semibold tracking-wide mt-6 text-lg">{{ $first['title'] }}</p>
+                        <p class="text-[#2a5fa0] font-semibold tracking-wide mt-4 text-base leading-snug">{{ $first['title'] }}</p>
                     </a>
 
-                    <div class="mt-3 space-y-4">
+                    <div class="mt-3 space-y-3">
                         @foreach(array_slice($events, 1) as $e)
-                        <div class="border-b-2 border-slate-300 pb-3">
-                            <a href="{{ $e['url'] }}" class="block text-base sm:text-lg leading-snug hover:text-[#2a5fa0]">
+                        <div class="border-b border-slate-300 pb-3">
+                            <a href="{{ $e['url'] }}" class="block text-md leading-snug hover:text-[#2a5fa0]">
                                 {{ $e['title'] }}
                             </a>
-                            @if($e['date'])
-                            <p class="text-sm text-slate-500 mt-1">{{ $e['date'] }}</p>
-                            @endif
+
                         </div>
                         @endforeach
                     </div>
                     @else
                     <p class="text-slate-500">Belum ada event terpublish.</p>
                     @endif
-                </div>
+                </aside>
 
             </div>
         </section>
+
 
         <section class="bg-[#5aa0b9] py-12 sm:py-16 px-4 sm:px-12 lg:px-48 flex flex-col lg:flex-row gap-8 sm:gap-12">
             @if($ngopini)
             <div class="flex flex-col lg:flex-row my-8 sm:my-16 gap-8 lg:gap-0">
                 <div class="flex-shrink-0 w-full lg:w-3/6">
                     @if($ngopini['image'])
-                    <img src="{{ $ngopini['image'] }}" alt="{{ $ngopini['title'] }}" class="w-full h-auto rounded shadow-lg" />
+                    <img src="{{ $ngopini['image'] }}" alt="{{ $ngopini['title'] }}" class="w-full h-auto  shadow-lg" />
                     @else
-                    <div class="w-full aspect-[16/9] bg-gray-200 flex items-center justify-center rounded shadow-lg">
+                    <div class="w-full aspect-[16/9] bg-gray-200 flex items-center justify-center  shadow-lg">
                         <span class="text-slate-400 text-sm">No Image</span>
                     </div>
                     @endif

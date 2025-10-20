@@ -1,5 +1,5 @@
 <div>
-    {{-- resources/views/livewire/cms/edit-insight.blade.php --}}
+
     <div class="max-w-4xl mx-auto p-6 sm:p-10">
         <div class="gap-2 flex mb-4">
             <a href="{{ route('cms.page.index.insight', ['locale' => app()->getLocale()]) }}">
@@ -12,15 +12,20 @@
         <div class="bg-white  border p-6 sm:p-10">
             <h2 class="text-2xl font-semibold mb-6">Edit Insight ({{ ucfirst($type) }})</h2>
 
-            {{-- Switch Language (EN / ID) --}}
-            <div class="flex gap-2 mb-6">
+
+            <div x-data="{ lang: @entangle('lang') }" class="flex gap-2 mb-6">
                 <button type="button"
-                    class="px-3 py-1  border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                    wire:click="$set('lang','en')">EN</button>
+                    @click="lang='en'; $wire.set('lang','en'); setTimeout(()=>{window.dispatchEvent(new CustomEvent('set-desc',{detail:{content:$wire.get('description_en')}})); window.dispatchEvent(new CustomEvent('set-content',{detail:{content:$wire.get('content_en')}}));},0)"
+                    class="px-3 py-1 border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}">
+                    EN
+                </button>
                 <button type="button"
-                    class="px-3 py-1  border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                    wire:click="$set('lang','id')">ID</button>
+                    @click="lang='id'; $wire.set('lang','id'); setTimeout(()=>{window.dispatchEvent(new CustomEvent('set-desc',{detail:{content:$wire.get('description_id')}})); window.dispatchEvent(new CustomEvent('set-content',{detail:{content:$wire.get('content_id')}}));},0)"
+                    class="px-3 py-1 border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}">
+                    ID
+                </button>
             </div>
+
 
             {{-- ================== FORM ================== --}}
             <div class="space-y-6">
@@ -64,265 +69,243 @@
 
                 {{-- Description (TinyMCE) --}}
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Description ({{ strtoupper($lang) }})</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">
+                        Description ({{ strtoupper($lang) }})
+                    </label>
+
                     <div
                         wire:ignore
                         wire:key="desc-{{ $lang }}"
                         x-data
                         data-base="{{ asset('tinymce') }}"
+                        data-id="desc_editor_{{ $lang }}"
                         data-initial="{{ $lang==='id' ? ($description_id ?? '') : ($description_en ?? '') }}"
                         x-init="
-        const base=$el.dataset.base, initial=$el.dataset.initial||'';
-        if (window.tinymce && tinymce.get('desc_editor')) tinymce.get('desc_editor').remove();
+      const base   = $el.dataset.base;
+      const edId   = $el.dataset.id;
+      const initHT = $el.dataset.initial || '';
 
-        tinymce.init({
-          selector:'#desc_editor',
-          height:300,
-          min_height:200,
-          max_height:480,
-          base_url:base,
-          suffix:'.min',
-          license_key:'gpl',
-          plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
-          menubar:'file edit view insert format tools table',
-          toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
-          toolbar_mode:'sliding',
-          style_formats:[
-            {title:'Text Styles',items:[
-              {title:'Paragraph',format:'p'},
-              {title:'Headings',items:[{title:'H1',format:'h1'},{title:'H2',format:'h2'},{title:'H3',format:'h3'},{title:'H4',format:'h4'},{title:'H5',format:'h5'},{title:'H6',format:'h6'}]},
-              {title:'Inline',items:[{title:'Bold',inline:'b'},{title:'Italic',inline:'i'},{title:'Underline',inline:'u'},{title:'Strikethrough',inline:'strike'}]}
-            ]}
-          ],
-          block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
-          toolbar_sticky:true,
-          promotion:false,
-          branding:false,
-          statusbar:true,
-          elementpath:false,
-          resize:true,
-          forced_root_block:'p',
+      if (window.tinymce && tinymce.get(edId)) tinymce.get(edId).remove();
 
-          setup:(ed)=>{
-            ed.on('init',()=>{ ed.setContent(initial) });
-            ed.on('change keyup undo redo',()=>{
-              const html=ed.getContent();
-              if(@this.get('lang')==='id'){ @this.set('description_id', html); } else { @this.set('description_en', html); }
-            });
-          },
+      tinymce.init({
+        selector:'#'+edId,
+        height:300,
+        base_url:base,
+        suffix:'.min',
+        license_key:'gpl',
+        plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
+        menubar:'file edit view insert format tools table',
+        toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
+        block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
+        promotion:false,
+        branding:false,
+        statusbar:true,
+        forced_root_block:'p',
 
-          file_picker_types:'image',
-          file_picker_callback:(cb,value,meta)=>{
-            if(meta.filetype!=='image') return;
-            const routePrefix='/laravel-filemanager?type=image';
+        relative_urls:false,
+        remove_script_host:false,
+        convert_urls:true,
+        document_base_url:'{{ url('/') }}/',
 
-            const openPopup=(url,w=980,h=600)=>{
-              const sl = window.screenLeft ?? window.screenX;
-              const st = window.screenTop ?? window.screenY;
-              const ww = window.innerWidth || document.documentElement.clientWidth || screen.width;
-              const wh = window.innerHeight|| document.documentElement.clientHeight|| screen.height;
-              const zoom = ww / window.screen.availWidth;
-              const left = (ww - w) / 2 / zoom + sl;
-              const top  = (wh - h) / 2 / zoom + st;
-              const features=[
-                'toolbar=no','location=no','status=no','menubar=no',
-                'scrollbars=yes','resizable=yes',
-                `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
-              ].join(',');
-              const win=window.open(url,'LFM_Popup',features);
-              if(win&&win.focus) win.focus();
-              return win;
-            };
+        setup:(ed)=>{
+          ed.on('init',()=>{ ed.setContent(initHT) })
+          ed.on('blur',()=>{
+            const html=ed.getContent()
+            if(@this.get('lang')==='id'){ @this.set('description_id', html) }
+            else{ @this.set('description_en', html) }
+          })
+        },
 
-            const oldSetUrl=window.SetUrl;
-            let restored=false;
-            let popupRef=null;
-            let poll=null;
+        file_picker_types:'image',
+        file_picker_callback:(cb)=>{
+          const routePrefix='/laravel-filemanager?type=image';
 
-            const restore=()=>{
-              if(restored) return; restored=true;
-              if(poll) clearInterval(poll);
-              if(oldSetUrl){ window.SetUrl=oldSetUrl; }
-              else { try{ delete window.SetUrl }catch(e){ window.SetUrl=undefined } }
-              window.removeEventListener('message', onMessage, false);
-            };
+          const open=(url,w=980,h=600)=>{
+            const sl=window.screenLeft??window.screenX;
+            const st=window.screenTop??window.screenY;
+            const ww=window.innerWidth||document.documentElement.clientWidth||screen.width;
+            const wh=window.innerHeight||document.documentElement.clientHeight||screen.height;
+            const zoom=ww/window.screen.availWidth;
+            const left=(ww-w)/2/zoom+sl, top=(wh-h)/2/zoom+st;
+            const win=window.open(url,'LFM_Popup',[
+              'toolbar=no','location=no','status=no','menubar=no','scrollbars=yes','resizable=yes',
+              `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
+            ].join(','));
+            if(win&&win.focus) win.focus();
+            return win;
+          };
 
-            const onMessage=(ev)=>{
-              const data=ev?.data||{};
-              const action=data.mceAction || ev?.mceAction;
-              if(action==='fileSelected'){
-                const f=data.file || (data.files && data.files[0]) || {};
-                if(f && f.url){
-                  cb(f.url,{alt:f.name||''});
-                  try{ popupRef && popupRef.close && popupRef.close(); }catch(e){}
-                  restore();
-                }
+          const old=window.SetUrl; let done=false; let pop=null; let poll=null;
+          const cleanup=()=>{ if(done) return; done=true; if(poll) clearInterval(poll);
+            if(old){ window.SetUrl=old } else { try{ delete window.SetUrl }catch(e){ window.SetUrl=undefined } }
+            window.removeEventListener('message', onMsg, false);
+          };
+
+          const toAbs=(u)=>{
+            if(/^https?:\/\//i.test(u)) return u;
+            if(u.startsWith('/')) return location.origin+u;
+            return location.origin+'/'+u;
+          };
+
+          const onMsg=(ev)=>{
+            const d=ev?.data||{}; const act=d.mceAction||ev?.mceAction;
+            if(act==='fileSelected'){
+              const f=d.file || (d.files&&d.files[0]) || {};
+              if(f && (f.url||f.full_url||f.thumb_url||f.path)){
+                const url = toAbs(f.url||f.full_url||f.thumb_url||f.path);
+                cb(url,{alt:f.name||''}); try{pop&&pop.close&&pop.close()}catch(e){} cleanup();
               }
-            };
-            window.addEventListener('message', onMessage, false);
+            }
+          };
+          window.addEventListener('message', onMsg, false);
 
-            window.SetUrl=(items)=>{
-              try{
-                const arr=Array.isArray(items)?items:(items?[items]:[]);
-                const f=arr[0]||{};
-                if(f.url) cb(f.url,{alt:f.name||''});
-              }finally{
-                try{ popupRef && popupRef.close && popupRef.close(); }catch(e){}
-                restore();
+          window.SetUrl=(items)=>{
+            try{
+              const a=Array.isArray(items)?items:(items?[items]:[]);
+              const f=a[0]||{};
+              if(f && (f.url||f.full_url||f.thumb_url||f.path)){
+                const url = toAbs(f.url||f.full_url||f.thumb_url||f.path);
+                cb(url,{alt:f.name||''});
               }
-            };
+            } finally { try{pop&&pop.close&&pop.close()}catch(e){} cleanup(); }
+          };
 
-            popupRef=openPopup(routePrefix,980,600);
-            poll=setInterval(()=>{ if(!popupRef || popupRef.closed){ restore(); } }, 700);
-            setTimeout(()=>restore(), 180000);
-          },
+          pop=open(routePrefix,980,600);
+          poll=setInterval(()=>{ if(!pop||pop.closed){ cleanup() } },700);
+          setTimeout(()=>cleanup(),180000);
+        },
 
-       init_instance_callback:(editor)=>{
-  const handle=editor.getContainer().querySelector('.tox-statusbar__resize-handle');
-  if(handle){
-    handle.style.marginLeft='auto';
-    handle.style.marginRight='4px';
-    handle.style.cursor='se-resize';
-  }
-}
-
-        });
-
-        window.addEventListener('set-desc', (e)=>{
-          const ed=tinymce.get('desc_editor'); if(ed) ed.setContent(e.detail?.content||'');
-        });
-      ">
-                        <textarea id="desc_editor"></textarea>
+        init_instance_callback:(editor)=>{
+          const h=editor.getContainer().querySelector('.tox-statusbar__resize-handle');
+          if(h){ h.style.marginLeft='auto'; h.style.marginRight='4px'; h.style.cursor='se-resize' }
+        }
+      });
+    ">
+                        <textarea id="desc_editor_{{ $lang }}"></textarea>
                     </div>
+
                     @error('description_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                     @error('description_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- Content (TinyMCE) --}}
+
+                 {{-- Content (TinyMCE) --}}
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Content ({{ strtoupper($lang) }})</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">
+                        Content ({{ strtoupper($lang) }})
+                    </label>
+
                     <div
                         wire:ignore
-                        wire:key="content-{{ $lang }}"
+                        wire:key="desc-{{ $lang }}"
                         x-data
                         data-base="{{ asset('tinymce') }}"
+                        data-id="desc_editor_{{ $lang }}"
                         data-initial="{{ $lang==='id' ? ($content_id ?? '') : ($content_en ?? '') }}"
                         x-init="
-        const base=$el.dataset.base, initial=$el.dataset.initial||'';
-        if (window.tinymce && tinymce.get('content_editor')) tinymce.get('content_editor').remove();
+      const base   = $el.dataset.base;
+      const edId   = $el.dataset.id;
+      const initHT = $el.dataset.initial || '';
 
-        tinymce.init({
-          selector:'#content_editor',
-          height:340,
-          min_height:220,
-          max_height:520,
-          base_url:base,
-          suffix:'.min',
-          license_key:'gpl',
-          plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
-          menubar:'file edit view insert format tools table',
-          toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
-          toolbar_mode:'sliding',
-          block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
-          toolbar_sticky:true,
-          promotion:false,
-          branding:false,
-          statusbar:true,
-          elementpath:true,
-          resize:true,
-          forced_root_block:'p',
+      if (window.tinymce && tinymce.get(edId)) tinymce.get(edId).remove();
 
-          setup:(ed)=>{
-            ed.on('init',()=>{ ed.setContent(initial) });
-            ed.on('change keyup undo redo',()=>{
-              const html=ed.getContent();
-              if(@this.get('lang')==='id'){ @this.set('content_id', html); } else { @this.set('content_en', html); }
-            });
-          },
+      tinymce.init({
+        selector:'#'+edId,
+        height:300,
+        base_url:base,
+        suffix:'.min',
+        license_key:'gpl',
+        plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
+        menubar:'file edit view insert format tools table',
+        toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
+        block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
+        promotion:false,
+        branding:false,
+        statusbar:true,
+        forced_root_block:'p',
 
-          file_picker_types:'image',
-          file_picker_callback:(cb,value,meta)=>{
-            if(meta.filetype!=='image') return;
-            const routePrefix='/laravel-filemanager?type=image';
+        relative_urls:false,
+        remove_script_host:false,
+        convert_urls:true,
+        document_base_url:'{{ url('/') }}/',
 
-            const openPopup=(url,w=980,h=600)=>{
-              const sl = window.screenLeft ?? window.screenX;
-              const st = window.screenTop ?? window.screenY;
-              const ww = window.innerWidth || document.documentElement.clientWidth || screen.width;
-              const wh = window.innerHeight|| document.documentElement.clientHeight|| screen.height;
-              const zoom = ww / window.screen.availWidth;
-              const left = (ww - w) / 2 / zoom + sl;
-              const top  = (wh - h) / 2 / zoom + st;
-              const features=[
-                'toolbar=no','location=no','status=no','menubar=no',
-                'scrollbars=yes','resizable=yes',
-                `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
-              ].join(',');
-              const win=window.open(url,'LFM_Popup',features);
-              if(win&&win.focus) win.focus();
-              return win;
-            };
+        setup:(ed)=>{
+          ed.on('init',()=>{ ed.setContent(initHT) })
+          ed.on('blur',()=>{
+            const html=ed.getContent()
+            if(@this.get('lang')==='id'){ @this.set('content_id', html) }
+            else{ @this.set('content_en', html) }
+          })
+        },
 
-            const oldSetUrl=window.SetUrl;
-            let restored=false;
-            let popupRef=null;
-            let poll=null;
+        file_picker_types:'image',
+        file_picker_callback:(cb)=>{
+          const routePrefix='/laravel-filemanager?type=image';
 
-            const restore=()=>{
-              if(restored) return; restored=true;
-              if(poll) clearInterval(poll);
-              if(oldSetUrl){ window.SetUrl=oldSetUrl; }
-              else { try{ delete window.SetUrl }catch(e){ window.SetUrl=undefined } }
-              window.removeEventListener('message', onMessage, false);
-            };
+          const open=(url,w=980,h=600)=>{
+            const sl=window.screenLeft??window.screenX;
+            const st=window.screenTop??window.screenY;
+            const ww=window.innerWidth||document.documentElement.clientWidth||screen.width;
+            const wh=window.innerHeight||document.documentElement.clientHeight||screen.height;
+            const zoom=ww/window.screen.availWidth;
+            const left=(ww-w)/2/zoom+sl, top=(wh-h)/2/zoom+st;
+            const win=window.open(url,'LFM_Popup',[
+              'toolbar=no','location=no','status=no','menubar=no','scrollbars=yes','resizable=yes',
+              `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
+            ].join(','));
+            if(win&&win.focus) win.focus();
+            return win;
+          };
 
-            const onMessage=(ev)=>{
-              const data=ev?.data||{};
-              const action=data.mceAction || ev?.mceAction;
-              if(action==='fileSelected'){
-                const f=data.file || (data.files && data.files[0]) || {};
-                if(f && f.url){
-                  cb(f.url,{alt:f.name||''});
-                  try{ popupRef && popupRef.close && popupRef.close(); }catch(e){}
-                  restore();
-                }
+          const old=window.SetUrl; let done=false; let pop=null; let poll=null;
+          const cleanup=()=>{ if(done) return; done=true; if(poll) clearInterval(poll);
+            if(old){ window.SetUrl=old } else { try{ delete window.SetUrl }catch(e){ window.SetUrl=undefined } }
+            window.removeEventListener('message', onMsg, false);
+          };
+
+          const toAbs=(u)=>{
+            if(/^https?:\/\//i.test(u)) return u;
+            if(u.startsWith('/')) return location.origin+u;
+            return location.origin+'/'+u;
+          };
+
+          const onMsg=(ev)=>{
+            const d=ev?.data||{}; const act=d.mceAction||ev?.mceAction;
+            if(act==='fileSelected'){
+              const f=d.file || (d.files&&d.files[0]) || {};
+              if(f && (f.url||f.full_url||f.thumb_url||f.path)){
+                const url = toAbs(f.url||f.full_url||f.thumb_url||f.path);
+                cb(url,{alt:f.name||''}); try{pop&&pop.close&&pop.close()}catch(e){} cleanup();
               }
-            };
-            window.addEventListener('message', onMessage, false);
+            }
+          };
+          window.addEventListener('message', onMsg, false);
 
-            window.SetUrl=(items)=>{
-              try{
-                const arr=Array.isArray(items)?items:(items?[items]:[]);
-                const f=arr[0]||{};
-                if(f.url) cb(f.url,{alt:f.name||''});
-              }finally{
-                try{ popupRef && popupRef.close && popupRef.close(); }catch(e){}
-                restore();
+          window.SetUrl=(items)=>{
+            try{
+              const a=Array.isArray(items)?items:(items?[items]:[]);
+              const f=a[0]||{};
+              if(f && (f.url||f.full_url||f.thumb_url||f.path)){
+                const url = toAbs(f.url||f.full_url||f.thumb_url||f.path);
+                cb(url,{alt:f.name||''});
               }
-            };
+            } finally { try{pop&&pop.close&&pop.close()}catch(e){} cleanup(); }
+          };
 
-            popupRef=openPopup(routePrefix,980,600);
-            poll=setInterval(()=>{ if(!popupRef || popupRef.closed){ restore(); } }, 700);
-            setTimeout(()=>restore(), 180000);
-          },
+          pop=open(routePrefix,980,600);
+          poll=setInterval(()=>{ if(!pop||pop.closed){ cleanup() } },700);
+          setTimeout(()=>cleanup(),180000);
+        },
 
-               init_instance_callback:(editor)=>{
-  const handle=editor.getContainer().querySelector('.tox-statusbar__resize-handle');
-  if(handle){
-    handle.style.marginLeft='auto';
-    handle.style.marginRight='4px';
-    handle.style.cursor='se-resize';
-  }
-}
-
-        });
-
-        window.addEventListener('set-content', (e)=>{
-          const ed=tinymce.get('content_editor'); if(ed) ed.setContent(e.detail?.content||'');
-        });
-      ">
-                        <textarea id="content_editor"></textarea>
+        init_instance_callback:(editor)=>{
+          const h=editor.getContainer().querySelector('.tox-statusbar__resize-handle');
+          if(h){ h.style.marginLeft='auto'; h.style.marginRight='4px'; h.style.cursor='se-resize' }
+        }
+      });
+    ">
+                        <textarea id="desc_editor_{{ $lang }}"></textarea>
                     </div>
+
                     @error('content_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                     @error('content_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                 </div>

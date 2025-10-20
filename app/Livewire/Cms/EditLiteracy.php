@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Livewire\Cms;
- 
+
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
@@ -12,9 +12,8 @@ class EditLiteracy extends Component
 {
     use WithFileUploads;
 
-    // Ditentukan otomatis di mount
-    public string $type = 'journal'; // journal | case_report
-    public string $lang = 'en';      // en | id
+    public string $type = 'journal';
+    public string $lang = 'en';
 
     public string $title_en = '';
     public string $title_id = '';
@@ -28,8 +27,14 @@ class EditLiteracy extends Component
     public string $status = 'on';
 
     public $image = null;
-    public $file  = null;
     public ?string $imagePreview = null;
+    public ?string $existing_image = null;
+
+    // Ganti single $file -> dua file terpisah
+    public $file_en = null;
+    public $file_id = null;
+    public ?string $existing_file_en = null;
+    public ?string $existing_file_id = null;
 
     public int $literacyId;
 
@@ -37,27 +42,21 @@ class EditLiteracy extends Component
     {
         $this->literacyId = $id;
 
-        // Optional: ?t=journal atau ?t=case_report untuk paksa pilih tabel
         $forced = request()->query('t');
         if ($forced === 'journal' || $forced === 'case_report') {
             $this->type = $forced;
             $row = DB::table($this->type)->find($id);
         } else {
-            // Auto-resolve: cek journal dulu, kalau gak ada cek case_report
             $row = DB::table('journal')->find($id);
             if ($row) {
                 $this->type = 'journal';
             } else {
                 $row = DB::table('case_report')->find($id);
-                if ($row) {
-                    $this->type = 'case_report';
-                }
+                if ($row) $this->type = 'case_report';
             }
         }
 
-        if (!$row) {
-            abort(404);
-        }
+        if (!$row) abort(404);
 
         $this->title_en          = $row->title_en ?? '';
         $this->title_id          = $row->title_id ?? '';
@@ -68,23 +67,30 @@ class EditLiteracy extends Component
         $this->tanggal_publikasi = $row->tanggal_publikasi ?? null;
         $this->publikasi         = $row->publikasi ?? 'draf';
         $this->status            = $row->status ?? 'on';
-        $this->imagePreview      = !empty($row->image) ? Storage::url($row->image) : null;
+
+        $this->existing_image    = $row->image ?? null;
+        $this->imagePreview      = $this->existing_image ? Storage::url($this->existing_image) : null;
+
+        // ambil file lama per bahasa (untuk journal)
+        $this->existing_file_en  = $row->file_en ?? null;
+        $this->existing_file_id  = $row->file_id ?? null;
     }
 
     protected function rules(): array
     {
         $base = [
-            'title_en'          => ['required', 'string', 'max:255', 'required_without:title_id'],
-            'title_id'          => ['required', 'string', 'max:255', 'required_without:title_en'],
+            'title_en'          => ['required_without:title_id', 'string', 'max:255'],
+            'title_id'          => ['required_without:title_en', 'string', 'max:255'],
             'description_en'    => ['required', 'string'],
             'description_id'    => ['required', 'string'],
             'tanggal_publikasi' => ['required', 'date'],
             'publikasi'         => ['required', 'in:draf,publish'],
-            'image'             => ['required', FileRule::image()->max(5 * 1024)],
+            'image'             => ['nullable', FileRule::image()->max(5 * 1024)],
         ];
 
         if ($this->type === 'journal') {
-            $base['file'] = ['required', FileRule::types(['pdf', 'doc', 'docx', 'ppt', 'pptx'])->max(20 * 1024)];
+            $base['file_en'] = ['nullable', FileRule::types(['pdf', 'doc', 'docx', 'ppt', 'pptx'])->max(20 * 1024)];
+            $base['file_id'] = ['nullable', FileRule::types(['pdf', 'doc', 'docx', 'ppt', 'pptx'])->max(20 * 1024)];
         } else {
             $base['status']     = ['required', 'in:on,off'];
             $base['content_en'] = ['required', 'string'];
@@ -106,6 +112,13 @@ class EditLiteracy extends Component
         $this->validate();
 
         if ($this->type === 'journal') {
+            // minimal salah satu EN/ID harus ada (baru atau existing)
+            $hasAny = ($this->file_en || $this->existing_file_en || $this->file_id || $this->existing_file_id);
+            if (!$hasAny) {
+                $this->addError('file_en', 'Minimal unggah salah satu file (EN/ID) atau biarkan file lama.');
+                $this->addError('file_id', 'Minimal unggah salah satu file (EN/ID) atau biarkan file lama.');
+                return;
+            }
             $this->updateJournal();
         } else {
             $this->updateCaseReport();
@@ -129,10 +142,28 @@ class EditLiteracy extends Component
         if ($this->image) {
             $path = $this->image->store('literacy/journal/images', 'public');
             $data['image'] = $path;
+            $this->existing_image = $path;
+            $this->imagePreview = Storage::url($path);
+        } elseif ($this->existing_image) {
+            $data['image'] = $this->existing_image;
         }
-        if ($this->file) {
-            $path = $this->file->store('literacy/journal/files', 'public');
-            $data['file'] = $path;
+
+        // file EN (baru -> simpan; kalau tidak, pakai existing)
+        if ($this->file_en) {
+            $pathEn = $this->file_en->store('literacy/journal/files/en', 'public');
+            $data['file_en'] = Storage::url($pathEn);
+            $this->existing_file_en = $pathEn;
+        } elseif ($this->existing_file_en) {
+            $data['file_en'] = $this->existing_file_en;
+        }
+
+        // file ID
+        if ($this->file_id) {
+            $pathId = $this->file_id->store('literacy/journal/files/id', 'public');
+            $data['file_id'] = Storage::url($pathId);
+            $this->existing_file_id = $pathId;
+        } elseif ($this->existing_file_id) {
+            $data['file_id'] = $this->existing_file_id;
         }
 
         DB::table('journal')->where('id', $this->literacyId)->update($data);
@@ -156,6 +187,10 @@ class EditLiteracy extends Component
         if ($this->image) {
             $path = $this->image->store('literacy/case-report/images', 'public');
             $data['image'] = $path;
+            $this->existing_image = $path;
+            $this->imagePreview = Storage::url($path);
+        } elseif ($this->existing_image) {
+            $data['image'] = $this->existing_image;
         }
 
         DB::table('case_report')->where('id', $this->literacyId)->update($data);

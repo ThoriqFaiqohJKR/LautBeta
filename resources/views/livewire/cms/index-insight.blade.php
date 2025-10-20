@@ -5,6 +5,16 @@
         <div class="px-4 sm:px-6 lg:px-8 py-8 max-w-5xl mx-auto p-8">
             <div class="py-8 text-xl">
                 <p>Page insight</p>
+                @if (session('success'))
+                <div x-data="{ show:true }"
+                    x-init="setTimeout(()=>show=false,2000)"
+                    x-show="show"
+                    x-transition
+                    class="mb-6 px-4 py-3 bg-green-100 text-green-700 rounded">
+                    {{ session('success') }}
+                </div>
+                @endif
+
             </div>
             {{-- Tabs & Tambah --}}
             <div class="flex justify-between items-center mb-6">
@@ -101,8 +111,8 @@
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-xs text-slate-500">#{{ ($page - 1) * $perPage + $idx + 1 }}</span>
                         <div class="flex gap-2">
-                            <a href="#" class="px-2 py-1 text-xs border  ">Edit</a>
-                            <a href="#" class="px-2 py-1 text-xs border  ">Preview</a>
+                            <a href="{{ route('cms.page.edit.insight',  ['locale' => app()->getLocale(),'id' => $it->id]) }}" class="px-2 py-1 text-xs border  ">Edit</a>
+                            <a href="{{ route('cms.page.preview.insight',  ['locale' => app()->getLocale(),'id' => $it->id]) }}" class="px-2 py-1 text-xs border  ">Preview</a>
                         </div>
                     </div>
                     <div class="flex gap-3">

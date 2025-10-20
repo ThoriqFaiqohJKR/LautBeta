@@ -5,257 +5,389 @@ namespace App\Livewire\Cms;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class EditResource extends Component
 {
     use WithFileUploads;
 
-    public string $section = 'report';
-    public $id = null;
+    public $lang = 'en';
+    public $section = 'report';
+    public $id;
 
-    public string $title_en = '';
-    public string $title_id = '';
-    public ?string $description = null;
-    public string $status = 'on';
-    public string $publikasi = 'draf';
-    public ?string $tanggal_publikasi = null;
+    public $yt_id = null;
+    public $yt_en = null;
+    public $title_en = '';
+    public $title_id = '';
+    public $description_en = '';
+    public $description_id = '';
+    public $content_en = '';
+    public $content_id = '';
 
-    public $report_file = null;
-    public ?string $report_path = null;
-    public ?string $report_url = null;
 
-    public ?string $db_link = null;
-    public ?string $db_version = null;
+    public $tanggal_publikasi = null;
+    public $publikasi = 'draf';
+    public $status = 'on';
 
-    public $gallery_image = null;
-    public ?string $gallery_url = null;
-    public ?string $gallery_category = null;
 
-    protected function getTable(string $section): string
-    {
-        return match ($section) {
-            'report'   => 'report',
-            'database' => 'database',
-            'gallery'  => 'gallery',
-            default    => 'report',
-        };
-    }
+    public $image = null;
+    public $image_path = null;
+    public $imagePreview = null;
 
-    protected function findOne(string $table, int $id)
+
+    public $file_en = null;
+    public $file_id = null;
+    public $type = null;
+    public $database_id = null;
+    public $database_options = [];
+    public $slug = null;
+
+
+    public $file_en_preview = null;
+    public $file_id_preview = null;
+
+
+
+  
+    /* --------------------- helpers --------------------- */
+    protected function findOne($table, $id)
     {
         if (!Schema::hasTable($table)) return null;
         return DB::table($table)->where('id', $id)->first();
     }
 
-    protected function findRowAndTable(string $preferredSection, int $id): array
+    protected function storeImageIfAny($dir)
     {
-        $order = array_values(array_unique([$preferredSection, 'report', 'database', 'gallery']));
-        foreach ($order as $sec) {
-            $table = $this->getTable($sec);
-            $row = $this->findOne($table, $id);
-            if ($row) return ['section' => $sec, 'table' => $table, 'row' => $row];
-        }
-        return ['section' => null, 'table' => null, 'row' => null];
+        if ($this->image) return $this->image->store(trim($dir, '/'), 'public');
+        return $this->image_path; // keep old image
+    }
+    public function updatedFileId($v)
+    {
+        $this->yt_id = $this->extractYoutubeId($v);
+    }
+    public function updatedFileEn($v)
+    {
+        $this->yt_en = $this->extractYoutubeId($v);
     }
 
-    protected function fillFromRow(string $section, $row): void
+    private function extractYoutubeId($url)
     {
-        if ($section === 'report') {
-            $this->fill([
-                'title_en' => $row->title_en ?? '',
-                'title_id' => $row->title_id ?? '',
-                'description' => $row->description ?? null,
-                'status' => $row->status ?? 'on',
-                'publikasi' => $row->publikasi ?? 'draf',
-                'tanggal_publikasi' => $row->tanggal_publikasi ?? null,
-                'report_path' => $row->path ?? null,
-                'report_url' => $row->url ?? null,
-            ]);
-        } elseif ($section === 'database') {
-            $this->fill([
-                'title_en' => $row->title_en ?? '',
-                'title_id' => $row->title_id ?? '',
-                'description' => $row->description ?? null,
-                'status' => $row->status ?? 'on',
-                'publikasi' => $row->publikasi ?? 'draf',
-                'tanggal_publikasi' => $row->tanggal_publikasi ?? null,
-                'db_link' => $row->link ?? null,
-                'db_version' => $row->version ?? null,
-            ]);
+        if (!$url) return null;
+        if (preg_match('~(?:[?&]v=|youtu\.be/|/embed/|/shorts/)([A-Za-z0-9_-]{6,})~', $url, $m)) return $m[1];
+        return null;
+    }
+
+    public function updatedType()
+    {
+        $this->resetValidation(['file_id', 'file_en']);
+        $this->file_id = $this->file_en = $this->yt_id = $this->yt_en = null;
+    }
+
+    protected function refreshImagePreview()
+    {
+        $this->imagePreview = $this->image_path ? Storage::url($this->image_path) : null;
+    }
+
+    protected function refreshGalleryPreviews()
+    {
+        // Helper to convert storage path or absolute URL to a browser URL
+        $toUrl = function ($val) {
+            if (!$val) return null;
+            // if it's already an http(s) URL, return as is
+            if (is_string($val) && (str_starts_with($val, 'http://') || str_starts_with($val, 'https://'))) {
+                return $val;
+            }
+            // otherwise treat as storage path
+            return Storage::url($val);
+        };
+
+        $en = $toUrl($this->file_en);
+        $id = $toUrl($this->file_id);
+
+        // Untuk type photo, biasanya hanya simpan di file_id.
+        // Biar preview muncul di kedua bahasa, fallback saling isi.
+        if ($this->type === 'photo') {
+            if (!$en && $id) $en = $id;
+            if (!$id && $en) $id = $en;
+        }
+
+        $this->file_en_preview = $en;
+        $this->file_id_preview = $id;
+    }
+
+    /* --------------------- lifecycle --------------------- */
+    public function mount($section = null, $id = null)
+    {
+        $this->id = $id ?? request()->route('id') ?? request('id');
+        $sec = $section ?? request()->route('section') ?? request('section');
+
+        if (!$sec) {
+            if ($this->id && $this->findOne('gallery', $this->id)) $sec = 'gallery';
+            elseif ($this->id && $this->findOne('database', $this->id)) $sec = 'database';
+            else $sec = 'report';
+        }
+
+        if ($sec === 'gallery') {
+            $ok = $this->mountGallery($this->id);
+            if ($ok === false && $this->id && $this->findOne('database', $this->id)) $this->mountDatabase($this->id);
+            elseif ($ok === false && $this->id && $this->findOne('report', $this->id)) $this->mountReport($this->id);
+        } elseif ($sec === 'database') {
+            $ok = $this->mountDatabase($this->id);
+            if ($ok === false && $this->id && $this->findOne('report', $this->id)) $this->mountReport($this->id);
+            elseif ($ok === false && $this->id && $this->findOne('gallery', $this->id)) $this->mountGallery($this->id);
         } else {
-            $r = (array) $row;
-            $this->fill([
-                'title_en' => $r['title_en'] ?? '',
-                'title_id' => $r['title_id'] ?? '',
-                'description' => $r['description'] ?? null,
-                'status' => $r['status'] ?? 'on',
-                'publikasi' => $r['publikasi'] ?? 'draf',
-                'tanggal_publikasi' => $r['tanggal_publikasi'] ?? null,
-                'gallery_url' => $r['image_url'] ?? ($r['file_en'] ?? null),
-                'gallery_category' => $r['category'] ?? null,
-            ]);
+            $ok = $this->mountReport($this->id);
+            if ($ok === false && $this->id && $this->findOne('database', $this->id)) $this->mountDatabase($this->id);
+            elseif ($ok === false && $this->id && $this->findOne('gallery', $this->id)) $this->mountGallery($this->id);
         }
     }
 
-    public function mount($section = null, $id = null): void
+    public function mountReport($id = null)
     {
-        $section = $section ?? request()->route('section');
-        $id = $id ?? request()->route('id');
-        $allowed = ['report', 'database', 'gallery'];
-        $this->section = in_array($section, $allowed, true) ? $section : 'report';
-        $this->id = is_numeric($id) ? (int) $id : null;
+        $this->section = 'report';
+        $this->id = $id;
+        if (!$this->id) return false;
+        $row = $this->findOne('report', $this->id);
+        if (!$row) return false;
+        $this->fillFromRow((array)$row);
+        return true;
+    }
+
+    public function mountDatabase($id = null)
+    {
+        $this->section = 'database';
+        $this->id = $id;
+        if (!$this->id) return false;
+        $row = $this->findOne('database', $this->id);
+        if (!$row) return false;
+        $this->fillFromRow((array)$row);
+        return true;
+    }
+
+    public function mountGallery($id = null)
+    {
+        $this->section = 'gallery';
+        $this->id = $id;
+        if (!$this->id) return false;
+        $row = $this->findOne('gallery', $this->id);
+        if (!$row) return false;
+        $data = (array)$row;
+        $this->title_en = $data['title_en'] ?? ($data['tittle_en'] ?? '');
+        $this->title_id = $data['title_id'] ?? '';
+        $this->description_en = $data['description_en'] ?? '';
+        $this->description_id = $data['description_id'] ?? '';
+        $this->content_en = $data['content_en'] ?? '';
+        $this->content_id = $data['content_id'] ?? '';
+        $this->tanggal_publikasi = $data['tanggal_publikasi'] ?? null;
+        $this->publikasi = $data['publikasi'] ?? 'draf';
+        $this->status = $data['status'] ?? 'on';
+        $this->file_en = $data['file_en'] ?? null;
+        $this->file_id = $data['file_id'] ?? null;
+        $this->type = $data['type'] ?? null; // photo|video
+        $this->slug = $data['slug'] ?? $this->slug;
+        $this->database_id = $data['database_id'] ?? null;
+        $this->database_options = DB::table('database')
+            ->select('id', 'title_en', 'title_id')
+            ->orderByDesc('id')
+            ->get()
+            ->toArray();
+
+        $this->refreshGalleryPreviews();
+        return true;
+    }
+
+    protected function fillFromRow($row)
+    {
+        $this->title_en = $row['title_en'] ?? '';
+        $this->title_id = $row['title_id'] ?? '';
+        $this->description_en = $row['description_en'] ?? '';
+        $this->description_id = $row['description_id'] ?? '';
+        $this->content_en = $row['content_en'] ?? '';
+        $this->content_id = $row['content_id'] ?? '';
+        $this->tanggal_publikasi = $row['tanggal_publikasi'] ?? null;
+        $this->publikasi = $row['publikasi'] ?? 'draf';
+        $this->status = $row['status'] ?? 'on';
+        $this->image_path = $row['image'] ?? null;
+        $this->refreshImagePreview();
+    }
+
+    /* --------------------- validation --------------------- */
+    protected function rules()
+    {
+        return [
+            'title_en' => ['required_without:title_id', 'string', 'max:255'],
+            'title_id' => ['required_without:title_en', 'string', 'max:255'],
+            'description_en' => ['required', 'string'],
+            'description_id' => ['required', 'string'],
+            'content_en' => ['required', 'string'],
+            'content_id' => ['required', 'string'],
+            'tanggal_publikasi' => ['required', 'date'],
+            'publikasi' => ['required', 'in:draf,publish'],
+            'status' => ['required', 'in:on,off'],
+            'image' => ['nullable', 'image', 'max:6144'],
+        ];
+    }
+
+    /* --------------------- actions --------------------- */
+    public function updateReport()
+    {
+        $this->section = 'report';
+        $this->validate($this->rules());
         if (!$this->id) return;
 
-        $probe = $this->findRowAndTable($this->section, $this->id);
-        if (!$probe['row']) abort(404);
-        $this->section = $probe['section'];
-        $this->fillFromRow($this->section, $probe['row']);
-    }
+        $this->image_path = $this->storeImageIfAny('resources/report/images');
+        $this->refreshImagePreview();
 
-    protected function rulesReport(): array
-    {
-        return [
-            'title_en' => 'required_without:title_id|max:255',
-            'title_id' => 'required_without:title_en|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:on,off',
-            'publikasi' => 'required|in:draf,publish',
-            'tanggal_publikasi' => 'nullable|date',
-            'report_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,csv,zip|max:12288',
-            'report_url' => 'nullable|url',
-        ];
-    }
-
-    protected function rulesDatabase(): array
-    {
-        return [
-            'title_en' => 'required_without:title_id|max:255',
-            'title_id' => 'required_without:title_en|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:on,off',
-            'publikasi' => 'required|in:draf,publish',
-            'tanggal_publikasi' => 'nullable|date',
-            'db_link' => 'required|url',
-            'db_version' => 'required|string|max:100',
-        ];
-    }
-
-    protected function rulesGallery(): array
-    {
-        return [
-            'title_en' => 'required_without:title_id|max:255',
-            'title_id' => 'required_without:title_en|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:on,off',
-            'publikasi' => 'required|in:draf,publish',
-            'tanggal_publikasi' => 'nullable|date',
-            'gallery_image' => 'nullable|image|max:6144',
-            'gallery_url' => 'nullable|url',
-            'gallery_category' => 'nullable|string|max:100',
-        ];
-    }
-
-    public function rules(): array
-    {
-        return match ($this->section) {
-            'report' => $this->rulesReport(),
-            'database' => $this->rulesDatabase(),
-            'gallery' => $this->rulesGallery(),
-            default => $this->rulesReport(),
-        };
-    }
-
-    public function save(): void
-    {
-        match ($this->section) {
-            'report' => $this->updateReport(),
-            'database' => $this->updateDatabase(),
-            'gallery' => $this->updateGallery(),
-            default => null,
-        };
-    }
-
-    public function updateReport(): void
-    {
-        $this->validate($this->rulesReport());
-        if (!$this->id) abort(400);
-        if (!$this->report_file && !$this->report_url) {
-            $this->addError('report_file', 'Unggah file atau isi URL salah satu.');
-            $this->addError('report_url', 'Unggah file atau isi URL salah satu.');
-            return;
-        }
-        if ($this->report_file) {
-            $this->report_path = $this->report_file->store('reports', 'public');
-        }
         $updates = [
             'title_en' => $this->title_en,
             'title_id' => $this->title_id,
-            'description' => $this->description,
+            'description_en' => $this->description_en,
+            'description_id' => $this->description_id,
+            'content_en' => $this->content_en,
+            'content_id' => $this->content_id,
+            'tanggal_publikasi' => $this->tanggal_publikasi,
             'publikasi' => $this->publikasi,
             'status' => $this->status,
-            'tanggal_publikasi' => $this->tanggal_publikasi,
             'updated_at' => now(),
         ];
-        if ($this->report_path) $updates['path'] = $this->report_path;
-        if (!is_null($this->report_url)) $updates['url'] = $this->report_url;
+        if (Schema::hasColumn('report', 'image')) $updates['image'] = $this->image_path;
+
         DB::table('report')->where('id', $this->id)->update($updates);
-        $this->dispatch('toast', ['type' => 'success', 'message' => 'Report updated']);
+        session()->flash('success', 'Report updated');
     }
 
-    public function updateDatabase(): void
+    public function updateDatabase()
     {
-        $this->validate($this->rulesDatabase());
-        if (!$this->id) abort(400);
-        $table = 'database';
-        if (!Schema::hasTable($table)) abort(404);
-        DB::table($table)->where('id', $this->id)->update([
-            'title_en' => $this->title_en,
-            'title_id' => $this->title_id,
-            'description' => $this->description,
-            'publikasi' => $this->publikasi,
-            'status' => $this->status,
-            'tanggal_publikasi' => $this->tanggal_publikasi,
-            'link' => $this->db_link,
-            'version' => $this->db_version,
-            'updated_at' => now(),
-        ]);
-        $this->dispatch('toast', ['type' => 'success', 'message' => 'Database updated']);
-    }
+        $this->section = 'database';
+        $this->validate($this->rules());
+        if (!$this->id) return;
 
-    public function updateGallery(): void
-    {
-        $this->validate($this->rulesGallery());
-        if (!$this->id) abort(400);
-        if (!$this->gallery_image && !$this->gallery_url) {
-            $this->addError('gallery_image', 'Unggah gambar atau isi URL salah satu.');
-            $this->addError('gallery_url', 'Unggah gambar atau isi URL salah satu.');
-            return;
-        }
-        if ($this->gallery_image) {
-            $saved = $this->gallery_image->store('gallery', 'public');
-            $this->gallery_url = Storage::url($saved);
-        }
-        $hasImageUrl = Schema::hasColumn('gallery', 'image_url');
-        $hasFileEn = Schema::hasColumn('gallery', 'file_en');
-        $hasFileId = Schema::hasColumn('gallery', 'file_id');
+        $this->image_path = $this->storeImageIfAny('resources/database/images');
+        $this->refreshImagePreview();
+
         $updates = [
             'title_en' => $this->title_en,
             'title_id' => $this->title_id,
-            'description' => $this->description,
+            'description_en' => $this->description_en,
+            'description_id' => $this->description_id,
+            'content_en' => $this->content_en,
+            'content_id' => $this->content_id,
+            'tanggal_publikasi' => $this->tanggal_publikasi,
             'publikasi' => $this->publikasi,
             'status' => $this->status,
-            'tanggal_publikasi' => $this->tanggal_publikasi,
             'updated_at' => now(),
         ];
-        if ($hasImageUrl && !is_null($this->gallery_url)) $updates['image_url'] = $this->gallery_url;
-        if ($hasFileEn && !is_null($this->gallery_url)) $updates['file_en'] = $this->gallery_url;
-        if ($hasFileId) {}
-        if (Schema::hasColumn('gallery', 'category')) $updates['category'] = $this->gallery_category;
-        DB::table('gallery')->where('id', $this->id)->update($updates);
-        $this->dispatch('toast', ['type' => 'success', 'message' => 'Gallery updated']);
+        if (Schema::hasColumn('database', 'image')) $updates['image'] = $this->image_path;
+
+        DB::table('database')->where('id', $this->id)->update($updates);
+        session()->flash('success', 'Database updated');
     }
+
+    public function save()
+    {
+        if ($this->section === 'gallery') {
+            $this->saveGallery();
+            return;
+        }
+
+        if ($this->section === 'database') {
+            $this->updateDatabase();
+            return;
+        }
+
+        $this->updateReport();
+    }
+
+    private function saveGallery()
+    {
+        $this->validate([
+            'title_id'          => 'nullable|string',
+            'title_en'          => 'nullable|string',
+            'description_id'    => 'nullable|string',
+            'description_en'    => 'nullable|string',
+            'type'              => 'required|in:photo,video',
+            'status'            => 'required|in:on,off',
+            'publikasi'         => 'required|in:draf,publish',
+            'tanggal_publikasi' => 'nullable|date',
+        ]);
+
+        if ($this->type === 'video') {
+            $this->validate([
+                'file_id' => 'nullable|url',
+                'file_en' => 'nullable|url',
+            ]);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $now = now();
+            $payload = [
+                'database_id'       => $this->database_id,
+                'title_id'          => $this->title_id,
+                'title_en'          => $this->title_en,
+                'description_id'    => $this->description_id,
+                'description_en'    => $this->description_en,
+                'type'              => $this->type,
+                'tanggal_publikasi' => $this->tanggal_publikasi,
+                'publikasi'         => $this->publikasi,
+                'status'            => $this->status,
+                'updated_at'        => $now,
+            ];
+
+            if ($this->type === 'photo') {
+                if ($this->isUpload($this->file_id)) $this->file_id = $this->file_id->store('gallery', 'public');
+                if ($this->isUpload($this->file_en)) $this->file_en = $this->file_en->store('gallery', 'public');
+                if ($this->isUpload($this->image) && empty($this->file_id)) $this->file_id = $this->image->store('gallery', 'public');
+
+                $payload['file_id'] = $this->file_id ?: null;
+                $payload['file_en'] = $this->file_en ?: null;
+            } else {
+                $payload['file_id'] = $this->file_id;
+                $payload['file_en'] = $this->file_en;
+            }
+
+            if ($this->id) {
+                $affected = DB::table('gallery')->where('id', $this->id)->update($payload);
+                if ($affected === 0) {
+                    $payload['created_at'] = $now;
+                    $this->id = DB::table('gallery')->insertGetId($payload);
+                }
+            } else {
+                $payload['created_at'] = $now;
+                $this->id = DB::table('gallery')->insertGetId($payload);
+            }
+
+            DB::commit();
+
+            $this->file_id_preview = $this->toPreviewUrl($this->file_id);
+            $this->file_en_preview = $this->toPreviewUrl($this->file_en);
+            $this->reset(['image']);
+            $this->refreshGalleryPreviews();
+            session()->flash('success', 'Gallery berhasil disimpan!');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            session()->flash('error', 'Gagal menyimpan gallery: ' . $e->getMessage());
+        }
+    }
+
+    private function isUpload($val): bool
+    {
+        return is_object($val) && (method_exists($val, 'store') || method_exists($val, 'temporaryUrl'));
+    }
+
+    private function toPreviewUrl($val): ?string
+    {
+        if (empty($val)) return null;
+        if (is_string($val) && (str_starts_with($val, 'http://') || str_starts_with($val, 'https://'))) return $val;
+        if (is_string($val)) return Storage::url($val);
+        if ($this->isUpload($val) && method_exists($val, 'temporaryUrl')) return $val->temporaryUrl();
+        return null;
+    }
+
+
+
 
     public function render()
     {

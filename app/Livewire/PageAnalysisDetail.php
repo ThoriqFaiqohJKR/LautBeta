@@ -30,12 +30,12 @@ class PageAnalysisDetail extends Component
                 'tanggal_publikasi',
                 'slug',
             ])
-            ->where('id', $id)     // <-- query tetap by ID saja
+            ->where('id', $id)
             ->first();
 
-        if (!$row) abort(404, 'Data tidak ditemukan'); 
+        if (!$row) abort(404, 'Data tidak ditemukan');
 
-        // pilih konten sesuai locale (+fallback)
+
         $title = $locale === 'id'
             ? ($row->title_id ?? $row->title_en)
             : ($row->title_en ?? $row->title_id);
@@ -48,7 +48,7 @@ class PageAnalysisDetail extends Component
             ? ($row->content_id ?? $row->content_en)
             : ($row->content_en ?? $row->content_id);
 
-        // slug kanonis
+
         $canonicalSlug = $row->slug ?: Str::slug((string)$title);
 
 
@@ -63,7 +63,7 @@ class PageAnalysisDetail extends Component
         ];
     }
 
-    /** Normalisasi <img src> relatif di HTML TinyMCE ke URL publik */
+
     private function fixContentImages(string $html): string
     {
         if ($html === '') return $html;
@@ -90,12 +90,12 @@ class PageAnalysisDetail extends Component
                     return $prefix . asset($normalized) . $suffix;
                 }
 
-                // kalau file ada di disk public
+
                 if (Storage::disk('public')->exists($normalized)) {
                     return $prefix . Storage::url($normalized) . $suffix;
                 }
 
-                // fallback ke public/
+                
                 return $prefix . asset($normalized) . $suffix;
             },
             $html

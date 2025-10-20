@@ -26,7 +26,7 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => [MustLogin::cla
 
 
 Route::get('/', function () {
-    $locale = app()->getLocale(); 
+    $locale = app()->getLocale();
     return redirect("/{$locale}");
 });
 
@@ -40,6 +40,8 @@ Route::middleware([LanguageMiddleware::class])
     ->where(['locale' => 'en|id'])
     ->group(function () {
         Route::get('/', [PageController::class, 'home'])->name('home');
+
+        Route::get('/bukuview/{id}', [PageController::class, 'previewjurnal'])->name('previewjournal');
 
         //ini about
         Route::get('/Pageabout', [PageController::class, 'about'])->name('about');

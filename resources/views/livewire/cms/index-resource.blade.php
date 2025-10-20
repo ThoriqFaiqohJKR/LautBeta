@@ -3,7 +3,7 @@
     <div>
         <div class="max-w-6xl mx-auto p-6 sm:p-10 space-y-8">
             <div class="gap-2 flex mb-4">
-                    <p class="text-xl">Page Resource </p>
+                <p class="text-xl">Page Resource </p>
             </div>
             <div class="flex justify-between">
                 <h2 class="text-2xl font-semibold">Resources</h2>
@@ -178,8 +178,8 @@
                         <div>{{ $g->tanggal_publikasi ?? '-' }}</div>
                         <div>{{ ucfirst($g->publikasi ?? '-') }}</div>
                         <div class="flex gap-4">
-                            <a href="{{ route('cms.page.edit.resource', ['id' => $d->id]) }}" class="text-blue-600 hover:underline">Edit</a>
-                            <a href="{{ route('cms.page.preview.resource', ['id' => $d->id]) }}" class="text-blue-600 hover:underline">Preview</a>
+                            <a href="{{ route('cms.page.edit.resource', ['id' => $g->id]) }}" class="text-blue-600 hover:underline">Edit</a>
+                            <a href="{{ route('cms.page.preview.resource', ['id' => $g->id]) }}" class="text-blue-600 hover:underline">Preview</a>
                         </div>
                     </div>
                     @empty

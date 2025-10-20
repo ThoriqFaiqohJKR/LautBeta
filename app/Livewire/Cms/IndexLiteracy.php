@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Livewire\Cms;
 
@@ -11,7 +11,7 @@ class IndexLiteracy extends Component
 
     private function currentLocale(): string
     {
-        // Ambil dari route {locale} kalau ada, fallback ke app()->getLocale()
+
         return request()->route('locale') ?? app()->getLocale() ?? 'en';
     }
 
@@ -19,16 +19,15 @@ class IndexLiteracy extends Component
     {
         $locale   = $this->currentLocale();
         $titleCol = $locale === 'id' ? 'title_id' : 'title_en';
-        $descCol  = $locale === 'id' ? 'description_id' : 'description_en';
 
-        
+
         $journals = DB::table('journal')
             ->select(
                 'id',
                 DB::raw("$titleCol AS title"),
                 'tanggal_publikasi',
                 'publikasi',
-                
+
                 DB::raw(
                     $locale === 'id'
                         ? "COALESCE(file_id, file_en) AS file_url"
@@ -43,33 +42,13 @@ class IndexLiteracy extends Component
             ->orderByDesc('id')
             ->get();
 
-        
-        $caseReports = DB::table('case_report')
-            ->select(
-                'id',
-                DB::raw("$titleCol AS title"),
-                DB::raw("$descCol AS description"),
-                'tanggal_publikasi',
-                'publikasi',
-                'status',
-                'slug',
-                'created_at'
-            )
-            ->when($this->q !== '', function ($q) use ($titleCol, $descCol) {
-                $s = '%' . $this->q . '%';
-                $q->where(function ($w) use ($titleCol, $descCol, $s) {
-                    $w->where($titleCol, 'like', $s)
-                        ->orWhere($descCol, 'like', $s)
-                        ->orWhere('slug', 'like', $s);
-                });
-            })
-            ->orderByDesc('id')
-            ->get();
+
+
 
         return view('livewire.cms.index-literacy', [
             'journals'    => $journals,
-            'caseReports' => $caseReports,
-            'locale'      => $locale, 
+
+            'locale'      => $locale,
         ]);
     }
 }

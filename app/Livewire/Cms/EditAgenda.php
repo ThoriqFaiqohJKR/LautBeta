@@ -13,8 +13,8 @@ class EditAgenda extends Component
     use WithFileUploads;
 
     public int $id;
-    public string $lang = 'en'; 
-    public string $type;        
+    public string $lang = 'en';
+    public string $type;
 
     public string $title_en = '';
     public string $title_id = '';
@@ -25,7 +25,7 @@ class EditAgenda extends Component
     public ?string $tanggal_publikasi = null;
     public string $publikasi = 'draf';
     public string $status = 'on';
-    public ?string $slug = null; 
+    public ?string $slug = null;
     public $image = null;
     public ?string $imagePreview = null;
 
@@ -33,15 +33,13 @@ class EditAgenda extends Component
     {
         $this->id = $id;
         $data = DB::table('agenda')->find($id);
-        if (!$data) {
-            abort(404);
-        }
+        if (!$data) abort(404);
 
         $this->type              = $data->type;
         $this->title_en          = $data->title_en ?? '';
         $this->title_id          = $data->title_id ?? '';
         $this->description_en    = $data->description_en ?? '';
-        $this->description_id    = $data->description_id ?? ''; 
+        $this->description_id    = $data->description_id ?? '';
         $this->content_en        = $data->content_en ?? '';
         $this->content_id        = $data->content_id ?? '';
         $this->tanggal_publikasi = $data->tanggal_publikasi;
@@ -63,7 +61,7 @@ class EditAgenda extends Component
             'tanggal_publikasi' => ['required', 'date'],
             'publikasi'         => ['required', 'in:draf,publish'],
             'status'            => ['required', 'in:on,off'],
-            'image'             => ['required', File::image()->max(5 * 1024)],
+            'image'             => ['nullable', File::image()->max(5 * 1024)],
         ];
     }
 
@@ -93,7 +91,7 @@ class EditAgenda extends Component
 
         DB::table('agenda')->where('id', $this->id)->update($data);
 
-        session()->flash('success', 'agenda berhasil diperbarui.');
+        session()->flash('success', 'Agenda berhasil diperbarui.');
     }
 
     public function render()

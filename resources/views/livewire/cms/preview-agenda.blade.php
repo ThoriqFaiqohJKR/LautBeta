@@ -43,8 +43,9 @@
 
 
                 <div class="prose max-w-none text-gray-700 mb-12 text-justify">
-                    {!! $lang==='id' ? ($content_id ?? $description_id ?? '') : ($content_en ?? $description_en ?? '') !!}
+                    {!! $lang==='id' ? $this->contentHtml : $this->contentHtml !!}
                 </div>
+
 
 
 

@@ -99,6 +99,11 @@ class PageController extends Controller
         return view('page-gallery');
     }
 
+    public function previewjurnal($id)
+    {
+        return view('journal-preview', compact('id'));
+    }
+
 
     public function news()
     {

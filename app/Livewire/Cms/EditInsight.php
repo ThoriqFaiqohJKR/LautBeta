@@ -50,6 +50,7 @@ class EditInsight extends Component
         $this->imagePreview      = $data->image ? Storage::url($data->image) : null;
     }
 
+
     protected function rules(): array
     {
         return [
@@ -62,7 +63,7 @@ class EditInsight extends Component
             'tanggal_publikasi' => ['required', 'date'],
             'publikasi'         => ['required', 'in:draf,publish'],
             'status'            => ['required', 'in:on,off'],
-            'image'             => ['required', File::image()->max(5 * 1024)],
+            'image'             => ['nullable', File::image()->max(5 * 1024)], // <-- opsional
         ];
     }
 
@@ -83,6 +84,7 @@ class EditInsight extends Component
             'updated_at'        => now(),
         ];
 
+
         if ($this->image) {
             $path = $this->image->store("insight/{$this->type}", 'public');
             $data['image'] = $path;
@@ -93,6 +95,7 @@ class EditInsight extends Component
 
         session()->flash('success', 'Insight berhasil diperbarui.');
     }
+
 
     public function render()
     {

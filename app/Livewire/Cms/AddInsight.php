@@ -47,13 +47,13 @@ class AddInsight extends Component
             'content_en'        => ['required', 'string'],
             'content_id'        => ['required', 'string'],
             'type'              => ['required', 'in:feature,analysis,ngopini'],
-            'tanggal_publikasi' => ['required', 'date'],
+            'tanggal_publikasi' => ['required', 'date'], 
             'publikasi'         => ['required', 'in:draf,publish'],
             'image'             => ['required', File::image()->max(5 * 1024)],
         ];
     }
 
-    public function save(): void
+    public function save()
     {
         $this->validate();
 
@@ -66,7 +66,7 @@ class AddInsight extends Component
             'content_id'        => $this->content_id ?: null,
             'tanggal_publikasi' => $this->tanggal_publikasi,
             'publikasi'         => $this->publikasi,
-            'status' => 'on',
+            'status'            => 'on',
             'type'              => $this->type,
             'slug'              => Str::slug($this->title_id),
             'created_at'        => now(),
@@ -81,8 +81,9 @@ class AddInsight extends Component
 
         DB::table(self::TABLE)->insert($data);
 
-        $this->resetForm();
-        session()->flash('success', 'Insight berhasil disimpan.');
+        return redirect()
+            ->route('cms.page.index.insight', ['locale' => app()->getLocale()])
+            ->with('success', 'Insight berhasil disimpan.');
     }
 
     private function resetForm(): void

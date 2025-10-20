@@ -67,43 +67,6 @@
                 </div>
             </div>
 
-            {{-- Case Report --}}
-            <div class="bg-white border p-6">
-                <h3 class="text-xl font-semibold mb-4">
-                    {{ app()->getLocale() === 'id' ? 'Laporan Kasus' : 'Case Report' }}
-                </h3>
-
-                <div class="hidden sm:grid grid-cols-5 font-semibold text-sm border-b pb-2 mb-3">
-                    <div>No</div>
-                    <div>{{ app()->getLocale() === 'id' ? 'Judul' : 'Title' }}</div>
-                    <div>{{ app()->getLocale() === 'id' ? 'Deskripsi' : 'Description' }}</div>
-                    <div>Publikasi</div>
-                    <div>{{ app()->getLocale() === 'id' ? 'Aksi' : 'Action' }}</div>
-                </div>
-
-                <div class="space-y-3">
-                    @forelse($caseReports as $i => $c)
-                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 border p-3 text-sm items-center">
-                        <div>#{{ $i + 1 }}</div>
-                        <div>{{ $c->title ?? '-' }}</div>
-                        <div>{!! Str::limit(strip_tags($c->description ?? ''), 60) !!}</div>
-                        <div>{{ ucfirst($c->publikasi ?? '-') }}</div>
-                        <div class="flex gap-4">
-                            <a href="{{ route('cms.page.edit.literacy', ['locale' => app()->getLocale(),'id' => $c->id]) }}" class="text-blue-600 hover:underline">
-                                {{ app()->getLocale() === 'id' ? 'Edit' : 'Edit' }}
-                            </a>
-                            <a href="{{ route('cms.page.preview.literacy', ['locale' => app()->getLocale(),'id' => $c->id]) }}" class="text-blue-600 hover:underline">
-                                {{ app()->getLocale() === 'id' ? 'Lihat' : 'Preview' }}
-                            </a>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="text-center text-slate-500 py-6">
-                        {{ app()->getLocale() === 'id' ? 'Tidak ada laporan kasus' : 'No case reports available' }}
-                    </div>
-                    @endforelse
-                </div>
-            </div>
         </div>
     </div>
 

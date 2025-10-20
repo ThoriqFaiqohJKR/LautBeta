@@ -12,30 +12,34 @@ use Illuminate\Validation\Rules\File;
 class AddResource extends Component
 {
     use WithFileUploads;
+    public $source = 'report';
+    public $lang = 'en';
 
-    public string $source = 'report';
-    public string $lang   = 'en';
+    public $title_en = '';
+    public $title_id = '';
+    public $description_en = '';
+    public $description_id = '';
+    public $content_en = '';
+    public $content_id = '';
 
-    public ?string $title_en = '';
-    public ?string $title_id = '';
-    public ?string $description_en = '';
-    public ?string $description_id = '';
-    public ?string $content_en = '';
-    public ?string $content_id = '';
-
-    public ?string $tanggal_publikasi = null;
-    public string  $publikasi = 'draf';
-    public string  $status = 'on';
+    public $tanggal_publikasi = null;
+    public $publikasi = 'draf';
+    public $status = 'on';
 
     public $image = null;
-    public ?string $imagePreview = null;
+    public $imagePreview = null;
 
-    public ?int $database_id = null;
-    public string $gallery_type = 'photo';
-    public ?string $file_id = null;
-    public ?string $file_en = null;
+    public $database_id = null;
+    public $gallery_type = 'photo';
 
-    public array $databaseOptions = [];
+    public $file_id = null;
+    public $file_en = null;
+
+    public $yt_id = null;
+    public $yt_en = null;
+
+    public $databaseOptions = [];
+
 
     public function mount(): void
     {
@@ -44,10 +48,33 @@ class AddResource extends Component
         }
     }
 
+    public function updatedFileId($v)
+    {
+        $this->yt_id = $this->extractYoutubeId($v);
+    }
+
+    public function updatedFileEn($v)
+    {
+        $this->yt_en = $this->extractYoutubeId($v);
+    }
+
+
     public function updatedSource(string $val): void
     {
-        if ($val === 'gallery') $this->loadDatabaseOptions();
+        if ($val === 'gallery') {
+            $this->loadDatabaseOptions();
+        }
     }
+
+    /** saat user ganti type, kosongkan input & error supaya UI/validasi nggak nyangkut */
+
+
+    public function updatedGalleryType()
+    {
+        $this->resetValidation(['file_id', 'file_en']);
+        $this->file_id = $this->file_en = null;
+    }
+
 
     private function loadDatabaseOptions(): void
     {
@@ -72,35 +99,35 @@ class AddResource extends Component
     public function saveReport(): void
     {
         $this->validate([
-            'title_en' => ['required', 'string', 'max:255'],
-            'title_id' => ['required', 'string', 'max:255'],
-            'description_en' => ['required', 'string'],
-            'description_id' => ['required', 'string'],
-            'content_en' => ['required', 'string'],
-            'content_id' => ['required', 'string'],
+            'title_en'          => ['required', 'string', 'max:255'],
+            'title_id'          => ['required', 'string', 'max:255'],
+            'description_en'    => ['required', 'string'],
+            'description_id'    => ['required', 'string'],
+            'content_en'        => ['required', 'string'],
+            'content_id'        => ['required', 'string'],
             'tanggal_publikasi' => ['required', 'date'],
-            'publikasi' => ['required', 'in:draf,publish'],
-            'status' => ['required', 'in:on,off'],
-            'image' => ['required', File::image()->max(51200)],
+            'publikasi'         => ['required', 'in:draf,publish'],
+            'status'            => ['required', 'in:on,off'],
+            'image'             => ['required', File::image()->max(51200)],
         ]);
 
         DB::transaction(function () {
             $id = $this->nextId();
 
             $data = [
-                'id' => $id,
-                'title_en' => $this->title_en ?: null,
-                'title_id' => $this->title_id ?: null,
-                'description_en' => $this->description_en ?: null,
-                'description_id' => $this->description_id ?: null,
-                'content_en' => $this->content_en ?: null,
-                'content_id' => $this->content_id ?: null,
-                'tanggal_publikasi' => $this->tanggal_publikasi,
-                'publikasi' => $this->publikasi,
-                'status' => $this->status,
-                'slug' => Str::slug($this->title_id ?: $this->title_en),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'id'                 => $id,
+                'title_en'           => $this->title_en ?: null,
+                'title_id'           => $this->title_id ?: null,
+                'description_en'     => $this->description_en ?: null,
+                'description_id'     => $this->description_id ?: null,
+                'content_en'         => $this->content_en ?: null,
+                'content_id'         => $this->content_id ?: null,
+                'tanggal_publikasi'  => $this->tanggal_publikasi,
+                'publikasi'          => $this->publikasi,
+                'status'             => $this->status,
+                'slug'               => Str::slug($this->title_id ?: $this->title_en),
+                'created_at'         => now(),
+                'updated_at'         => now(),
             ];
 
             if ($this->image) {
@@ -119,35 +146,35 @@ class AddResource extends Component
     public function saveDatabase(): void
     {
         $this->validate([
-            'title_en' => ['required', 'string', 'max:255'],
-            'title_id' => ['required', 'string', 'max:255'],
-            'description_en' => ['required', 'string'],
-            'description_id' => ['required', 'string'],
-            'content_en' => ['required', 'string'],
-            'content_id' => ['required', 'string'],
+            'title_en'          => ['required', 'string', 'max:255'],
+            'title_id'          => ['required', 'string', 'max:255'],
+            'description_en'    => ['required', 'string'],
+            'description_id'    => ['required', 'string'],
+            'content_en'        => ['required', 'string'],
+            'content_id'        => ['required', 'string'],
             'tanggal_publikasi' => ['required', 'date'],
-            'publikasi' => ['required', 'in:draf,publish'],
-            'status' => ['required', 'in:on,off'],
-            'image' => ['required', File::image()->max(51200)],
+            'publikasi'         => ['required', 'in:draf,publish'],
+            'status'            => ['required', 'in:on,off'],
+            'image'             => ['required', File::image()->max(51200)],
         ]);
 
         DB::transaction(function () {
             $id = $this->nextId();
 
             $data = [
-                'id' => $id,
-                'title_en' => $this->title_en ?: null,
-                'title_id' => $this->title_id ?: null,
-                'description_en' => $this->description_en ?: null,
-                'description_id' => $this->description_id ?: null,
-                'content_en' => $this->content_en ?: null,
-                'content_id' => $this->content_id ?: null,
-                'tanggal_publikasi' => $this->tanggal_publikasi,
-                'publikasi' => $this->publikasi,
-                'status' => $this->status,
-                'slug' => Str::slug($this->title_id ?: $this->title_en),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'id'                 => $id,
+                'title_en'           => $this->title_en ?: null,
+                'title_id'           => $this->title_id ?: null,
+                'description_en'     => $this->description_en ?: null,
+                'description_id'     => $this->description_id ?: null,
+                'content_en'         => $this->content_en ?: null,
+                'content_id'         => $this->content_id ?: null,
+                'tanggal_publikasi'  => $this->tanggal_publikasi,
+                'publikasi'          => $this->publikasi,
+                'status'             => $this->status,
+                'slug'               => Str::slug($this->title_id ?: $this->title_en),
+                'created_at'         => now(),
+                'updated_at'         => now(),
             ];
 
             if ($this->image) {
@@ -165,7 +192,8 @@ class AddResource extends Component
 
     public function saveGallery(): void
     {
-        $this->validate([
+        // rules dasar
+        $base = [
             'title_en'          => ['required', 'string', 'max:255'],
             'title_id'          => ['required', 'string', 'max:255'],
             'tanggal_publikasi' => ['required', 'date'],
@@ -173,9 +201,22 @@ class AddResource extends Component
             'status'            => ['required', 'in:on,off'],
             'gallery_type'      => ['required', 'in:photo,video'],
             'database_id'       => ['required', 'integer', 'exists:database,id'],
-            'file_id'           => ['nullable', 'url', 'required_without:file_en'],
-            'file_en'           => ['nullable', 'url', 'required_without:file_id'],
-        ]);
+        ];
+
+        // cabang sesuai tipe
+        if ($this->gallery_type === 'photo') {
+            $rules = $base + [
+                'file_id' => ['required', File::image()->max(5120)], // 5MB
+                'file_en' => ['nullable', File::image()->max(5120)],
+            ];
+        } else {
+            $rules = $base + [
+                'file_id' => ['required', 'url'],
+                'file_en' => ['nullable', 'url'],
+            ];
+        }
+
+        $this->validate($rules);
 
         DB::transaction(function () {
             $id = $this->nextId();
@@ -194,11 +235,20 @@ class AddResource extends Component
                 'slug'               => Str::slug($this->title_id ?: $this->title_en),
                 'type'               => $this->gallery_type,
                 'database_id'        => $this->database_id,
-                'file_id'            => $this->file_id,
-                'file_en'            => $this->file_en,
                 'created_at'         => now(),
                 'updated_at'         => now(),
             ];
+
+            if ($this->gallery_type === 'photo') {
+                $pathId = $this->file_id->store('gallery', 'public');
+                $pathEn = $this->file_en ? $this->file_en->store('gallery', 'public') : null;
+                $data['file_id'] = $pathId;
+                $data['file_en'] = $pathEn;
+            } else {
+                // simpan URL YouTube apa adanya (atau pakai extractYoutubeId() jika mau hanya id)
+                $data['file_id'] = $this->file_id;
+                $data['file_en'] = $this->file_en;
+            }
 
             DB::table('gallery')->insert($data);
         });
@@ -230,10 +280,12 @@ class AddResource extends Component
         $this->status = 'on';
         $this->image = null;
         $this->imagePreview = null;
+
         $this->database_id = null;
         $this->gallery_type = 'photo';
         $this->file_id = null;
         $this->file_en = null;
+
         $this->databaseOptions = [];
         $this->source = 'report';
         $this->lang = 'en';
@@ -242,5 +294,15 @@ class AddResource extends Component
     public function render()
     {
         return view('livewire.cms.add-resource');
+    }
+
+    /** opsional: ambil YouTube video id dari berbagai format URL */
+    private function extractYoutubeId(?string $url): ?string
+    {
+        if (!$url) return null;
+        if (preg_match('~(?:youtu\.be/|/(?:embed|shorts)/|v=)([A-Za-z0-9_-]{6,})~', $url, $m)) {
+            return $m[1];
+        }
+        return null;
     }
 }

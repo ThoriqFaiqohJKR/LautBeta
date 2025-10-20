@@ -40,4 +40,16 @@ class PageLogin extends Component
     {
         return view('livewire.cms.page-login');
     }
+
+    public function mount()
+    {
+        if (Auth::check()) {
+            $locale = app()->getLocale();
+            $target = Auth::user()->role === 'admin'
+                ? "/cms/{$locale}/pageabout"
+                : '/';
+
+            return redirect()->to($target);
+        }
+    }
 }

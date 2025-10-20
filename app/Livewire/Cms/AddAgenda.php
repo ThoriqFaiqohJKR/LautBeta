@@ -49,12 +49,12 @@ class AddAgenda extends Component
             'type'              => ['required', 'in:event,activity'],
             'tanggal_publikasi' => ['required', 'date'],
             'publikasi'         => ['required', 'in:draf,publish'],
-            
+
             'image'             => ['required', File::image()->max(5 * 1024)],
         ];
     }
 
-    public function save(): void
+    public function save()
     {
         $this->validate();
 
@@ -82,12 +82,13 @@ class AddAgenda extends Component
 
         DB::table(self::TABLE)->insert($data);
 
-        $this->resetForm();
-        session()->flash('success', 'Agenda berhasil disimpan.');
+        return redirect()
+            ->route('cms.page.index.agenda', ['locale' => app()->getLocale()])
+            ->with('success', 'Jurnal berhasil disimpan.');
     }
- 
+
     private function resetForm(): void
-    { 
+    {
         $this->lang = 'en';
         $this->type = 'event';
         $this->title_en = $this->title_id = '';
@@ -99,7 +100,7 @@ class AddAgenda extends Component
         $this->slug = null;
         $this->image = null;
         $this->imagePreview = null;
-    } 
+    }
     public function render()
     {
         return view('livewire.cms.add-agenda');

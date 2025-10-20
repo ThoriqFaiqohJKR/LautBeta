@@ -97,6 +97,9 @@
             @endforeach
         </div>
         @endif
+        <label>
+            <img src="https://drive.google.com/thumbnail?id=1HXT2-JktE3mQm8myfcFifrXpI5E5M3iW" class="w-full h-full object-cover rounded-lg">
+        </label>
 
     </section>
     @endforeach

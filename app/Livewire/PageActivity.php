@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class PageActivity extends Component
 {
-    public array $items = [];
+    public array $items = []; 
 
     public function mount(): void
     {

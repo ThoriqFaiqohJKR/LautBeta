@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 class PreviewAgenda extends Component
 {
     public string $lang = 'en';
-
     public ?int $id = null;
     public ?string $type = null;
     public ?string $title_en = null;
@@ -25,7 +24,6 @@ class PreviewAgenda extends Component
     public ?string $image = null;
     public ?string $imagePreview = null;
 
-    // opsional: sync ?lang=id|en di URL
     protected $queryString = [
         'lang' => ['except' => 'en'],
     ];
@@ -62,7 +60,31 @@ class PreviewAgenda extends Component
         $this->lang = $lang;
     }
 
-    // computed fields sesuai bahasa aktif
+    private function normalizeTinymceUrls(?string $html): ?string
+    {
+        if (!$html) return $html;
+
+        return preg_replace_callback(
+            '/\b(src|data-mce-src)\s*=\s*"([^"]+)"/i',
+            function ($m) {
+                $attr = $m[1];
+                $src  = $m[2];
+
+                if (preg_match('#^(https?:)?//#i', $src) || str_starts_with($src, 'data:')) {
+                    return $m[0];
+                }
+
+                $path = ltrim($src, '/');
+                $path = preg_replace('#^storage/#', '', $path);
+                $path = preg_replace('#^public/#', '', $path);
+
+                $url = Storage::url($path);
+                return $attr . '="' . e($url) . '"';
+            },
+            $html
+        );
+    }
+
     public function getTitleProperty(): ?string
     {
         return $this->lang === 'id'
@@ -82,6 +104,16 @@ class PreviewAgenda extends Component
         return $this->lang === 'id'
             ? ($this->content_id ?? $this->content_en)
             : ($this->content_en ?? $this->content_id);
+    }
+
+    public function getDescriptionHtmlProperty(): ?string
+    {
+        return $this->normalizeTinymceUrls($this->description);
+    }
+
+    public function getContentHtmlProperty(): ?string
+    {
+        return $this->normalizeTinymceUrls($this->content);
     }
 
     public function render()

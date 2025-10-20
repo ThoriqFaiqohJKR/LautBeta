@@ -3,6 +3,7 @@
 
 /* Import Tailwind */
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 /* Tentukan source file untuk scan class */
 @source "../views";
@@ -13,19 +14,19 @@
 
 /* Custom theme config */
 @theme {
-  --font-sans: 'Poppins', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-               'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Poppins', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 /* Tambahan class manual */
 .poppins-thin {
-  font-family: "Poppins", sans-serif;
-  font-weight: 100;
-  font-style: normal;
+    font-family: "Poppins", sans-serif;
+    font-weight: 100;
+    font-style: normal;
 }
 
 .poppins-regular {
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }
