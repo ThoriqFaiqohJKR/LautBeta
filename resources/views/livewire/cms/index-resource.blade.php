@@ -7,7 +7,10 @@
             </div>
             <div class="flex justify-between">
                 <h2 class="text-2xl font-semibold">Resources</h2>
-                <a href="{{ route('cms.page.add.resource')}}"><button class="px-3 py-1.5 border bg-green-600 text-white  ">Tambah</button></a>
+                <a href="{{ route('cms.page.add.resource', ['locale' => app()->getLocale()]) }}">
+                    <button class="px-3 py-1.5 border bg-green-600 text-white">Tambah</button>
+                </a>
+
             </div>
 
 
@@ -58,8 +61,12 @@
                             <div class="text-xs text-slate-500">{{ $r->tanggal_publikasi ?? '-' }}</div>
                         </div>
                         <div class="flex gap-4">
-                            <a href="{{ route('cms.page.edit.resource', ['id' => $r->id]) }}" class="text-blue-600 hover:underline">Edit</a>
-                            <a href="{{ route('cms.page.preview.resource', ['id' => $r->id]) }}" class="text-blue-600 hover:underline">Preview</a>
+                            <a href="{{ route('cms.page.edit.resource', ['locale' => app()->getLocale(), 'id' => $r->id]) }}"
+                                class="text-blue-600 hover:underline">Edit</a>
+
+                            <a href="{{ route('cms.page.preview.resource', ['locale' => app()->getLocale(), 'id' => $r->id]) }}"
+                                class="text-blue-600 hover:underline">Preview</a>
+
                         </div>
                     </div>
                     @empty
@@ -113,8 +120,12 @@
                         <div>{{ $d->tanggal_publikasi ?? '-' }}</div>
                         <div>{{ ucfirst($d->publikasi ?? '-') }}</div>
                         <div class="flex gap-4">
-                            <a href="{{ route('cms.page.edit.resource', ['id' => $d->id]) }}" class="text-blue-600 hover:underline">Edit</a>
-                            <a href="{{ route('cms.page.preview.resource', ['id' => $d->id]) }}" class="text-blue-600 hover:underline">Preview</a>
+                            <a href="{{ route('cms.page.edit.resource', ['locale' => app()->getLocale(), 'id' => $d->id]) }}"
+                                class="text-blue-600 hover:underline">Edit</a>
+
+                            <a href="{{ route('cms.page.preview.resource', ['locale' => app()->getLocale(), 'id' => $d->id]) }}"
+                                class="text-blue-600 hover:underline">Preview</a>
+
                         </div>
                     </div>
                     @empty
@@ -125,14 +136,14 @@
 
 
 
-            <div class="border  p-6">
+            <div class="border p-6">
                 <h3 class="text-xl font-semibold mt-8 mb-3">Gallery</h3>
 
                 <div class="flex flex-wrap items-end gap-3 mb-4">
                     <div class="flex-1 min-w-[220px]">
                         <label class="block text-xs text-slate-500 mb-1">Search Gallery</label>
                         <input type="text" class="w-full border rounded px-3 py-2"
-                            placeholder="Cari judul / slug / type..." wire:model.live.debounce.400ms="galleryQ" />
+                            place holder="Cari judul / slug / type..." wire:model.live.debounce.400ms="galleryQ" />
                     </div>
                     <div>
                         <label class="block text-xs text-slate-500 mb-1">Publikasi</label>
@@ -161,32 +172,44 @@
                     </div>
                 </div>
 
-                <div class="hidden sm:grid grid-cols-6 font-semibold text-sm border-b pb-2 mb-3">
-                    <div>No</div>
-                    <div>Judul</div>
-                    <div>Type</div>
-                    <div>Tanggal Publikasi</div>
-                    <div>Publikasi</div>
-                    <div>Aksi</div>
+                <div class="hidden sm:grid grid-cols-12 font-semibold text-sm border-b pb-2 mb-3">
+                    <div class="col-span-1">No</div>
+                    <div class="col-span-4">Judul</div>
+                    <div class="col-span-2">Type</div>
+                    <div class="col-span-2">Tanggal Publikasi</div>
+                    <div class="col-span-1">Publikasi</div>
+                    <div class="col-span-2">Aksi</div>
                 </div>
+
                 <div class="space-y-3">
                     @forelse($galleries as $i => $g)
-                    <div class="grid grid-cols-1 sm:grid-cols-6 gap-2 border p-3 text-sm items-center">
-                        <div>#{{ $i+1 }}</div>
-                        <div>{{ $g->title ?? '-' }}</div>
-                        <div class="uppercase">{{ $g->type ?? '-' }}</div>
-                        <div>{{ $g->tanggal_publikasi ?? '-' }}</div>
-                        <div>{{ ucfirst($g->publikasi ?? '-') }}</div>
-                        <div class="flex gap-4">
-                            <a href="{{ route('cms.page.edit.resource', ['id' => $g->id]) }}" class="text-blue-600 hover:underline">Edit</a>
-                            <a href="{{ route('cms.page.preview.resource', ['id' => $g->id]) }}" class="text-blue-600 hover:underline">Preview</a>
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 border px-3 py-2 text-[13px] items-center">
+                        <div class="sm:col-span-1">#{{ $i+1 }}</div>
+                        <div class="sm:col-span-4">
+                            <span class="block truncate whitespace-nowrap" title="{{ $g->title ?? '-' }}">
+                                {{ $g->title ?? '-' }}
+                            </span>
+                        </div>
+                        <div class="sm:col-span-2 uppercase">{{ $g->type ?? '-' }}</div>
+                        <div class="sm:col-span-2">{{ $g->tanggal_publikasi ?? '-' }}</div>
+                        <div class="sm:col-span-1 {{ ($g->publikasi ?? '-') === 'Publish' ? 'text-emerald-600' : 'text-orange-500' }}">
+                            {{ ucfirst($g->publikasi ?? '-') }}
+                        </div>
+                        <div class="sm:col-span-2 flex gap-3">
+                            <a href="{{ route('cms.page.edit.resource', ['locale' => app()->getLocale(), 'id' => $g->id]) }}"
+                                class="text-blue-600 hover:underline">Edit</a>
+
+                            <a href="{{ route('cms.page.preview.resource', ['locale' => app()->getLocale(), 'id' => $g->id]) }}"
+                                class="text-blue-600 hover:underline">Preview</a>
+
                         </div>
                     </div>
                     @empty
-                    <div class="text-center text-slate-500 py-6">Tidak ada gallery</div>
+                    <div class="text-center text-slate-500 py-6 text-sm">Tidak ada gallery</div>
                     @endforelse
                 </div>
             </div>
+
         </div>
     </div>
 

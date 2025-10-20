@@ -12,7 +12,7 @@
 
         <section class="max-w-6xl mx-auto py-10 px-4 sm:px-10  ">
 
-            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 min-h-90 border">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 min-h-90 ">
 
                 <!-- INSIGHT -->
                 <div class="flex-[8]">
@@ -21,29 +21,32 @@
 
                     <div class="flex flex-wrap gap-4">
                         @foreach($insights as $item)
-                        <article class="w-full md:w-1/2 lg:max-w-sm bg-[#bfbfbf] flex flex-col overflow-hidden min-h-90">
 
-                            <!-- Gambar dibikin lebih tinggi -->
-                            <div class="w-full aspect-[16/9] overflow-hidden">
-                                @if(!empty($item['image']))
-                                <img src="{{ $item['image'] }}" class="w-full h-full object-cover">
-                                @else
-                                <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                    <span class="text-slate-400 text-sm">No Image</span>
+                        <article class="relative  w-full md:w-1/2 lg:max-w-sm bg-[#bfbfbf] flex flex-col overflow-hidden min-h-90">
+
+                            <a href="{{ $item['url'] }}" class="block group">
+                                <!-- Gambar dibikin lebih tinggi -->
+                                <div class="w-full aspect-[16/9] overflow-hidden">
+                                    @if(!empty($item['image']))
+                                    <img src="{{ $item['image'] }}" class="w-full h-full object-cover">
+                                    @else
+                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                        <span class="text-slate-400 text-sm">No Image</span>
+                                    </div>
+                                    @endif
                                 </div>
-                                @endif
-                            </div>
 
-                            <!-- Isi teks -->
-                            <div class="p-4 min-h-[140px] flex flex-col">
-                                <p class="text-[#2a5fa0] font-semibold text-xl">
-                                    {{ ucfirst(strtolower($item['type'])) }}
-                                </p>
-                                <p class="mt-1 text-xl text-white leading-snug line-clamp-3">
-                                    {{ $item['title'] }}
-                                </p>
-                            </div>
-
+                                <!-- Isi teks -->
+                                <div class="p-4  min-h-[140px] flex flex-col">
+                                    <p class="text-[#2a5fa0] font-semibold text-xl">
+                                        {{ ucfirst(strtolower($item['type'])) }}
+                                    </p>
+                                    <p class="mt-1 text-xl text-white leading-snug line-clamp-3">
+                                        {{ $item['title'] }}
+                                    </p>
+                                    <span class="absolute right-0 bottom-0 w-0 h-0 border-l-[28px] border-b-[28px] border-l-transparent border-b-gray-500"></span>
+                                </div>
+                            </a>
                         </article>
 
                         @endforeach
@@ -74,12 +77,12 @@
 
                     <div class="mt-3 space-y-3">
                         @foreach(array_slice($events, 1) as $e)
-                        <div class="border-b border-slate-300 pb-3">
+                        <div class="border-b border-slate-300 pb-3 min-h-14 flex">
                             <a href="{{ $e['url'] }}" class="block text-md leading-snug hover:text-[#2a5fa0]">
                                 {{ $e['title'] }}
                             </a>
-
                         </div>
+
                         @endforeach
                     </div>
                     @else
@@ -91,41 +94,51 @@
         </section>
 
 
-        <section class="bg-[#5aa0b9] py-12 sm:py-16 px-4 sm:px-12 lg:px-48 flex flex-col lg:flex-row gap-8 sm:gap-12">
-            @if($ngopini)
-            <div class="flex flex-col lg:flex-row my-8 sm:my-16 gap-8 lg:gap-0">
-                <div class="flex-shrink-0 w-full lg:w-3/6">
-                    @if($ngopini['image'])
-                    <img src="{{ $ngopini['image'] }}" alt="{{ $ngopini['title'] }}" class="w-full h-auto  shadow-lg" />
-                    @else
-                    <div class="w-full aspect-[16/9] bg-gray-200 flex items-center justify-center  shadow-lg">
-                        <span class="text-slate-400 text-sm">No Image</span>
-                    </div>
-                    @endif
-                </div>
+        <section class="bg-[#5aa0b9] py-12 sm:py-16">
+            <div class="max-w-6xl mx-auto px-4 sm:px-12 flex flex-col lg:flex-row gap-8 sm:gap-12">
+                @if($ngopini)
+                <div class="flex flex-col lg:flex-row my-8 sm:my-16 gap-24 lg:gap-18">
+                    <div class="flex-shrink-0 w-full lg:w-3/6">
+                        @if($ngopini['image'])
+                        <div class="max-w-lg aspect-[16/9] overflow-hidden shadow-md bg-white">
+                            <img src="{{ $ngopini['image'] }}" alt="{{ $ngopini['title'] }}"
+                                class="w-full h-full object-contain">
+                        </div>
 
-                <div class="text-white lg:w-[38rem] px-0 sm:px-8 lg:px-24">
-                    <p class="uppercase tracking-widest text-sm mb-2">NGOPINI</p>
-                    <h3 class="text-2xl sm:text-3xl font-semibold mb-4">
-                        {{ $ngopini['title'] }}
-                    </h3>
-                    <div class="lg:w-[20rem]">
-                        <p class="text-sm mb-6">
+                        @else
+                        <div class="w-full aspect-[16/9] bg-gray-200 flex items-center justify-center  shadow-lg">
+                            <span class="text-slate-400 text-sm">No Image</span>
+                        </div>
+                        @endif
+                    </div>
+
+                    <div class="text-white max-w-xs lg:max-w-sm flex flex-col ">
+                        <p class="uppercase tracking-widest text-sm mb-2">NGOPINI</p>
+
+                        <h3 class="text-xl sm:text-2xl mb-4">
+                            {{ $ngopini['title'] }}
+                        </h3>
+
+                        <p class="text-sm mb-6 break-all md:break-words">
                             @if($ngopini['date'])
                             <span class="font-semibold">{{ strtoupper($ngopini['date']) }}</span>
                             @endif
                             | {{ Str::limit($ngopini['desc'], 120) }}
                         </p>
+
+
+                        <!-- VIEW tetap di bawah -->
                         <a href="{{ route('ngopini.detail', ['id' => $ngopini['id'], 'slug' => $ngopini['slug']]) }}"
-                            class="inline-flex items-center gap-2 text-sm font-semibold">
+                            class="inline-flex items-center gap-2 text-sm font-semibold mt-auto">
                             VIEW <span>&rarr;</span>
                         </a>
                     </div>
+
                 </div>
+                @else
+                <p class="text-slate-400 text-center my-10">Belum ada Ngopini terpublish.</p>
+                @endif
             </div>
-            @else
-            <p class="text-slate-400 text-center my-10">Belum ada Ngopini terpublish.</p>
-            @endif
 
         </section>
 
