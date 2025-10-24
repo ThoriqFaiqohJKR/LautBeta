@@ -1,4 +1,8 @@
 <div class="p-4">
+    <div class="max-w-4xl mx-auto py-4">
+        <p class="text-lg">Page About</p>
+    </div>
+
     <div x-data="{
     lang:@entangle('lang'),
     en:@entangle('contentEN'),
@@ -9,7 +13,9 @@
         x-init="window.addEventListener('saved',()=>{saved=true;setTimeout(()=>saved=false,1800)})"
         class="max-w-4xl mx-auto p-4 border bg-white space-y-6">
 
+
         <div class="flex items-center gap-2 mb-6">
+
             <button type="button"
                 @click="lang='en'; set(en)"
                 class="px-4 py-2 border"
