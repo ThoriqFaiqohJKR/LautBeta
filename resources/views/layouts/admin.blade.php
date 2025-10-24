@@ -59,13 +59,8 @@
                 <div class="flex items-center gap-1">
                     @php $locale = app()->getLocale(); @endphp
 
-                    <a href="{{ url('/') }}"
-                        class="px-3 py-2 text-sm font-medium
-          {{ request()->is('/')
-              ? 'text-slate-900 border-b-2 border-slate-900'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100' }}">
-                        Home
-                    </a>
+
+
 
                     <a href="{{ route('cms.page.about', ['locale' => $locale]) }}"
                         class="px-3 py-2 text-sm font-medium
@@ -163,7 +158,7 @@
             <div class="md:hidden fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 z-40"
                 :class="mobile ? 'translate-x-0' : '-translate-x-full'">
                 <div class="pt-4 pb-3 space-y-1">
-                    <a href="#" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">Home</a>
+
 
 
                     <a href="{{ route('cms.page.about') }}" class="block px-4 py-2 rounded-md text-base text-slate-700 hover:bg-slate-100">About</a>

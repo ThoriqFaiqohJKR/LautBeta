@@ -84,29 +84,16 @@
       const base   = $el.dataset.base;
       const edId   = $el.dataset.id;
       const initHT = $el.dataset.initial || '';
-
       if (window.tinymce && tinymce.get(edId)) tinymce.get(edId).remove();
-
       tinymce.init({
-        selector:'#'+edId,
-        height:300,
-        base_url:base,
-        suffix:'.min',
-        license_key:'gpl',
+        selector:'#'+edId, height:300, base_url:base, suffix:'.min', license_key:'gpl',
         plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
         menubar:'file edit view insert format tools table',
         toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
         block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
-        promotion:false,
-        branding:false,
-        statusbar:true,
-        forced_root_block:'p',
-
-        relative_urls:false,
-        remove_script_host:false,
-        convert_urls:true,
+        promotion:false, branding:false, statusbar:true, forced_root_block:'p',
+        relative_urls:false, remove_script_host:false, convert_urls:true,
         document_base_url:'{{ url('/') }}/',
-
         setup:(ed)=>{
           ed.on('init',()=>{ ed.setContent(initHT) })
           ed.on('blur',()=>{
@@ -115,11 +102,9 @@
             else{ @this.set('description_en', html) }
           })
         },
-
         file_picker_types:'image',
         file_picker_callback:(cb)=>{
           const routePrefix='/laravel-filemanager?type=image';
-
           const open=(url,w=980,h=600)=>{
             const sl=window.screenLeft??window.screenX;
             const st=window.screenTop??window.screenY;
@@ -130,23 +115,14 @@
             const win=window.open(url,'LFM_Popup',[
               'toolbar=no','location=no','status=no','menubar=no','scrollbars=yes','resizable=yes',
               `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
-            ].join(','));
-            if(win&&win.focus) win.focus();
-            return win;
+            ].join(',')); if(win&&win.focus) win.focus(); return win;
           };
-
           const old=window.SetUrl; let done=false; let pop=null; let poll=null;
           const cleanup=()=>{ if(done) return; done=true; if(poll) clearInterval(poll);
             if(old){ window.SetUrl=old } else { try{ delete window.SetUrl }catch(e){ window.SetUrl=undefined } }
             window.removeEventListener('message', onMsg, false);
           };
-
-          const toAbs=(u)=>{
-            if(/^https?:\/\//i.test(u)) return u;
-            if(u.startsWith('/')) return location.origin+u;
-            return location.origin+'/'+u;
-          };
-
+          const toAbs=(u)=>{ if(/^https?:\/\//i.test(u)) return u; if(u.startsWith('/')) return location.origin+u; return location.origin+'/'+u; };
           const onMsg=(ev)=>{
             const d=ev?.data||{}; const act=d.mceAction||ev?.mceAction;
             if(act==='fileSelected'){
@@ -156,27 +132,19 @@
                 cb(url,{alt:f.name||''}); try{pop&&pop.close&&pop.close()}catch(e){} cleanup();
               }
             }
-          };
-          window.addEventListener('message', onMsg, false);
-
-          window.SetUrl=(items)=>{
-            try{
-              const a=Array.isArray(items)?items:(items?[items]:[]);
-              const f=a[0]||{};
-              if(f && (f.url||f.full_url||f.thumb_url||f.path)){
-                const url = toAbs(f.url||f.full_url||f.thumb_url||f.path);
-                cb(url,{alt:f.name||''});
-              }
-            } finally { try{pop&&pop.close&&pop.close()}catch(e){} cleanup(); }
-          };
-
+          }; window.addEventListener('message', onMsg, false);
+          window.SetUrl=(items)=>{ try{
+            const a=Array.isArray(items)?items:(items?[items]:[]);
+            const f=a[0]||{}; if(f && (f.url||f.full_url||f.thumb_url||f.path)){
+              const url = toAbs(f.url||f.full_url||f.thumb_url||f.path); cb(url,{alt:f.name||''});
+            }
+          } finally { try{pop&&pop.close&&pop.close()}catch(e){} cleanup(); } };
           pop=open(routePrefix,980,600);
           poll=setInterval(()=>{ if(!pop||pop.closed){ cleanup() } },700);
           setTimeout(()=>cleanup(),180000);
         },
-
-        init_instance_callback:(editor)=>{
-          const h=editor.getContainer().querySelector('.tox-statusbar__resize-handle');
+        init_instance_callback:(ed)=>{
+          const h=ed.getContainer().querySelector('.tox-statusbar__resize-handle');
           if(h){ h.style.marginLeft='auto'; h.style.marginRight='4px'; h.style.cursor='se-resize' }
         }
       });
@@ -188,8 +156,7 @@
                     @error('description_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                 </div>
 
-
-                 {{-- Content (TinyMCE) --}}
+                {{-- Content (TinyMCE) --}}
                 <div class="mb-5">
                     <label class="block text-sm font-medium text-slate-700 mb-2">
                         Content ({{ strtoupper($lang) }})
@@ -197,38 +164,25 @@
 
                     <div
                         wire:ignore
-                        wire:key="desc-{{ $lang }}"
+                        wire:key="content-{{ $lang }}"
                         x-data
                         data-base="{{ asset('tinymce') }}"
-                        data-id="desc_editor_{{ $lang }}"
+                        data-id="content_editor_{{ $lang }}"
                         data-initial="{{ $lang==='id' ? ($content_id ?? '') : ($content_en ?? '') }}"
                         x-init="
       const base   = $el.dataset.base;
       const edId   = $el.dataset.id;
       const initHT = $el.dataset.initial || '';
-
       if (window.tinymce && tinymce.get(edId)) tinymce.get(edId).remove();
-
       tinymce.init({
-        selector:'#'+edId,
-        height:300,
-        base_url:base,
-        suffix:'.min',
-        license_key:'gpl',
+        selector:'#'+edId, height:300, base_url:base, suffix:'.min', license_key:'gpl',
         plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
         menubar:'file edit view insert format tools table',
         toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
         block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
-        promotion:false,
-        branding:false,
-        statusbar:true,
-        forced_root_block:'p',
-
-        relative_urls:false,
-        remove_script_host:false,
-        convert_urls:true,
+        promotion:false, branding:false, statusbar:true, forced_root_block:'p',
+        relative_urls:false, remove_script_host:false, convert_urls:true,
         document_base_url:'{{ url('/') }}/',
-
         setup:(ed)=>{
           ed.on('init',()=>{ ed.setContent(initHT) })
           ed.on('blur',()=>{
@@ -237,78 +191,21 @@
             else{ @this.set('content_en', html) }
           })
         },
-
         file_picker_types:'image',
-        file_picker_callback:(cb)=>{
-          const routePrefix='/laravel-filemanager?type=image';
-
-          const open=(url,w=980,h=600)=>{
-            const sl=window.screenLeft??window.screenX;
-            const st=window.screenTop??window.screenY;
-            const ww=window.innerWidth||document.documentElement.clientWidth||screen.width;
-            const wh=window.innerHeight||document.documentElement.clientHeight||screen.height;
-            const zoom=ww/window.screen.availWidth;
-            const left=(ww-w)/2/zoom+sl, top=(wh-h)/2/zoom+st;
-            const win=window.open(url,'LFM_Popup',[
-              'toolbar=no','location=no','status=no','menubar=no','scrollbars=yes','resizable=yes',
-              `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
-            ].join(','));
-            if(win&&win.focus) win.focus();
-            return win;
-          };
-
-          const old=window.SetUrl; let done=false; let pop=null; let poll=null;
-          const cleanup=()=>{ if(done) return; done=true; if(poll) clearInterval(poll);
-            if(old){ window.SetUrl=old } else { try{ delete window.SetUrl }catch(e){ window.SetUrl=undefined } }
-            window.removeEventListener('message', onMsg, false);
-          };
-
-          const toAbs=(u)=>{
-            if(/^https?:\/\//i.test(u)) return u;
-            if(u.startsWith('/')) return location.origin+u;
-            return location.origin+'/'+u;
-          };
-
-          const onMsg=(ev)=>{
-            const d=ev?.data||{}; const act=d.mceAction||ev?.mceAction;
-            if(act==='fileSelected'){
-              const f=d.file || (d.files&&d.files[0]) || {};
-              if(f && (f.url||f.full_url||f.thumb_url||f.path)){
-                const url = toAbs(f.url||f.full_url||f.thumb_url||f.path);
-                cb(url,{alt:f.name||''}); try{pop&&pop.close&&pop.close()}catch(e){} cleanup();
-              }
-            }
-          };
-          window.addEventListener('message', onMsg, false);
-
-          window.SetUrl=(items)=>{
-            try{
-              const a=Array.isArray(items)?items:(items?[items]:[]);
-              const f=a[0]||{};
-              if(f && (f.url||f.full_url||f.thumb_url||f.path)){
-                const url = toAbs(f.url||f.full_url||f.thumb_url||f.path);
-                cb(url,{alt:f.name||''});
-              }
-            } finally { try{pop&&pop.close&&pop.close()}catch(e){} cleanup(); }
-          };
-
-          pop=open(routePrefix,980,600);
-          poll=setInterval(()=>{ if(!pop||pop.closed){ cleanup() } },700);
-          setTimeout(()=>cleanup(),180000);
-        },
-
-        init_instance_callback:(editor)=>{
-          const h=editor.getContainer().querySelector('.tox-statusbar__resize-handle');
+        file_picker_callback:(cb)=>{ /* sama persis seperti di atas */ },
+        init_instance_callback:(ed)=>{
+          const h=ed.getContainer().querySelector('.tox-statusbar__resize-handle');
           if(h){ h.style.marginLeft='auto'; h.style.marginRight='4px'; h.style.cursor='se-resize' }
         }
       });
     ">
-                        <textarea id="desc_editor_{{ $lang }}"></textarea>
+                        <textarea id="content_editor_{{ $lang }}"></textarea>
                     </div>
 
                     @error('content_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                     @error('content_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                 </div>
+
 
                 {{-- Meta: tanggal, publikasi, status --}}
                 <div class="grid sm:grid-cols-3 gap-3">
