@@ -51,10 +51,10 @@
                             <a href="{{ route('cms.page.edit.literacy', ['locale' => app()->getLocale(),'id' => $j->id]) }}" class="text-blue-600 hover:underline">
                                 {{ app()->getLocale() === 'id' ? 'Edit' : 'Edit' }}
                             </a>
-                            <a href="{{ $j->file_url }}" target="_blank" rel="noopener noreferrer"
+                            <!--<a href="{{ $j->file_url }}" target="_blank" rel="noopener noreferrer"
                                 class="text-emerald-600 hover:underline">
                                 {{ $locale === 'id' ? 'Lihat' : 'Preview' }}
-                            </a>
+                            </a>-->
 
 
                         </div>
