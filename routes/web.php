@@ -9,7 +9,10 @@ use App\Http\Controllers\PageController;
 use App\Http\Middleware\Auth as MustLogin;
 use UniSharp\LaravelFilemanager\Lfm;
 
-
+Route::fallback(function () {
+    $locale = app()->getLocale();
+    return redirect("/{$locale}");
+});
 
 
 Route::get('/login', [ControllerCms::class, 'login'])->name('login');
