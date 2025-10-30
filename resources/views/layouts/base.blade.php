@@ -99,7 +99,7 @@
                                     <ul class="text-sm">
                                         <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Grafik') }}</a></li>
                                         <li class="px-4 py-2 cursor-pointer"><a href="{{ route('journal') }}">{{ __('Jurnal') }}</a></li>
-                                        <li class="px-4 py-2 cursor-pointer"><a href="{{ route('report') }}">{{ __('Laporan') }}</a></li>
+
                                     </ul>
                                 </div>
                             </div>
@@ -231,7 +231,7 @@
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
                             <li><a href="#" class="block py-1">{{ __('Grafik') }}</a></li>
                             <li><a href="{{ route('journal') }}" class="block py-1">{{ __('Jurnal') }}</a></li>
-                            <li><a href="{{ route('report') }}" class="block py-1">{{ __('Laporan') }}</a></li>
+
                         </ul>
                     </li>
                     <li x-data="{open:false}">
