@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 class ControllerCms extends Controller
 {
-    //
+
     public function login()
     {
         return view('cms.page-login');

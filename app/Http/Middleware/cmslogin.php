@@ -15,14 +15,14 @@ class cmslogin
      */
     public function handle(Request $request, Closure $next, $role = null)
     {
-        // contoh: pakai guard default
+        
         if (!Auth::check()) {
             return redirect('/login');
         }
 
-        // kalau butuh role:
+
         if ($role && Auth::user()->role !== $role) {
-            abort(403); // atau redirect('/login')
+            abort(403);
         }
 
         return $next($request);

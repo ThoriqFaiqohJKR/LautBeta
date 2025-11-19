@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class PageEventDetail extends Component
+class PageReportResourceDetail extends Component
 {
     public array $item = [];
 
@@ -17,7 +17,7 @@ class PageEventDetail extends Component
         $urlSlug = request()->route('slug');
         $locale  = app()->getLocale();
 
-        $row = DB::table('agenda')
+        $row = DB::table('report')
             ->select([
                 'id',
                 'title_id',
@@ -50,69 +50,19 @@ class PageEventDetail extends Component
 
         // slug kanonis
         $canonicalSlug = $row->slug ?: Str::slug((string)$title);
-
-
         $this->item = [
             'id'          => $row->id,
             'slug'        => $canonicalSlug,
             'title'       => $title ?: 'Untitled',
             'description' => $this->fixContentImages((string)$desc),
             'content'     => $this->fixContentImages((string)$cont),
-            'image_url'   => $this->imageUrl($row->image),
-            'tanggal'     => $row->tanggal_publikasi,
+            'image'       => $row->image ? Storage::url($row->image) : null,
+            'tanggal_publikasi' => $row->tanggal_publikasi,
         ];
-    }
-
-
-    private function fixContentImages(string $html): string
-    {
-        if ($html === '') return $html;
-
-        return preg_replace_callback(
-            '~(<img\s[^>]*src=["\'])([^"\']+)(["\'])~i',
-            function ($m) {
-                $prefix = $m[1];
-                $src    = $m[2];
-                $suffix = $m[3];
-
-
-                if (preg_match('~^https?://~i', $src)) return $m[0];
-
-
-                $normalized = ltrim($src, './');
-                while (str_starts_with($normalized, '../')) {
-                    $normalized = substr($normalized, 3);
-                }
-                $normalized = ltrim($normalized, '/');
-
-
-                if (str_starts_with($normalized, 'storage/')) {
-                    return $prefix . asset($normalized) . $suffix;
-                }
-
-
-                if (Storage::disk('public')->exists($normalized)) {
-                    return $prefix . Storage::url($normalized) . $suffix;
-                }
-
-
-                return $prefix . asset($normalized) . $suffix;
-            },
-            $html
-        );
-    }
-
-    private function imageUrl(?string $path): string
-    {
-        if (!$path) return asset('img/placeholder-16x9.png');
-        if (preg_match('~^https?://~i', $path)) return $path;
-        if (str_starts_with($path, 'storage/')) return asset($path);
-        if (Storage::disk('public')->exists($path)) return Storage::url($path);
-        return asset(ltrim($path, '/'));
     }
 
     public function render()
     {
-        return view('livewire.page-event-detail');
+        return view('livewire.page-report-resource-detail');
     }
 }

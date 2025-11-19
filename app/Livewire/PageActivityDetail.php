@@ -35,7 +35,7 @@ class PageActivityDetail extends Component
 
         if (!$row) abort(404, 'Data tidak ditemukan');
 
-        // pilih konten sesuai locale (+fallback)
+         
         $title = $locale === 'id'
             ? ($row->title_id ?? $row->title_en)
             : ($row->title_en ?? $row->title_id);

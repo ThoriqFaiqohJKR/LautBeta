@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class PageEventDetail extends Component
+class PageAgendaDetail extends Component
 {
     public array $item = [];
 
     public function mount(): void
     {
-        $id      = (int) request()->route('id');
-        $urlSlug = request()->route('slug');
-        $locale  = app()->getLocale();
+        $id     = (int) request()->route('id');
+        $slug   = request()->route('slug');
+        $locale = app()->getLocale();
 
         $row = DB::table('agenda')
             ->select([
@@ -33,9 +33,8 @@ class PageEventDetail extends Component
             ->where('id', $id)
             ->first();
 
-        if (!$row) abort(404, 'Data tidak ditemukan');
+        if (!$row) abort(404);
 
-        // pilih konten sesuai locale (+fallback)
         $title = $locale === 'id'
             ? ($row->title_id ?? $row->title_en)
             : ($row->title_en ?? $row->title_id);
@@ -48,9 +47,7 @@ class PageEventDetail extends Component
             ? ($row->content_id ?? $row->content_en)
             : ($row->content_en ?? $row->content_id);
 
-        // slug kanonis
-        $canonicalSlug = $row->slug ?: Str::slug((string)$title);
-
+        $canonicalSlug = $row->slug ?: Str::slug((string) $title);
 
         $this->item = [
             'id'          => $row->id,
@@ -63,7 +60,6 @@ class PageEventDetail extends Component
         ];
     }
 
-
     private function fixContentImages(string $html): string
     {
         if ($html === '') return $html;
@@ -75,9 +71,7 @@ class PageEventDetail extends Component
                 $src    = $m[2];
                 $suffix = $m[3];
 
-
                 if (preg_match('~^https?://~i', $src)) return $m[0];
-
 
                 $normalized = ltrim($src, './');
                 while (str_starts_with($normalized, '../')) {
@@ -85,16 +79,13 @@ class PageEventDetail extends Component
                 }
                 $normalized = ltrim($normalized, '/');
 
-
                 if (str_starts_with($normalized, 'storage/')) {
                     return $prefix . asset($normalized) . $suffix;
                 }
 
-
                 if (Storage::disk('public')->exists($normalized)) {
                     return $prefix . Storage::url($normalized) . $suffix;
                 }
-
 
                 return $prefix . asset($normalized) . $suffix;
             },
@@ -113,6 +104,6 @@ class PageEventDetail extends Component
 
     public function render()
     {
-        return view('livewire.page-event-detail');
+        return view('livewire.page-agenda-detail');
     }
 }

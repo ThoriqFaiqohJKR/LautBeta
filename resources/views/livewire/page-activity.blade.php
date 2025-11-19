@@ -5,7 +5,7 @@
             <h1 class="text-slate-600 text-sm tracking-widest mb-4">{{ __('Aktifitas') }}</h1>
 
             @forelse($items as $item)
-            <a href="{{ route('activity.detail', ['id' => $item['id'], 'slug' => $item['slug']]) }}"
+            <a href="{{ route('agenda.detail', ['id' => $item['id'], 'slug' => $item['slug']]) }}"
                 class="block max-w-5xl hover:bg-slate-50 transition">
                 <div class="flex flex-col md:flex-row gap-4 md:gap-12 py-4 border-b-2 md:mr-40 items-start md:items-end group transition-all duration-300 hover:bg-slate-100/10">
                     <div class="overflow-hidden md:w-1/2 w-full">

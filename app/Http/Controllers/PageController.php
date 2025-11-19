@@ -88,6 +88,15 @@ class PageController extends Controller
     {
         return view('page-report-resource');
     }
+    public function detailreportresource($id)
+    {
+        return view('page-report-resource-detail', compact('id'));
+    }
+
+    public function detailagenda($id)
+    {
+        return view('page-agenda-detail', compact('id'));
+    }
 
     public function database()
     {

@@ -48,6 +48,7 @@ Route::middleware([LanguageMiddleware::class])
 
         //ini about
         Route::get('/Pageabout', [PageController::class, 'about'])->name('about');
+
         //ini insight
         //ini Analysis
         Route::get('/PageAnalysis', [PageController::class, 'analysis'])->name('analysis');
@@ -67,12 +68,12 @@ Route::middleware([LanguageMiddleware::class])
         Route::get('/Pagegrafik', [PageController::class, 'grafik'])->name('grafik');
         Route::get('/Pagejournal', [PageController::class, 'journal'])->name('journal');
 
-        //ini Report
-        Route::get('/Pagereport', [PageController::class, 'report'])->name('report');
-        Route::get('/Pagedetailreport/{id}/{slug?}', [PageController::class, 'detailreport'])->name('report.detail');
+
 
 
         //ini agenda
+        Route::get('/Pagedetailagenda/{id}/{slug?}', [PageController::class, 'detailagenda'])->name('agenda.detail');
+        
         //ini Event
         Route::get('/Pageevent', [PageController::class, 'event'])->name('event');
         Route::get('/Pagedetailevent/{id}/{slug?}', [PageController::class, 'detailevent'])->name('event.detail');
@@ -83,7 +84,7 @@ Route::middleware([LanguageMiddleware::class])
 
         //ini resource
         Route::get('/Pagereportresource', [PageController::class, 'reportresource'])->name('reportresource');
-        Route::get('/Pagedetailreportresource', [PageController::class, 'detailreportresource'])->name('reportresource.detail   ');
+        Route::get('/Pagedetailreportresource/{id}/{slug?}', [PageController::class, 'detailreportresource'])->name('reportresource.detail');
 
         Route::get('/Pagedatabase', [PageController::class, 'database'])->name('database');
         Route::get('/Pagedetaildatabase', [PageController::class, 'detaildatabase'])->name('database.detail');
