@@ -27,7 +27,12 @@
                             </svg>
                         </button>
 
-                        <img src="{{ asset('img/logos/logo.png') }}" alt="Logo Auriga" class="h-[48px] w-auto mx-auto" />
+                        <div class="w-auto mx-auto">
+                            <a href="{{ '/' . app()->getLocale() }}">
+                                <img src="{{ asset('img/logos/logo.png') }}" alt="Logo Auriga" class="h-[48px] w-auto mx-auto" />
+                            </a>
+                        </div>
+
 
                         <div class="absolute right-0">
                             <div class="inline-flex items-center rounded-full border p-[2px]">
@@ -55,7 +60,7 @@
 
                         <div class="hidden md:flex gap-8 text-sm tracking-wide px-8">
 
-                            <div class="relative">
+                            <div class="relative hover:text-blue-400">
                                 <a href="{{ route('about') }}">
                                     {{ __('Tentang') }}
                                 </a>
@@ -63,7 +68,7 @@
 
 
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='insight' ? null : 'insight')" class="hover:text-green-900 flex items-center focus:outline-none cursor-pointer">{{ __('Wawasan') }}<template x-if="desktopOpen!=='insight'">
+                                <button @click="desktopOpen = (desktopOpen==='insight' ? null : 'insight')" class="hover:text-blue-900 flex items-center focus:outline-none cursor-pointer">{{ __('Wawasan') }}<template x-if="desktopOpen!=='insight'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
@@ -76,15 +81,15 @@
                                 </button>
                                 <div x-show="desktopOpen==='insight'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                                     <ul class="text-sm">
-                                        <li class="px-4 py-2 cursor-pointer"><a href="{{ route('analysis') }}">{{ __('Analisis') }}</a></li>
-                                        <li class="px-4 py-2 cursor-pointer"><a href="{{ route('feature') }}">{{ __('Fitur') }}</a></li>
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('analysis') }}">{{ __('Analisis') }}</a></li>
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('feature') }}">{{ __('Fitur') }}</a></li>
                                     </ul>
                                 </div>
                             </div>
 
                             <!-- LITERASI dropdown -->
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='literasi' ? null : 'literasi')" class="hover:text-green-900 flex items-center focus:outline-none cursor-pointer">{{ __('Literasi') }}<template x-if="desktopOpen!=='literasi'">
+                                <button @click="desktopOpen = (desktopOpen==='literasi' ? null : 'literasi')" class="hover:text-blue-900 flex items-center focus:outline-none cursor-pointer">{{ __('Literasi') }}<template x-if="desktopOpen!=='literasi'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
@@ -97,8 +102,8 @@
                                 </button>
                                 <div x-show="desktopOpen==='literasi'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                                     <ul class="text-sm">
-                                        <li class="px-4 py-2 cursor-pointer"><a href="#">{{ __('Grafik') }}</a></li>
-                                        <li class="px-4 py-2 cursor-pointer"><a href="{{ route('journal') }}">{{ __('Jurnal') }}</a></li>
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="#">{{ __('Grafik') }}</a></li>
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('journal') }}">{{ __('Jurnal') }}</a></li>
 
                                     </ul>
                                 </div>
@@ -106,7 +111,7 @@
 
                             <!-- EVENT dropdown -->
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='event' ? null : 'event')" class="hover:text-green-900 flex items-center focus:outline-none cursos-pointer">{{ __('Agenda') }}<template x-if="desktopOpen!=='event'">
+                                <button @click="desktopOpen = (desktopOpen==='event' ? null : 'event')" class="hover:text-blue-900 flex items-center focus:outline-none cursos-pointer">{{ __('Agenda') }}<template x-if="desktopOpen!=='event'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
@@ -119,15 +124,15 @@
                                 </button>
                                 <div x-show="desktopOpen==='event'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                                     <ul class="text-sm">
-                                        <li class="px-4 py-2 cursor-pointer"><a href="{{ route('event') }}">{{ __('Event') }}</a></li>
-                                        <li class="px-4 py-2 cursor-pointer"><a href="{{ route('activity') }}">{{ __('Aktifitas') }}</a></li>
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('event') }}">{{ __('Event') }}</a></li>
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('activity') }}">{{ __('Aktifitas') }}</a></li>
                                     </ul>
                                 </div>
                             </div>
 
                             <!-- GALERI dropdown -->
                             <div class="relative">
-                                <button @click="desktopOpen = (desktopOpen==='galeri' ? null : 'galeri')" class="hover:text-green-900 flex items-center focus:outline-none cursor-pointer">{{ __('Sumber Daya') }}<template x-if="desktopOpen!=='galeri'">
+                                <button @click="desktopOpen = (desktopOpen==='galeri' ? null : 'galeri')" class="hover:text-blue-900 flex items-center focus:outline-none cursor-pointer">{{ __('Sumber Daya') }}<template x-if="desktopOpen!=='galeri'">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
@@ -140,9 +145,9 @@
                                 </button>
                                 <div x-show="desktopOpen==='galeri'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
                                     <ul class="text-sm">
-                                        <li class="px-4 py-2 cursor-pointer"><a href="{{ route('reportresource') }}"">{{ __('Report') }}</a></li>
-                                        <li class=" px-4 py-2 cursor-pointer"><a href="{{ route('database') }}">{{ __('Database') }}</a></li>
-                                        <li class="px-4 py-2 cursor-pointer"><a href="{{ route('gallery') }}">{{ __('Galeri') }}</a></li>
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('reportresource') }}"">{{ __('Report') }}</a></li>
+                                        <li class=" px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('database') }}">{{ __('Database') }}</a></li>
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('gallery') }}">{{ __('Galeri') }}</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -167,14 +172,14 @@
                                     <li>
                                         <a
                                             href="{{ url('en' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
-                                            class="block px-4 py-2 hover:bg-green-100 {{ request()->segment(1)==='en' ? 'font-bold text-green-900' : 'text-slate-700' }}">
+                                            class="block px-4 py-2 hover:bg-gray-100 {{ request()->segment(1)==='en' ? 'font-bold text-green-900' : 'text-slate-700' }}">
                                             ENGLISH
                                         </a>
                                     </li>
                                     <li>
                                         <a
                                             href="{{ url('id' . (count(request()->segments()) > 1 ? '/' . implode('/', array_slice(request()->segments(), 1)) : '')) }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}"
-                                            class="block px-4 py-2 hover:bg-green-100 {{ request()->segment(1)==='id' ? 'font-bold text-green-900' : 'text-slate-700' }}">
+                                            class="block px-4 py-2 hover:bg-gray-100 {{ request()->segment(1)==='id' ? 'font-bold text-green-900' : 'text-slate-700' }}">
                                             INDONESIA
                                         </a>
                                     </li>
@@ -213,21 +218,49 @@
                         <input type="text" placeholder="Search..." class="w-full text-sm focus:outline-none" />
                     </div>
                 </label>
-                <!-- Menu list with collapsible submenus (mobile: bisa buka beberapa sekaligus) -->
+                <!-- Menu Mobile -->
                 <ul class="space-y-3">
                     <a href="{{ route('about') }}" class="block font-medium py-2">
                         {{ __('Tentang') }}
                     </a>
 
-                    <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">{{ __('Wawasan') }}</button>
+                    <div x-data="{ open:false }">
+                        <button @click="open = !open"
+                            class="w-full flex items-center justify-between text-left font-medium py-2">
+
+                            <span>{{ __('Wawasan') }}</span>
+
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 transform transition-transform duration-200"
+                                :class="open ? 'rotate-180' : 'rotate-0'"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
                             <li><a href="{{ route('analysis') }}" class="block py-1">{{ __('Analisis') }}</a></li>
                             <li><a href="{{ route('feature') }}" class="block py-1">{{ __('Fitur') }}</a></li>
                         </ul>
-                    </li>
+                    </div>
+
                     <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">{{ __('Literasi') }}</button>
+                        <button @click="open = !open"
+                            class="w-full flex items-center justify-between text-left font-medium py-2">
+
+                            <span>{{ __('Literasi') }}</span>
+
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 transform transition-transform duration-200"
+                                :class="open ? 'rotate-180' : 'rotate-0'"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
                             <li><a href="#" class="block py-1">{{ __('Grafik') }}</a></li>
                             <li><a href="{{ route('journal') }}" class="block py-1">{{ __('Jurnal') }}</a></li>
@@ -235,14 +268,40 @@
                         </ul>
                     </li>
                     <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">{{ __('Agenda') }}</button>
+                        <button @click="open = !open"
+                            class="w-full flex items-center justify-between text-left font-medium py-2">
+
+                            <span>{{ __('Agenda') }}</span>
+
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 transform transition-transform duration-200"
+                                :class="open ? 'rotate-180' : 'rotate-0'"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
                             <li><a href="{{ route('event') }}" class="block py-1">{{ __('Event') }}</a></li>
                             <li><a href="{{ route('activity') }}" class="block py-1">{{ __('Activites') }}</a></li>
                         </ul>
                     </li>
                     <li x-data="{open:false}">
-                        <button @click="open = !open" class="w-full text-left font-medium py-2">{{ __('Galeri') }}</button>
+                        <button @click="open = !open"
+                            class="w-full flex items-center justify-between text-left font-medium py-2">
+
+                            <span>{{ __('Galeri') }}</span>
+
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 transform transition-transform duration-200"
+                                :class="open ? 'rotate-180' : 'rotate-0'"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
                             <li><a href="{{ route('reportresource') }}" class="block py-1">{{ __('Laporan') }}</a></li>
                             <li><a href="{{ route('database') }}" class="block py-1">{{ __('Basis Data') }}</a></li>
