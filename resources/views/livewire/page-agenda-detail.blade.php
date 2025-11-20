@@ -3,28 +3,29 @@
     <div>
 
         <div class="w-full aspect-[3/1] bg-white flex items-center justify-center overflow-hidden">
-            <img src="{{ $item['image_url']  }}"
+            <img src="{{ $item['image_url'] }}"
                 alt="{{ $item['title'] }}"
-                class="max-h-full max-w-full object-center" />
+                class="w-full h-auto md:h-full object-contain md:object-cover md:object-top" />
+
         </div>
 
-        <div class="px-4 sm:px-6 lg:max-w-2xl mx-auto py-12">
+        <div class="px-4 sm:px-6 lg:max-w-3xl mx-auto py-12 items-center">
 
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-6">
+            <h1 class="text-4xl text-center mb-4">
                 {{ $item['title'] }}
             </h1>
 
 
-            @if(!empty($item['description']))
-            <div class="prose mx-auto text-justify text-gray-700 mb-8">
+
+            <div class="prose max-w-none mx-auto text-left text-gray-700 font-bold leading-snug">
                 {!! $item['description'] !!}
             </div>
-            @endif
 
-
-            <div class="prose mx-auto text-justify text-gray-700">
+            <div class="prose max-w-none mx-auto text-left text-gray-700 leading-snug mt-6">
                 {!! $item['content'] !!}
             </div>
+
+
 
 
         </div>

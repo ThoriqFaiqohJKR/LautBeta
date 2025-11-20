@@ -16,7 +16,7 @@ class Index extends Component
     public array $infographics = [];
 
     public int $limitInsights = 2;
-    public int $limitEvents = 4;
+    public int $limitEvents = 2;
     public int $limitInfographics = 6;
 
     public function mount(): void

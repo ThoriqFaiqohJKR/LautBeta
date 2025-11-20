@@ -10,19 +10,19 @@
 
         <div class="px-4 sm:px-6 lg:max-w-2xl mx-auto py-12">
 
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-6">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl  text-center mb-6">
                 {{ $item['title'] }}
             </h1>
 
 
             @if(!empty($item['description']))
-            <div class="prose mx-auto text-justify text-gray-700 mb-8">
+            <div class="prose mx-auto text-left text-gray-700 mb-8 leading-snug font-semibold">
                 {!! $item['description'] !!}
             </div>
             @endif
 
 
-            <div class="prose mx-auto text-justify text-gray-700">
+            <div class="prose mx-auto text-left text-gray-700 leading-snug">
                 {!! $item['content'] !!}
             </div>
 

@@ -38,10 +38,10 @@
 
                                 <!-- Isi teks -->
                                 <div class="p-4  min-h-[140px] flex flex-col">
-                                    <p class="text-[#2a5fa0] font-semibold text-xl">
+                                    <p class="text-[#2a5fa0]  text-md">
                                         {{ ucfirst(strtolower($item['type'])) }}
                                     </p>
-                                    <p class="mt-1 text-xl text-white leading-snug line-clamp-3">
+                                    <p class="mt-1 text-lg text-white leading-snug line-clamp-3">
                                         {{ $item['title'] }}
                                     </p>
                                     <span class="absolute right-0 bottom-0 w-0 h-0 border-l-[28px] border-b-[28px] border-l-transparent border-b-gray-500"></span>
@@ -56,39 +56,45 @@
                 </div>
 
                 <!-- EVENT -->
-                <aside class="flex-[2] h-full self-stretch bg-white p-2">
+                <div class="flex-[2] h-full bg-white flex flex-col">
 
-                    <h2 class="text-slate-500 text-sm font-semibold tracking-wider mb-3">EVENT</h2>
+                    <h2 class="text-slate-500 text-sm font-semibold tracking-wider mb-3">AGENDA</h2>
 
                     @if(!empty($events))
-                    @php($first = $events[0])
-                    <a href="{{ $first['url'] }}" class="block group">
-                        @if($first['image'])
-                        <div class="w-full h-28 bg-white overflow-hidden shadow-sm">
-                            <img src="{{ $first['image'] }}" alt="{{ $first['title'] }}" class="w-full h-full object-cover" />
-                        </div>
-                        @else
-                        <div class="w-full aspect-[16/9] bg-gray-200 flex items-center justify-center">
-                            <span class="text-slate-400 text-sm">No Image</span>
-                        </div>
-                        @endif
-                        <p class="text-[#2a5fa0] font-semibold tracking-wide mt-4 text-base leading-snug">{{ $first['title'] }}</p>
-                    </a>
+                    <div class="flex flex-col justify-between flex-1  p-3">
 
-                    <div class="mt-3 space-y-3">
-                        @foreach(array_slice($events, 1) as $e)
-                        <div class="border-b border-slate-300 pb-3 min-h-14 flex">
-                            <a href="{{ $e['url'] }}" class="block text-md leading-snug hover:text-[#2a5fa0]">
-                                {{ $e['title'] }}
+                        <!-- EVENT PERTAMA -->
+                        <div>
+                            @php($first = $events[0])
+                            <a href="{{ $first['url'] }}" class="block group">
+                                <div class="w-full h-full overflow-hidden shadow-sm ">
+                                    <img src="{{ $first['image'] }}"
+                                        class="w-full h-full object-contain hover:scale-100 transition duration-200">
+                                </div>
+                                <p class="text-[#2a5fa0] font-semibold tracking-wide text-base leading-snug border-b border-gray-300 py-2">
+                                    {{ $first['title'] }}
+                                </p>
                             </a>
                         </div>
 
-                        @endforeach
+                        <!-- EVENT LIST (TURUN KE BAWAH & TIDAK MELEBIHI KOTAK) -->
+                        <div class="space-y-3">
+                            @foreach(array_slice($events, 1) as $e)
+                            <div class=" mb-8">
+                                <a href="{{ $e['url'] }}" class="block text-md leading-snug hover:text-[#2a5fa0] py-2">
+                                    <p>event Sebelumnya event sebelumnya</p>
+
+                                </a>
+                            </div>
+                            @endforeach
+                        </div>
+
+
                     </div>
-                    @else
-                    <p class="text-slate-500">Belum ada event terpublish.</p>
                     @endif
-                </aside>
+
+                </div>
+
 
             </div>
         </section>
@@ -100,7 +106,7 @@
                 <div class="flex flex-col lg:flex-row my-8 sm:my-16 gap-24 lg:gap-18">
                     <div class="flex-shrink-0 w-full lg:w-3/6">
                         @if($ngopini['image'])
-                        <div class="max-w-lg aspect-[16/9] overflow-hidden shadow-md bg-white">
+                        <div class="max-w-lg aspect-[16/9] overflow-hidden shadow-md ">
                             <img src="{{ $ngopini['image'] }}" alt="{{ $ngopini['title'] }}"
                                 class="w-full h-full object-contain">
                         </div>
@@ -129,7 +135,7 @@
 
                         <!-- VIEW tetap di bawah -->
                         <a href="{{ route('ngopini.detail', ['id' => $ngopini['id'], 'slug' => $ngopini['slug']]) }}"
-                            class="inline-flex items-center gap-2 text-sm font-semibold mt-auto">
+                            class="inline-flex items-center gap-2 text-sm font-semibold mt-auto hover:underline">
                             VIEW <span>&rarr;</span>
                         </a>
                     </div>
@@ -142,17 +148,22 @@
 
         </section>
 
-        <section class="px-4 sm:px-12 lg:px-52 py-12 sm:py-24">
+        <section class="px-4 sm:px-12 lg:px-52 py-24">
             <p>INFOGRAFIK</p>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 h-auto sm:h-screen">
-                <!-- Kolom kiri (besar) -->
-                <div class="col-span-1 sm:col-span-2 bg-gray-400 h-48 sm:h-auto"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="col-span-1 sm:col-span-2">
+                    <img src="{{ asset('img/infografik-1.jpg') }}" class="w-full h-full object-cover">
+                </div>
 
-                <!-- Kolom kanan (2 kotak kecil tumpuk) -->
                 <div class="flex flex-col gap-4">
-                    <div class="bg-gray-400 h-48 sm:h-1/2"></div>
-                    <div class="bg-gray-400 h-48 sm:h-1/2"></div>
+                    <div>
+                        <img src="{{ asset('img/infografik-2.jpg') }}" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <img src="{{ asset('img/infografik-3.jpg') }}" class="w-full h-full object-cover">
+                    </div>
                 </div>
             </div>
         </section>
+
 </div>
