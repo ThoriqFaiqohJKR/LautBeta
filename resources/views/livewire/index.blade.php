@@ -2,11 +2,27 @@
     {{-- If you look to others for fulfillment, you will never truly be fulfilled. --}}
     <main class="flex-grow">
         <!-- Hero Image -->
-        <div class="relative w-full overflow-hidden shadow-lg">
+        <div class="w-full overflow-hidden shadow-lg flex ">
             <img
-                src="{{ asset('img/index.png') }}"
+                src="{{ asset('img/index.jpg') }}"
                 class="w-full h-auto md:h-full object-contain md:object-cover md:object-top"
                 alt="Index Image" />
+
+            <div class="flex absolute  items-center py-82 px-24 text-xl font-bold justify-between">
+                <div class="max-w-4xl">
+                    <p>Situs ini akan fokus pada isu-isu pesisir, laut, dan pulau-pulau kecil serta berbagai dinamikanya.</p>
+                </div>
+                <!--<div>
+                    <img
+                        src="{{ asset('img/index.png') }}"
+                        class="w-full h-auto md:h-full object-contain md:object-cover md:object-top"
+                        alt="Overlay Image" />
+                </div>-->
+            </div>
+
+            <div>
+
+            </div>
         </div>
 
 
