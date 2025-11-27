@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class ControllerCms extends Controller
 {
 
@@ -107,5 +108,18 @@ class ControllerCms extends Controller
     public function previewresource($locale, $id)
     {
         return view('cms.preview-resource', compact('id'));
+    }
+
+    public function indexinfografik()
+    {
+        return view('cms.index-infografik');
+    }
+    public function addinfografik()
+    {
+        return view('cms.add-infografik');
+    }
+    public function editinfografik($locale, $id)
+    {
+        return view('cms.edit-infografik', compact('id'));
     }
 }

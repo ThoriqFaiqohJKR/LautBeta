@@ -73,7 +73,7 @@ Route::middleware([LanguageMiddleware::class])
 
         //ini agenda
         Route::get('/Pagedetailagenda/{id}/{slug?}', [PageController::class, 'detailagenda'])->name('agenda.detail');
-        
+
         //ini Event
         Route::get('/Pageevent', [PageController::class, 'event'])->name('event');
         Route::get('/Pagedetailevent/{id}/{slug?}', [PageController::class, 'detailevent'])->name('event.detail');
@@ -135,4 +135,10 @@ Route::prefix('cms/{locale}')
         Route::get('/pageaddresource', [ControllerCms::class, 'addresource'])->name('page.add.resource');
         Route::get('/pageeditresource/{id}', [ControllerCms::class, 'editresource'])->name('page.edit.resource');
         Route::get('/pagepreviewresource/{id}', [ControllerCms::class, 'previewresource'])->name('page.preview.resource');
+
+        // infografik
+        Route::get('/pageindexinfografik', [ControllerCms::class, 'indexinfografik'])->name('page.index.infografik');
+        // Route::get('/pageindexresource', [ControllerCms::class, 'indexresource'])->name('page.index.resource');
+        Route::get('/pageaddinfografik', [ControllerCms::class, 'addinfografik'])->name('page.add.infografik');
+        Route::get('/pageeditresource/{id}', [ControllerCms::class, 'editresource'])->name('page.edit.resource');
     });

@@ -19,6 +19,8 @@ class Index extends Component
     public int $limitEvents = 2;
     public int $limitInfographics = 6;
 
+
+
     public function mount(): void
     {
         $this->loadInsights();
@@ -134,26 +136,30 @@ class Index extends Component
     protected function loadInfographics(): void
     {
         $loc = app()->getLocale();
-        $rows = DB::table('insight')
-            ->whereIn('type', ['infographic', 'infografik'])
-            ->where('publikasi', 'publish')
-            ->where('status', 'on')
-            ->orderByDesc('tanggal_publikasi')
-            ->orderByDesc('id')
-            ->limit($this->limitInfographics)
-            ->get(['id', 'slug', 'title_en', 'title_id', 'image']);
 
-        $this->infographics = $rows->map(function ($r) use ($loc) {
-            $title = $loc === 'id' ? ($r->title_id ?? $r->title_en) : ($r->title_en ?? $r->title_id);
+        $rows = DB::table('infografik')
+            ->orderByDesc('id')
+            ->limit(3) // EXACT 3 buat layout
+            ->get();
+
+        $this->infographics = $rows->map(function ($item) use ($loc) {
+
+            $images = DB::table('infografik_images')
+                ->where('infografik_id', $item->id)
+                ->orderBy('sort')
+                ->get()
+                ->map(fn($img) => Storage::url($img->image))
+                ->toArray();
+
             return [
-                'id'    => $r->id,
-                'slug'  => $r->slug,
-                'title' => $title ?: 'Untitled',
-                'image' => $r->image ? Storage::url($r->image) : null,
-                'url'   => url(app()->getLocale() . '/infographic/' . $r->id . '/' . $r->slug),
+                'id'     => $item->id,
+                'slug'   => $item->slug,
+                'title'  => $loc === 'id' ? $item->title_id : $item->title_en,
+                'images' => $images,
             ];
         })->toArray();
     }
+
 
     public function render()
     {

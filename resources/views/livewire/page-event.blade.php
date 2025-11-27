@@ -11,7 +11,7 @@
                     <div class="overflow-hidden md:w-1/2 w-full max-h-[350px] aspect-[9/16] mx-auto">
                         <img
                             src="{{ $item['image_url'] }}"
-                            class="w-full h-full object-cover" />
+                            class="w-full h-full object-contain" />
                     </div>
 
 

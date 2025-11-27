@@ -149,21 +149,177 @@
         </section>
 
         <section class="px-4 sm:px-12 lg:px-52 py-24">
-            <p>INFOGRAFIK</p>
+            <p class="text-sm tracking-widest text-slate-600 mb-4">INFOGRAFIK</p>
+
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="col-span-1 sm:col-span-2">
-                    <img src="{{ asset('img/infografik-1.jpg') }}" class="w-full h-full object-cover">
+
+
+                @if(isset($infographics[0]))
+                <div class="col-span-1 sm:col-span-2"
+                    x-data="{
+        idx: 0,
+        open: false,
+        popupIdx: 0,
+        imgs: {{ json_encode($infographics[0]['images']) }}
+    }">
+
+                    <!-- MAIN IMAGE -->
+                    <div class="w-full aspect-[4/5] bg-gray-200 overflow-hidden relative">
+
+                        <img :src="imgs[idx]"
+                            class="w-full h-full object-cover cursor-pointer"
+                            @click="open = true; popupIdx = idx">
+
+                        <!-- PREV -->
+                        <button
+                            x-show="idx > 0"
+                            @click.stop="idx--"
+                            class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2">
+                            ‹
+                        </button>
+
+                        <!-- NEXT -->
+                        <button
+                            x-show="idx < imgs.length - 1"
+                            @click.stop="idx++"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2">
+                            ›
+                        </button>
+
+                    </div>
+
+                    <!-- POPUP -->
+                    <div x-show="open" x-cloak
+                        class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-6"
+                        @click.self="open = false">
+
+                        <div class="relative max-w-4xl w-full flex justify-center"
+                            x-data="{
+            startX: 0,
+            endX: 0,
+            handleTouchStart(e) { this.startX = e.touches[0].clientX },
+            handleTouchEnd(e) {
+                this.endX = e.changedTouches[0].clientX;
+                let diff = this.endX - this.startX;
+                if (Math.abs(diff) > 50) {
+                    if (diff < 0) popupIdx = (popupIdx + 1) % imgs.length;
+                    else popupIdx = (popupIdx - 1 + imgs.length) % imgs.length;
+                }
+            }
+        }"
+                            @touchstart="handleTouchStart($event)"
+                            @touchend="handleTouchEnd($event)">
+
+                            <!-- WRAPPER GAMBAR -->
+                            <div class="relative py-6">
+
+                                <!-- GAMBAR (NO ROUNDED) -->
+                                <img
+                                    :src="imgs[popupIdx]"
+                                    class="max-w-full max-h-[80vh] object-contain">
+
+                                <!-- BUTTON KIRI (desktop only) -->
+                                <button
+                                    @click.stop="popupIdx = (popupIdx - 1 + imgs.length) % imgs.length"
+                                    class="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2
+           bg-black/70 hover:bg-black/80 text-white p-1 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5">
+                                        <path stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                            stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+
+                                <button
+                                    @click.stop="popupIdx = (popupIdx + 1) % imgs.length"
+                                    class="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2
+           bg-black/70 hover:bg-black/80 text-white p-1 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-2 w-2">
+                                        <path stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                            stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
 
+
+                @endif
+
+
+                {{-- ================== KANAN (2 & 3) ================== --}}
                 <div class="flex flex-col gap-4">
-                    <div>
-                        <img src="{{ asset('img/infografik-2.jpg') }}" class="w-full h-full object-cover">
+
+                    {{-- INFOGRAFIK 2 --}}
+                    @if(isset($infographics[1]))
+                    <div x-data="{ idx: 0, imgs: {{ json_encode($infographics[1]['images']) }} }">
+
+                        <div class="w-full aspect-[4/5] bg-gray-200  overflow-hidden relative">
+
+
+                            <img :src="imgs[idx]" class="w-full h-full object-cover">
+
+                            <!-- PREV -->
+                            <button @click="idx = (idx - 1 + imgs.length) % imgs.length"
+                                class="absolute left-2 top-1/2 -translate-y-1/2
+                        bg-black/40 text-white px-2 py-1  text-sm">
+                                ‹
+                            </button>
+
+                            <!-- NEXT -->
+                            <button @click="idx = (idx + 1) % imgs.length"
+                                class="absolute right-2 top-1/2 -translate-y-1/2
+                        bg-black/40 text-white px-2 py-1  text-sm">
+                                ›
+                            </button>
+
+                        </div>
+
+
                     </div>
-                    <div>
-                        <img src="{{ asset('img/infografik-3.jpg') }}" class="w-full h-full object-cover">
+                    @endif
+
+
+                    {{-- INFOGRAFIK 3 --}}
+                    @if(isset($infographics[2]))
+                    <div x-data="{ idx: 0, imgs: {{ json_encode($infographics[2]['images']) }} }">
+
+                        <div class="w-full aspect-[4/5] bg-gray-200  overflow-hidden relative">
+
+
+                            <img :src="imgs[idx]" class="w-full h-full object-cover">
+
+                            <!-- PREV -->
+                            <button @click="idx = (idx - 1 + imgs.length) % imgs.length"
+                                class="absolute left-2 top-1/2 -translate-y-1/2
+                        bg-black/40 text-white px-2 py-1  text-sm">
+                                ‹
+                            </button>
+
+                            <!-- NEXT -->
+                            <button @click="idx = (idx + 1) % imgs.length"
+                                class="absolute right-2 top-1/2 -translate-y-1/2
+                        bg-black/40 text-white px-2 py-1  text-sm">
+                                ›
+                            </button>
+
+                        </div>
+
+
                     </div>
+                    @endif
+
                 </div>
+
             </div>
         </section>
+
+
+
+
 
 </div>

@@ -15,30 +15,14 @@
             </h1>
 
 
-            @if(!empty($item['description']))
             <div class="prose mx-auto text-left text-gray-700 font-semibold mb-8 leading-snug">
                 {!! $item['description'] !!}
             </div>
-            @endif
 
 
             <div class="prose mx-auto text-left text-gray-700 leading-snug">
-                {!! $item['content'] !!} <span class="inline-block w-2 h-2 bg-gray-700 rounded-full"></span>
-
-
+                {!! $item['content'] !!}
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
         </div>
     </div>
 </div>
