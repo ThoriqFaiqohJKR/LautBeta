@@ -13,7 +13,7 @@ class IndexInsight extends Component
     public string $sort = 'latest';
 
     public int $page = 1;
-    public int $perPage = 6;
+    public int $perPage = 10;
     public int $total = 0;
 
     protected $queryString = [
@@ -25,46 +25,26 @@ class IndexInsight extends Component
         'perPage'   => ['except' => 6],
     ];
 
-    public function mount(): void
+
+    public function updated($field)
     {
-        $t = request('type');
-        if (in_array($t, ['all', 'feature', 'analysis', 'ngopini'], true)) {
-            $this->type = $t;
+        if (in_array($field, ['type', 'publikasi', 'q', 'sort', 'perPage'])) {
+            $this->page = 1;
         }
     }
 
-
-    public function updatingType()
+    private function localeColumns(): array
     {
-        $this->page = 1;
-    }
-    public function updatingPublikasi()
-    {
-        $this->page = 1;
-    }
-    public function updatingQ()
-    {
-        $this->page = 1;
-    }
-    public function updatingSort()
-    {
-        $this->page = 1;
-    }
-    public function updatingPerPage()
-    {
-        $this->page = 1;
-    }
-
-    private function currentLocale(): string
-    {
-        return request()->route('locale') ?? app()->getLocale();
+        $locale = request()->route('locale') ?? app()->getLocale();
+        return [
+            'title'       => $locale === 'id' ? 'title_id' : 'title_en',
+            'description' => $locale === 'id' ? 'description_id' : 'description_en',
+        ];
     }
 
     private function baseQuery()
     {
-        $locale   = $this->currentLocale();
-        $titleCol = $locale === 'id' ? 'title_id' : 'title_en';
-        $descCol  = $locale === 'id' ? 'description_id' : 'description_en';
+        $cols = $this->localeColumns();
 
         return DB::table('insight')
             ->select(
@@ -74,42 +54,20 @@ class IndexInsight extends Component
                 'type',
                 'tanggal_publikasi',
                 'publikasi',
-                DB::raw("$titleCol as title"),
-                DB::raw("$descCol as description")
+                DB::raw("{$cols['title']} as title"),
+                DB::raw("{$cols['description']} as description")
             )
             ->where('status', 'on')
             ->when($this->type !== 'all', fn($q) => $q->where('type', $this->type))
             ->when($this->publikasi !== 'all', fn($q) => $q->where('publikasi', $this->publikasi))
-            ->when($this->q !== '', function ($q) use ($titleCol, $descCol) {
+            ->when($this->q !== '', function ($q) use ($cols) {
                 $s = '%' . $this->q . '%';
-                $q->where(function ($w) use ($titleCol, $descCol, $s) {
-                    $w->where($titleCol, 'like', $s)
-                        ->orWhere($descCol, 'like', $s)
+                $q->where(function ($w) use ($cols, $s) {
+                    $w->where($cols['title'], 'like', $s)
+                        ->orWhere($cols['description'], 'like', $s)
                         ->orWhere('slug', 'like', $s);
                 });
             });
-    }
-
-    public function getInsights()
-    {
-        $base = $this->baseQuery();
-        $this->total = (int) $base->count();
-
-        $base = match ($this->sort) {
-            'oldest' => $base->orderBy('updated_at')->orderBy('id'),
-            'az'     => $base->orderBy('title')->orderByDesc('id'),
-            'za'     => $base->orderBy('title', 'desc')->orderByDesc('id'),
-            default  => $base->orderByDesc('updated_at')->orderByDesc('id'),
-        };
-
-
-        $lp = $this->lastPage();
-        if ($this->page > $lp) $this->page = $lp;
-
-        return $base
-            ->skip(($this->page - 1) * $this->perPage)
-            ->take($this->perPage)
-            ->get();
     }
 
     public function lastPage(): int
@@ -117,14 +75,41 @@ class IndexInsight extends Component
         return max(1, (int) ceil($this->total / $this->perPage));
     }
 
-    public function nextPage(): void
+    public function goToPage($page)
     {
-        if ($this->page < $this->lastPage()) $this->page++;
+        $this->page = max(1, min($page, $this->lastPage()));
     }
 
-    public function prevPage(): void
+    public function prevPage()
     {
-        if ($this->page > 1) $this->page--;
+        $this->goToPage($this->page - 1);
+    }
+
+    public function nextPage()
+    {
+        $this->goToPage($this->page + 1);
+    }
+
+    public function getInsights()
+    {
+        $query = $this->baseQuery();
+
+
+        $this->total = $query->count();
+
+
+        $query = match ($this->sort) {
+            'oldest' => $query->orderBy('updated_at')->orderBy('id'),
+            'az'     => $query->orderBy('title'),
+            'za'     => $query->orderBy('title', 'desc'),
+            default  => $query->orderByDesc('updated_at')->orderByDesc('id'),
+        };
+
+
+        return $query
+            ->skip(($this->page - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get();
     }
 
     public function render()

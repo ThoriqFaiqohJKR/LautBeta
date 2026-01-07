@@ -1,6 +1,5 @@
 <div>
     {{-- Close your eyes. Count to one. That is how long forever feels. --}}
-    {{-- resources/views/livewire/cms/preview-resource.blade.php --}}
     <div class="max-w-4xl mx-auto p-6 sm:p-10">
         <div class="gap-2 flex mb-4">
             <a href="{{ route('cms.page.index.resource', ['locale' => app()->getLocale()]) }}">

@@ -1,33 +1,28 @@
-<div class="bg-blue-100">
-    {{-- The Master doesn't talk, he acts. --}}
+<div>
+    {{-- Be like water. --}}
     <div>
 
-        <div class="w-full aspect-[3/1] bg-white flex items-center justify-center overflow-hidden mb-12">
+        <div class="w-full aspect-[3/1] bg-white flex items-center justify-center overflow-hidden">
             <img src="{{ $item['image_url'] }}"
                 alt="{{ $item['title'] }}"
                 class="w-full h-auto md:h-full object-contain md:object-cover md:object-top" />
-
         </div>
 
-        <div class="px-4 sm:px-6 lg:max-w-3xl mx-auto py-12 items-center border bg-white">
+        <div class="px-4 sm:px-6 lg:max-w-2xl mx-auto py-12">
 
-            <h1 class="text-4xl text-center mb-4">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl  text-center mb-6">
                 {{ $item['title'] }}
             </h1>
 
 
-
-            <div class="prose max-w-none mx-auto text-left text-gray-700 font-bold leading-snug">
+            <div class="prose mx-auto text-left text-gray-700 font-semibold mb-8 leading-snug">
                 {!! $item['description'] !!}
             </div>
 
-            <div class="prose max-w-none mx-auto text-left text-gray-700 leading-snug mt-6">
+
+            <div class="prose mx-auto text-left text-gray-700 leading-snug">
                 {!! $item['content'] !!}
             </div>
-
-
-
-
         </div>
     </div>
 </div>

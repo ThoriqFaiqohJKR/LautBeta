@@ -79,7 +79,8 @@
                                         </svg>
                                     </template>
                                 </button>
-                                <div x-show="desktopOpen==='insight'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
+                                <div x-show="desktopOpen==='insight'" x-cloak @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white shadow-lg z-50">
+
                                     <ul class="text-sm">
                                         <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('analysis') }}">{{ __('Analisis') }}</a></li>
                                         <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('feature') }}">{{ __('Fitur') }}</a></li>
@@ -100,7 +101,8 @@
                                         </svg>
                                     </template>
                                 </button>
-                                <div x-show="desktopOpen==='literasi'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
+                                <div x-show="desktopOpen==='literasi'" x-cloak @click.outside="desktopOpen=null"
+                                    class="absolute left-0 mt-2 w-40 bg-white shadow-lg z-50">
                                     <ul class="text-sm">
                                         <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="#">{{ __('Grafik') }}</a></li>
                                         <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('journal') }}">{{ __('Jurnal') }}</a></li>
@@ -122,7 +124,9 @@
                                         </svg>
                                     </template>
                                 </button>
-                                <div x-show="desktopOpen==='event'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
+                                <div x-show="desktopOpen==='event'" x-cloak @click.outside="desktopOpen=null"
+                                    class="absolute left-0 mt-2 w-40 bg-white shadow-lg z-50">
+
                                     <ul class="text-sm">
                                         <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('event') }}">{{ __('Event') }}</a></li>
                                         <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('activity') }}">{{ __('Aktifitas') }}</a></li>
@@ -143,11 +147,12 @@
                                         </svg>
                                     </template>
                                 </button>
-                                <div x-show="desktopOpen==='galeri'" @click.outside="desktopOpen=null" class="absolute left-0 mt-2 w-40 bg-white   shadow-lg z-50">
+                                <div x-show="desktopOpen==='galeri'" x-cloak @click.outside="desktopOpen=null"
+                                    class="absolute left-0 mt-2 w-40 bg-white shadow-lg z-50">
+
                                     <ul class="text-sm">
                                         <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('reportresource') }}"">{{ __('Report') }}</a></li>
-                                        <li class=" px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('database') }}">{{ __('Database') }}</a></li>
-                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('gallery') }}">{{ __('Galeri') }}</a></li>
+                                        <li class=" px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-400"><a href="{{ route('gallery') }}">{{ __('Galeri') }}</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -167,7 +172,8 @@
                                 </svg>
                             </button>
 
-                            <div x-show="open" @click.outside="open=false" class="absolute left-0 mt-2 w-40 bg-white border shadow-lg z-50">
+                            <div x-show="open" x-cloak @click.outside="open=false"
+                                class="absolute left-0 mt-2 w-40 bg-white border shadow-lg z-50">
                                 <ul class="py-1 text-sm">
                                     <li>
                                         <a
@@ -185,6 +191,7 @@
                                     </li>
                                 </ul>
                             </div>
+
                         </div>
 
 
@@ -304,7 +311,6 @@
                         </button>
                         <ul x-show="open" x-transition class="pl-4 text-sm space-y-1">
                             <li><a href="{{ route('reportresource') }}" class="block py-1">{{ __('Laporan') }}</a></li>
-                            <li><a href="{{ route('database') }}" class="block py-1">{{ __('Basis Data') }}</a></li>
                             <li><a href="{{ route('gallery') }}" class="block py-1">{{ __('Galeri') }}</a></li>
                         </ul>
                     </li>

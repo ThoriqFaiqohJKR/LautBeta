@@ -5,15 +5,11 @@ namespace App\Livewire\Cms;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rules\File;
 use Illuminate\Support\Str;
 
 class AddAgenda extends Component
 {
     use WithFileUploads;
-
-    private const TABLE = 'agenda';
 
     public string $lang = 'en';
     public string $type = 'event';
@@ -26,31 +22,25 @@ class AddAgenda extends Component
     public string $content_id = '';
     public ?string $tanggal_publikasi = null;
     public string $publikasi = 'draf';
-    public string $status = 'on';
-    public ?string $slug = null;
 
-    public $image = null;
+    public $image;
+    public $file_id;
+    public $file_en;
     public ?string $imagePreview = null;
-
-    protected $messages = [
-        'title_en.required_without' => 'Minimal isi salah satu judul: EN atau ID.',
-        'title_id.required_without' => 'Minimal isi salah satu judul: EN atau ID.',
-    ];
-
-    protected function rules(): array
+    protected function rules()
     {
         return [
-            'title_en'          => ['required', 'string', 'max:255', 'required_without:title_id'],
-            'title_id'          => ['required', 'string', 'max:255', 'required_without:title_en'],
-            'description_en'    => ['required', 'string'],
-            'description_id'    => ['required', 'string'],
-            'content_en'        => ['required', 'string'],
-            'content_id'        => ['required', 'string'],
-            'type'              => ['required', 'in:event,activity'],
-            'tanggal_publikasi' => ['required', 'date'],
-            'publikasi'         => ['required', 'in:draf,publish'],
+            'title_en' => 'required',
+            'title_id' => 'required',
+            'description_en' => 'required',
+            'description_id' => 'required',
+            'content_en' => 'required',
+            'content_id' => 'required',
+            'tanggal_publikasi' => 'required',
+            'publikasi' => 'required',
 
-            'image'             => ['required', File::image()->max(5 * 1024)],
+            'file_id' => $this->type === 'activity' ? 'required|file|mimes:pdf,doc,docx' : 'nullable',
+            'file_en' => $this->type === 'activity' ? 'required|file|mimes:pdf,doc,docx' : 'nullable',
         ];
     }
 
@@ -59,12 +49,12 @@ class AddAgenda extends Component
         $this->validate();
 
         $data = [
-            'title_en'          => $this->title_en ?: null,
-            'title_id'          => $this->title_id ?: null,
-            'description_en'    => $this->description_en ?: null,
-            'description_id'    => $this->description_id ?: null,
-            'content_en'        => $this->content_en ?: null,
-            'content_id'        => $this->content_id ?: null,
+            'title_en'          => $this->title_en,
+            'title_id'          => $this->title_id,
+            'description_en'    => $this->description_en,
+            'description_id'    => $this->description_id,
+            'content_en'        => $this->content_en,
+            'content_id'        => $this->content_id,
             'tanggal_publikasi' => $this->tanggal_publikasi,
             'publikasi'         => $this->publikasi,
             'status'            => 'on',
@@ -75,32 +65,34 @@ class AddAgenda extends Component
         ];
 
         if ($this->image) {
-            $path = $this->image->store("ageda/{$this->type}", 'public');
+            $path = $this->image->store("agenda/{$this->type}", 'public');
             $data['image'] = $path;
-            $this->imagePreview = Storage::url($path);
         }
 
-        DB::table(self::TABLE)->insert($data);
+        if ($this->type === 'activity') {
+            if ($this->file_id) {
+                $original = pathinfo($this->file_id->getClientOriginalName(), PATHINFO_FILENAME);
+                $ext      = $this->file_id->getClientOriginalExtension();
+                $clean    = Str::slug($original) . '-' . time() . '.' . $ext;
+
+                $data['file_id'] = $this->file_id->storeAs('agenda/files', $clean, 'public');
+            }
+            if ($this->file_en) {
+                $original = pathinfo($this->file_en->getClientOriginalName(), PATHINFO_FILENAME);
+                $ext      = $this->file_en->getClientOriginalExtension();
+                $clean    = Str::slug($original) . '-' . time() . '.' . $ext;
+
+                $data['file_en'] = $this->file_en->storeAs('agenda/files', $clean, 'public');
+            }
+        }
+
+        DB::table('agenda')->insert($data);
 
         return redirect()
             ->route('cms.page.index.agenda', ['locale' => app()->getLocale()])
-            ->with('success', 'Jurnal berhasil disimpan.');
+            ->with('success', 'Agenda berhasil disimpan.');
     }
 
-    private function resetForm(): void
-    {
-        $this->lang = 'en';
-        $this->type = 'event';
-        $this->title_en = $this->title_id = '';
-        $this->description_en = $this->description_id = '';
-        $this->content_en = $this->content_id = '';
-        $this->tanggal_publikasi = null;
-        $this->publikasi = 'draf';
-        $this->status = 'on';
-        $this->slug = null;
-        $this->image = null;
-        $this->imagePreview = null;
-    }
     public function render()
     {
         return view('livewire.cms.add-agenda');

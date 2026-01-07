@@ -11,40 +11,40 @@ class IndexAgenda extends Component
     public string $publikasi = 'all';
     public string $q = '';
     public string $sort = 'latest';
+
     public int $page = 1;
-    public int $perPage = 6;
+    public int $perPage = 10;
     public int $total = 0;
 
     protected $queryString = [
-        'type'    => ['except' => 'all'],
+        'type'      => ['except' => 'all'],
         'publikasi' => ['except' => 'all'],
-        'q'       => ['except' => ''],
-        'sort'    => ['except' => 'latest'],
-        'page'    => ['except' => 1],
-        'perPage' => ['except' => 6],
+        'q'         => ['except' => ''],
+        'sort'      => ['except' => 'latest'],
+        'page'      => ['except' => 1],
+        'perPage'   => ['except' => 6],
     ];
 
-    public function mount(): void
-    {
-        $t = request('type');
-        if (in_array($t, ['all', 'event', 'activity'], true)) {
-            $this->type = $t;
-        }
-    }
 
-    public function updating($name, $value): void
+    public function updated($field)
     {
-        if (in_array($name, ['type', 'publikasi', 'q', 'sort', 'perPage'], true)) {
+        if (in_array($field, ['type', 'publikasi', 'q', 'sort', 'perPage'])) {
             $this->page = 1;
         }
     }
 
+    private function localeColumns(): array
+    {
+        $locale = request()->route('locale') ?? app()->getLocale();
+        return [
+            'title'       => $locale === 'id' ? 'title_id' : 'title_en',
+            'description' => $locale === 'id' ? 'description_id' : 'description_en',
+        ];
+    }
+
     private function baseQuery()
     {
-        // Ambil locale dari URL (navbar kamu sudah set ini), fallback ke app locale
-        $locale = request()->route('locale') ?? app()->getLocale() ?? 'en';
-        $titleCol = $locale === 'id' ? 'title_id' : 'title_en';
-        $descCol  = $locale === 'id' ? 'description_id' : 'description_en';
+        $cols = $this->localeColumns();
 
         return DB::table('agenda')
             ->select(
@@ -54,49 +54,20 @@ class IndexAgenda extends Component
                 'type',
                 'tanggal_publikasi',
                 'publikasi',
-                // kirim dua-duanya ke view
-                'title_en',
-                'title_id',
-                // alias yang dipakai tabel (otomatis sesuai locale)
-                DB::raw("$titleCol AS title"),
-                DB::raw("$descCol  AS description")
+                DB::raw("{$cols['title']} as title"),
+                DB::raw("{$cols['description']} as description")
             )
             ->where('status', 'on')
             ->when($this->type !== 'all', fn($q) => $q->where('type', $this->type))
             ->when($this->publikasi !== 'all', fn($q) => $q->where('publikasi', $this->publikasi))
-            ->when($this->q !== '', function ($q) use ($titleCol, $descCol) {
+            ->when($this->q !== '', function ($q) use ($cols) {
                 $s = '%' . $this->q . '%';
-                $q->where(function ($w) use ($titleCol, $descCol, $s) {
-                    $w->where($titleCol, 'like', $s)
-                        ->orWhere($descCol,  'like', $s)
-                        ->orWhere('slug',    'like', $s);
+                $q->where(function ($w) use ($cols, $s) {
+                    $w->where($cols['title'], 'like', $s)
+                        ->orWhere($cols['description'], 'like', $s)
+                        ->orWhere('slug', 'like', $s);
                 });
             });
-    }
-
-    private function applySorting($query)
-    {
-        return match ($this->sort) {
-            'oldest' => $query->orderBy('tanggal_publikasi')->orderBy('id'),
-            'az'     => $query->orderBy('title')->orderByDesc('id'),
-            'za'     => $query->orderBy('title', 'desc')->orderByDesc('id'),
-            default  => $query->orderByDesc('tanggal_publikasi')->orderByDesc('id'),
-        };
-    }
-
-    public function getagendas()
-    {
-        $query = $this->baseQuery();
-
-        $this->total = (int) (clone $query)->count();
-        $this->page  = min($this->page, $this->lastPage());
-
-        $query = $this->applySorting($query);
-
-        return $query
-            ->skip(($this->page - 1) * $this->perPage)
-            ->take($this->perPage)
-            ->get();
     }
 
     public function lastPage(): int
@@ -104,20 +75,47 @@ class IndexAgenda extends Component
         return max(1, (int) ceil($this->total / $this->perPage));
     }
 
-    public function nextPage(): void
+    public function goToPage($page)
     {
-        if ($this->page < $this->lastPage()) $this->page++;
+        $this->page = max(1, min($page, $this->lastPage()));
     }
 
-    public function prevPage(): void
+    public function prevPage()
     {
-        if ($this->page > 1) $this->page--;
+        $this->goToPage($this->page - 1);
+    }
+
+    public function nextPage()
+    {
+        $this->goToPage($this->page + 1);
+    }
+
+    public function getAgenda()
+    {
+        $query = $this->baseQuery();
+
+
+        $this->total = $query->count();
+
+
+        $query = match ($this->sort) {
+            'oldest' => $query->orderBy('updated_at')->orderBy('id'),
+            'az'     => $query->orderBy('title'),
+            'za'     => $query->orderBy('title', 'desc'),
+            default  => $query->orderByDesc('updated_at')->orderByDesc('id'),
+        };
+
+
+        return $query
+            ->skip(($this->page - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get();
     }
 
     public function render()
     {
         return view('livewire.cms.index-agenda', [
-            'agendas'  => $this->getagendas(),
+            'agenda' => $this->getAgenda(),
             'page'     => $this->page,
             'lastPage' => $this->lastPage(),
             'total'    => $this->total,

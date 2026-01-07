@@ -47,7 +47,7 @@ class AddInsight extends Component
             'content_en'        => ['required', 'string'],
             'content_id'        => ['required', 'string'],
             'type'              => ['required', 'in:feature,analysis,ngopini'],
-            'tanggal_publikasi' => ['required', 'date'], 
+            'tanggal_publikasi' => ['required', 'date'],
             'publikasi'         => ['required', 'in:draf,publish'],
             'image'             => ['required', File::image()->max(5 * 1024)],
         ];

@@ -67,36 +67,79 @@
             {{-- "Table" Desktop --}}
             <div class="hidden md:block">
                 <div class="border   overflow-hidden">
-                    <div class="grid grid-cols-12 gap-3 bg-slate-100 px-4 py-3 text-xs font-semibold text-slate-600">
-                        <div class="col-span-1">No</div>
-                        <div class="col-span-2">Image</div>
-                        <div class="col-span-5">Title EN</div>
-                        <div class="col-span-2">Publikasi</div>
-                        <div class="col-span-2">Aksi</div>
+                    <div class="flex px-4 py-3 bg-slate-100 text-xs font-semibold text-slate-600">
+
+                        <div class="w-12">No</div>
+
+                        <div class="px-52">Title</div>
+
+                        <div class="px-12">Type</div>
+                        <div class="px-14">Publikasi</div>
+                        <div class="px-14">Aksi</div>
+
                     </div>
 
+
+
                     @forelse($insights as $idx => $it)
-                    <div class="grid grid-cols-12 gap-3 items-center px-4 py-3 border-t text-sm">
-                        <div class="col-span-1">{{ ($page - 1) * $perPage + $idx + 1 }}</div>
+                    <div class="flex items-center px-4 py-3 border-t text-sm">
+                        <div>{{ ($page - 1) * $perPage + $idx + 1 }}</div>
 
-                        <div class="col-span-2">
-                            @if($it->image)
-                            <img src="{{ Storage::url($it->image) }}" class="w-14 h-14 object-cover   border" alt="">
-                            @else
-                            <div class="w-14 h-14 bg-slate-100   border"></div>
-                            @endif
+
+
+                        <div class="flex-1 font-medium line-clamp-2 px-12 min-h-12 flex items-center">
+                            {{ $it->title ?? '-' }}
                         </div>
 
-                        <div class="col-span-5 font-medium truncate">{{ $it->title ?? '-' }}</div>
 
-                        <div class="col-span-2">
-                            <span class="inline-flex px-2 py-0.5   border text-xs">{{ $it->publikasi ?? '-' }}</span>
+                        <div class="w-34 font-medium truncate">{{ $it->type ?? '-' }}</div>
+
+                        <div class="w-32">
+                            <span class="
+        inline-flex px-2 py-0.5 text-xs font-medium
+        {{ $it->publikasi === 'publish' ? 'bg-green-600 text-white' : '' }}
+        {{ $it->publikasi === 'draf' ? 'bg-orange-500 text-white' : '' }}
+    ">
+                                {{ $it->publikasi ?? '-' }}
+                            </span>
                         </div>
 
-                        <div class="col-span-2 flex gap-2">
-                            <a href="{{ route('cms.page.edit.insight',  ['locale' => app()->getLocale(),'id' => $it->id]) }}" class="px-2.5 py-1 text-xs border   hover:bg-slate-50">Edit</a>
-                            <a href="{{ route('cms.page.preview.insight', ['locale' => app()->getLocale(), 'id' => $it->id]) }}" class="px-2.5 py-1 text-xs border   hover:bg-slate-50">Preview</a>
+
+                        <div class="w-32 flex gap-2">
+
+                            {{-- EDIT --}}
+                            <a href="{{ route('cms.page.edit.insight', ['locale' => app()->getLocale(), 'id' => $it->id]) }}"
+                                class="p-1.5 border rounded hover:bg-yellow-50 text-yellow-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16.862 4.487l1.65 1.65a2.121 2.121 0 010 3l-8.49 8.49L6 18l.373-3.022 8.49-8.49a2.121 2.121 0 013 0z" />
+                                </svg>
+                            </a>
+
+                            {{-- PREVIEW --}}
+                            <a href="{{ route('cms.page.preview.insight', ['locale' => app()->getLocale(), 'id' => $it->id]) }}"
+                                class="p-1.5 border rounded hover:bg-blue-50 text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M1.5 12s3.75-6.75 10.5-6.75S22.5 12 22.5 12s-3.75 6.75-10.5 6.75S1.5 12 1.5 12z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </a>
+
+                            {{-- DELETE --}}
+                            <button wire:click="askDelete({{ $it->id }})"
+                                class="p-1.5 border rounded hover:bg-red-50 text-red-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0115.916 21H8.084a2.25 2.25 0 01-2.244-2.327L5.772 5.79m13.456 0A48.108 48.108 0 0012 4.5c-2.35 0-4.676.164-6.228.49m13.456 0c-.04-.597-.108-1.177-.2-1.74A2.251 2.251 0 0016.916 2.25H7.084A2.25 2.25 0 004.97 3.75c-.092.563-.16 1.143-.2 1.74" />
+                                </svg>
+                            </button>
+
                         </div>
+
                     </div>
                     @empty
                     <div class="px-4 py-10 text-center text-slate-500">Tidak ada data</div>
@@ -133,13 +176,13 @@
             </div>
 
             {{-- Pagination --}}
-            @if($lastPage > 1)
-            <div class="mt-8 flex justify-center items-center gap-2">
-                <button wire:click="prevPage" class="px-3 py-1 border   {{ $page==1?'opacity-50 cursor-not-allowed':'' }}">‹ Prev</button>
-                <span class="px-3 py-1">Halaman {{ $page }} / {{ $lastPage }}</span>
-                <button wire:click="nextPage" class="px-3 py-1 border   {{ $page==$lastPage?'opacity-50 cursor-not-allowed':'' }}">Next ›</button>
+            <div class="mt-8">
+                @include('pagination.custom', [
+                'page' => $page,
+                'lastPage' => $lastPage
+                ])
             </div>
-            @endif
+
         </div>
     </div>
 

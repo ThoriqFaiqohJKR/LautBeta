@@ -1,247 +1,387 @@
-<div>
-    <div class="max-w-4xl mx-auto p-6 sm:p-10">
-        <div class="gap-2 flex mb-4">
-            <a href="{{ route('cms.page.index.literacy', ['locale' => app()->getLocale()]) }}">
-                <p class="text-xl hover:underline">Page Literacy</p>
-            </a>
-            <p> > </p>
-            <p class="text-xl text-blue-700">Edit Literacy</p>
-        </div>
+<div class="max-w-4xl mx-auto p-8 sm:p-10">
+    {{-- BREADCRUMB --}}
+    <div class="gap-2 flex mb-4">
+        <div id="topForm"></div>
 
-        <div class="bg-white border p-6 sm:p-10">
-            <h2 class="text-2xl font-semibold mb-6">Edit Literacy (Journal)</h2>
+        <a href="{{ route('cms.page.index.literacy', ['locale' => app()->getLocale()]) }}">
+            <p class="text-xl hover:underline">Page Literacy</p>
+        </a>
+        <p> > </p>
+        <p class="text-xl text-blue-700">
+            Edit Literacy
+        </p>
+    </div>
 
-            {{-- Switch Language (EN / ID) --}}
-            <div class="flex gap-2 mb-6">
-                <button type="button"
-                    class="px-3 py-1 border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                    wire:click="$set('lang','en')">EN</button>
-                <button type="button"
-                    class="px-3 py-1 border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                    wire:click="$set('lang','id')">ID</button>
+    <div class="bg-white border p-6 sm:p-10">
+        {{-- INFO TYPE & BAHASA --}}
+        <div class="flex flex-col sm:flex-row sm:items-start gap-4"> 
+            {{-- TYPE (HANYA DITAMPILKAN, TIDAK BISA DIGANTI) --}}
+            <div class="sm:border-r sm:pr-6">
+                <p class="py-2 font-semibold">Tipe Literacy :</p>
+                <p class="inline-flex items-center px-3 py-1 text-sm rounded border bg-slate-50 text-slate-700">
+                    {{-- kalau mau lebih rapi, bisa mapping ke label --}}
+                    {{ ucfirst($type) }}
+                </p>
+                </p>
             </div>
 
-            <div class="space-y-6">
-                {{-- Title --}}
-                <div x-data="{ lang:@entangle('lang') }">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">
-                        Title (<span class="uppercase" x-text="lang.toUpperCase()"></span>)
-                    </label>
-                    <input x-show="lang==='en'" x-cloak type="text" wire:model.defer="title_en" class="w-full border p-2">
-                    <input x-show="lang==='id'" x-cloak type="text" wire:model.defer="title_id" class="w-full border p-2">
-                    @error('title_en') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                    @error('title_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+            {{-- PILIH BAHASA --}}
+            <div class="sm:pl-6">
+                <p class="py-2 font-semibold">Pilih Bahasa</p>
+                <div class="flex gap-2 mb-2">
+                    <button type="button"
+                        class="px-3 py-1 border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        wire:click="$set('lang','en')">
+                        EN
+                    </button>
+                    <button type="button"
+                        class="px-3 py-1 border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        wire:click="$set('lang','id')">
+                        ID
+                    </button>
                 </div>
 
-                {{-- Description (TinyMCE) --}}
-                <div class="mb-5">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Description ({{ strtoupper($lang) }})</label>
+            </div>
+        </div>
 
-                    <div
-                        wire:ignore
-                        wire:key="desc-{{ $lang }}"
-                        x-data
-                        data-base="{{ asset('tinymce') }}"
-                        data-id="desc_editor_{{ $lang }}"
-                        data-initial="{{ $lang==='id' ? ($description_id ?? '') : ($description_en ?? '') }}"
-                        x-init="
-              const base   = $el.dataset.base;
-              const edId   = $el.dataset.id;
-              const initHT = $el.dataset.initial || '';
+        {{-- FORM BODY --}}
+        <div class="space-y-6 mt-6">
+            {{-- TITLE --}}
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Title ({{ strtoupper($lang) }})
+                </label>
 
-              if (window.tinymce && tinymce.get(edId)) tinymce.get(edId).remove();
+                @if ($lang === 'en')
+                <input
+                    wire:key="title-input-en"
+                    id="title_en"
+                    name="title_en"
+                    type="text"
+                    autocomplete="off"
+                    wire:model.defer="title_en"
+                    class="w-full border p-2"
+                    placeholder="English title">
+                @error('title_en')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+                @else
+                <input
+                    wire:key="title-input-id"
+                    id="title_id"
+                    name="title_id"
+                    type="text"
+                    autocomplete="off"
+                    wire:model.defer="title_id"
+                    class="w-full border p-2"
+                    placeholder="Judul Indonesia">
+                @error('title_id')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+                @endif
+            </div>
 
-              tinymce.init({
-                selector:'#'+edId,
-                height:300,
-                base_url:base,
-                suffix:'.min',
-                license_key:'gpl',
-                plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
-                menubar:'file edit view insert format tools table',
-                toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
-                block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
-                promotion:false,
-                branding:false,
-                statusbar:true,
-                forced_root_block:'p',
+            {{-- DESCRIPTION (TINYMCE) --}}
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Description ({{ strtoupper($lang) }})
+                </label>
 
-                /* URL absolut utk gambar */
-                relative_urls:false,
-                remove_script_host:false,
-                convert_urls:true,
-                document_base_url:'{{ url('/') }}/',
+                <div
+                    wire:ignore
+                    wire:key="desc-{{ $lang }}"
+                    x-data
+                    data-base="{{ asset('tinymce') }}"
+                    data-initial="{{ $lang==='id' ? ($description_id ?? '') : ($description_en ?? '') }}"
+                    x-init="
+                        const base = $el.dataset.base, initial = $el.dataset.initial || '';
+                        if (window.tinymce && tinymce.get('desc_editor')) tinymce.get('desc_editor').remove();
 
-                setup:(ed)=>{
-                  ed.on('init',()=>{ ed.setContent(initHT) })
-                  ed.on('blur',()=>{
-                    const html=ed.getContent()
-                    if(@this.get('lang')==='id'){ @this.set('description_id', html) }
-                    else{ @this.set('description_en', html) }
-                  })
-                },
+                        tinymce.init({
+                            selector: '#desc_editor',
+                            height: 260,
+                            min_height: 180,
+                            max_height: 420,
+                            base_url: base,
+                            suffix: '.min',
+                            license_key: 'gpl',
+                            plugins: 'advlist anchor autolink link lists image media table code preview',
+                            menubar: false,
+                            toolbar: 'undo redo | italic bold | image media | bullist numlist | table',
+                            toolbar_mode: 'sliding',
+                            promotion: false,
+                            branding: false,
+                            statusbar: true,
+                            elementpath: false,
+                            resize: true,
+                            forced_root_block: 'p',
 
-                file_picker_types:'image',
-                file_picker_callback:(cb)=>{
-                  const routePrefix='/laravel-filemanager?type=image';
+                            setup: (ed) => {
+                                ed.on('init', () => { ed.setContent(initial) });
+                                ed.on('change keyup undo redo', () => {
+                                    const html = ed.getContent();
+                                    if (@this.get('lang') === 'id') {
+                                        @this.set('description_id', html);
+                                    } else {
+                                        @this.set('description_en', html);
+                                    }
+                                });
+                            },
 
-                  const open=(url,w=980,h=600)=>{
-                    const sl=window.screenLeft??window.screenX, st=window.screenTop??window.screenY;
-                    const ww=window.innerWidth||document.documentElement.clientWidth||screen.width;
-                    const wh=window.innerHeight||document.documentElement.clientHeight||screen.height;
-                    const zoom=ww/window.screen.availWidth;
-                    const left=(ww-w)/2/zoom+sl, top=(wh-h)/2/zoom+st;
-                    const win=window.open(url,'LFM_Popup',[
-                      'toolbar=no','location=no','status=no','menubar=no','scrollbars=yes','resizable=yes',
-                      `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
-                    ].join(','));
-                    if(win&&win.focus) win.focus(); return win;
-                  };
+                            file_picker_types: 'image',
+                            file_picker_callback: (cb, value, meta) => {
+                                if (meta.filetype !== 'image') return;
+                                const routePrefix = '/laravel-filemanager?type=image';
 
-                  const old=window.SetUrl; let done=false; let pop=null; let poll=null;
-                  const cleanup=()=>{ if(done) return; done=true; if(poll) clearInterval(poll);
-                    if(old){ window.SetUrl=old } else { try{ delete window.SetUrl }catch(e){ window.SetUrl=undefined } }
-                    window.removeEventListener('message', onMsg, false);
-                  };
-                  const toAbs=(u)=>/^https?:\/\//i.test(u)?u:(u.startsWith('/')?location.origin+u:location.origin+'/'+u);
-                  const onMsg=(ev)=>{
-                    const d=ev?.data||{}; const act=d.mceAction||ev?.mceAction;
-                    if(act==='fileSelected'){
-                      const f=d.file || (d.files&&d.files[0]) || {};
-                      if(f && (f.url||f.full_url||f.thumb_url||f.path)){
-                        cb(toAbs(f.url||f.full_url||f.thumb_url||f.path), {alt:f.name||''});
-                        try{pop&&pop.close&&pop.close()}catch(e){} cleanup();
-                      }
-                    }
-                  };
-                  window.addEventListener('message', onMsg, false);
-                  window.SetUrl=(items)=>{
-                    try{
-                      const a=Array.isArray(items)?items:(items?[items]:[]);
-                      const f=a[0]||{};
-                      if(f && (f.url||f.full_url||f.thumb_url||f.path)){
-                        cb(toAbs(f.url||f.full_url||f.thumb_url||f.path), {alt:f.name||''});
-                      }
-                    } finally { try{pop&&pop.close&&pop.close()}catch(e){} cleanup(); }
-                  };
-
-                  pop=open(routePrefix,980,600);
-                  poll=setInterval(()=>{ if(!pop||pop.closed){ cleanup() } },700);
-                  setTimeout(()=>cleanup(),180000);
-                },
-
-                init_instance_callback:(editor)=>{
-                  const h=editor.getContainer().querySelector('.tox-statusbar__resize-handle');
-                  if(h){ h.style.marginLeft='auto'; h.style.marginRight='4px'; h.style.cursor='se-resize' }
-                }
-              });
-            ">
-                        <textarea id="desc_editor_{{ $lang }}"></textarea>
-                    </div>
-
-                    @error('description_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
-                    @error('description_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+                                const popup = window.open(routePrefix, 'LFM', 'width=980,height=600');
+                                window.SetUrl = (items) => {
+                                    const f = (Array.isArray(items) ? items : [items])[0] || {};
+                                    if (f.url) cb(f.url, { alt: f.name || '' });
+                                    try { popup.close(); } catch (e) {}
+                                };
+                            }
+                        });
+                    ">
+                    <textarea id="desc_editor"></textarea>
                 </div>
 
-                {{-- Meta --}}
-                <div class="grid sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Tanggal Publikasi</label>
-                        <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border p-2">
-                        @error('tanggal_publikasi') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Publikasi</label>
-                        <select wire:model.defer="publikasi" class="w-full border p-2">
-                            <option value="draf">Draf</option>
-                            <option value="publish">Publish</option>
-                        </select>
-                        @error('publikasi') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                    </div>
+                @error('description_en')
+                <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
+                @enderror
+                @error('description_id')
+                <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- CONTENT (TINYMCE) --}}
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Content ({{ strtoupper($lang) }})
+                </label>
+
+                <div
+                    wire:ignore
+                    wire:key="content-{{ $lang }}"
+                    x-data
+                    data-base="{{ asset('tinymce') }}"
+                    data-initial="{{ $lang==='id' ? ($content_id ?? '') : ($content_en ?? '') }}"
+                    x-init="
+                        const base = $el.dataset.base, initial = $el.dataset.initial || '';
+                        if (window.tinymce && tinymce.get('content_editor')) tinymce.get('content_editor').remove();
+
+                        tinymce.init({
+                            selector: '#content_editor',
+                            height: 340,
+                            min_height: 220,
+                            max_height: 520,
+                            base_url: base,
+                            suffix: '.min',
+                            license_key: 'gpl',
+                            plugins: 'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
+                            menubar: false,
+                            toolbar: 'undo redo | italic bold | image media | bullist numlist | table ',
+                            toolbar_mode: 'sliding',
+                            block_formats: 'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
+                            toolbar_sticky: true,
+                            promotion: false,
+                            branding: false,
+                            statusbar: true,
+                            elementpath: false,
+                            resize: true,
+                            forced_root_block: 'p',
+
+                            setup: (ed) => {
+                                ed.on('init', () => { ed.setContent(initial) });
+                                ed.on('change keyup undo redo', () => {
+                                    const html = ed.getContent();
+                                    if (@this.get('lang') === 'id') {
+                                        @this.set('content_id', html);
+                                    } else {
+                                        @this.set('content_en', html);
+                                    }
+                                });
+                            },
+
+                            file_picker_types: 'image',
+                            file_picker_callback: (cb, value, meta) => {
+                                if (meta.filetype !== 'image') return;
+                                const routePrefix = '/laravel-filemanager?type=image';
+
+                                const openPopup = (url, w = 980, h = 600) => {
+                                    const sl = window.screenLeft ?? window.screenX;
+                                    const st = window.screenTop ?? window.screenY;
+                                    const ww = window.innerWidth || document.documentElement.clientWidth || screen.width;
+                                    const wh = window.innerHeight || document.documentElement.clientHeight || screen.height;
+                                    const zoom = ww / window.screen.availWidth;
+                                    const left = (ww - w) / 2 / zoom + sl;
+                                    const top  = (wh - h) / 2 / zoom + st;
+                                    const features = [
+                                        'toolbar=no','location=no','status=no','menubar=no',
+                                        'scrollbars=yes','resizable=yes',
+                                        `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
+                                    ].join(',');
+                                    const win = window.open(url, 'LFM_Popup', features);
+                                    if (win && win.focus) win.focus();
+                                    return win;
+                                };
+
+                                const oldSetUrl = window.SetUrl;
+                                let restored = false;
+                                let popupRef = null;
+                                let poll = null;
+
+                                const restore = () => {
+                                    if (restored) return; restored = true;
+                                    if (poll) clearInterval(poll);
+                                    if (oldSetUrl) {
+                                        window.SetUrl = oldSetUrl;
+                                    } else {
+                                        try { delete window.SetUrl } catch (e) { window.SetUrl = undefined }
+                                    }
+                                    window.removeEventListener('message', onMessage, false);
+                                };
+
+                                const onMessage = (ev) => {
+                                    const data = ev?.data || {};
+                                    const action = data.mceAction || ev?.mceAction;
+                                    if (action === 'fileSelected') {
+                                        const f = data.file || (data.files && data.files[0]) || {};
+                                        if (f && f.url) {
+                                            cb(f.url, { alt: f.name || '' });
+                                            try { popupRef && popupRef.close && popupRef.close(); } catch (e) {}
+                                            restore();
+                                        }
+                                    }
+                                };
+                                window.addEventListener('message', onMessage, false);
+
+                                window.SetUrl = (items) => {
+                                    try {
+                                        const arr = Array.isArray(items) ? items : (items ? [items] : []);
+                                        const f = arr[0] || {};
+                                        if (f.url) cb(f.url, { alt: f.name || '' });
+                                    } finally {
+                                        try { popupRef && popupRef.close && popupRef.close(); } catch (e) {}
+                                        restore();
+                                    }
+                                };
+
+                                popupRef = openPopup(routePrefix, 980, 600);
+                                poll = setInterval(() => {
+                                    if (!popupRef || popupRef.closed) { restore(); }
+                                }, 700);
+                                setTimeout(() => restore(), 180000);
+                            },
+
+                            init_instance_callback: (editor) => {
+                                const handle = editor.getContainer().querySelector('.tox-statusbar__resize-handle');
+                                if (handle) {
+                                    handle.style.marginLeft = 'auto';
+                                    handle.style.marginRight = '4px';
+                                    handle.style.cursor = 'se-resize';
+                                }
+                            }
+                        });
+
+                        window.addEventListener('set-content', (e) => {
+                            const ed = tinymce.get('content_editor'); if (ed) ed.setContent(e.detail?.content || '');
+                        });
+                    ">
+                    <textarea id="content_editor"></textarea>
                 </div>
 
-                {{-- Image --}}
+                @error('content_en')
+                <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
+                @enderror
+                @error('content_id')
+                <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- TANGGAL, STATUS, PUBLIKASI --}}
+            <div class="grid sm:grid-cols-3 gap-3">
                 <div>
-                    <label class="block text-sm font-medium mb-1">Gambar</label>
-                    <input type="file" accept="image/*" wire:model="image" class="w-full border p-2">
-                    <div wire:loading wire:target="image" class="text-sm text-slate-500 mt-1">Uploading…</div>
-                    @error('image') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-
-                    @if($image && method_exists($image,'temporaryUrl'))
-                    <div class="mt-3"><img src="{{ $image->temporaryUrl() }}" class="max-h-52 border"></div>
-                    @elseif($imagePreview)
-                    <div class="mt-3"><img src="{{ $imagePreview }}" class="max-h-52 border"></div>
-                    @endif
+                    <label class="block text-sm font-medium mb-1">Tanggal Publikasi</label>
+                    <input type="date" wire:model.defer="tanggal_publikasi" class="w-full border p-2">
+                    @error('tanggal_publikasi')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- File links (journal) --}}
-                <div class="space-y-4">
-                    <div x-data="{ lang:@entangle('lang') }">
-                        <label class="block text-sm font-medium text-slate-700 mb-2">
-                            Upload File (<span class="uppercase" x-text="lang"></span>)
-                        </label>
-
-                        <!-- ENGLISH -->
-                        <div x-show="lang === 'en'" x-cloak>
-                            <input type="file" wire:model="file_en" class="w-full border p-2">
-                            @error('file_en')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-
-                            <div wire:loading wire:target="file_en" class="text-xs text-slate-500 mt-1">Uploading...</div>
-
-                            @if($file_en && method_exists($file_en, 'temporaryUrl'))
-                            <p class="text-xs text-slate-600 mt-2">File sementara (EN): {{ $file_en->getClientOriginalName() }}</p>
-                            @elseif(!empty($existing_file_en))
-                            <p class="text-xs text-slate-600 mt-2">File saat ini (EN): {{ basename($existing_file_en) }}</p>
-                            @endif
-                        </div>
-
-                        <!-- INDONESIA -->
-                        <div x-show="lang === 'id'" x-cloak>
-                            <input type="file" wire:model="file_id" class="w-full border p-2">
-                            @error('file_id')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-
-                            <div wire:loading wire:target="file_id" class="text-xs text-slate-500 mt-1">Uploading...</div>
-
-                            @if($file_id && method_exists($file_id, 'temporaryUrl'))
-                            <p class="text-xs text-slate-600 mt-2">File sementara (ID): {{ $file_id->getClientOriginalName() }}</p>
-                            @elseif(!empty($existing_file_id))
-                            <p class="text-xs text-slate-600 mt-2">File saat ini (ID): {{ basename($existing_file_id) }}</p>
-                            @endif
-                        </div>
-
-                        <p class="text-xs text-slate-500 mt-1">Minimal salah satu file diunggah (ID atau EN).</p>
-                    </div>
-
-
-                    {{-- Status --}}
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Status</label>
-                        <select wire:model.defer="status" class="w-full border p-2">
-                            <option value="on">On</option>
-                            <option value="off">Off</option>
-                        </select>
-                        @error('status')
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Publikasi</label>
+                    <select wire:model.defer="publikasi" class="w-full border p-2">
+                        <option value="draf">Draf</option>
+                        <option value="publish">Publish</option>
+                    </select>
+                    @error('publikasi')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- Actions --}}
-                <div class="pt-2">
-                    <button type="button" wire:click="update" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700">Update</button>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Status</label>
+                    <select wire:model.defer="status" class="w-full border p-2">
+                        <option value="on">On</option>
+                        <option value="off">Off</option>
+                    </select>
+                    @error('status')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
+            </div>
 
-                @if (session('success'))
-                <div x-data="{show:true}" x-init="setTimeout(()=>show=false,2000)" x-show="show" x-transition
-                    class="p-3 bg-green-100 text-green-700 mt-3 rounded">
-                    {{ session('success') }}
+            {{-- GAMBAR --}}
+            <div>
+                <label class="block text-sm font-medium mb-1">Gambar</label>
+                <input type="file" accept="image/*" wire:model="image" class="w-full border p-2">
+                <div wire:loading wire:target="image" class="text-sm text-slate-500 mt-1">Uploading…</div>
+                @error('image')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
+                @if ($image && method_exists($image,'temporaryUrl'))
+                <div class="mt-3">
+                    <img src="{{ $image->temporaryUrl() }}" alt="Preview" class="max-h-52 border">
+                </div>
+                @elseif ($imagePreview)
+                <div class="mt-3">
+                    <img src="{{ $imagePreview }}" alt="Preview" class="max-h-52 border">
                 </div>
                 @endif
             </div>
+
+
+            <div class="pt-2">
+                <button type="button"
+                    wire:click="update"
+                    class="px-4 py-2 bg-green-600 text-white hover:bg-green-700">
+                    Update
+                </button>
+            </div>
+
+            {{-- FLASH MESSAGE --}}
+            @if (session()->has('success'))
+            <div class="p-3 bg-green-100 text-green-700">
+                {{ session('success') }}
+            </div>
+            @endif
         </div>
     </div>
+    <a href="#topForm"
+        class="fixed bottom-6 right-6 bg-blue-600 text-white w-12 h-12 flex items-center justify-center rounded-full shadow-lg hover:bg-blue-700">
+
+
+        <svg xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            class="w-6 h-6">
+            <path fill-rule="evenodd"
+                d="M12 8.47l6.22 6.22a.75.75 0 101.06-1.06l-6.75-6.75a.75.75 0 00-1.06 0L4.72 13.63a.75.75 0 001.06 1.06L12 8.47z"
+                clip-rule="evenodd" />
+        </svg>
+
+    </a>
+
+
 </div>

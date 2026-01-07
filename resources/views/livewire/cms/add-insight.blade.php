@@ -7,34 +7,41 @@
         <p class="text-xl text-blue-700">Tambah Insight</p>
     </div>
 
-    <div class="bg-white border p-6 sm:p-10">
+    <div class="bg-white border p-6 sm:p-10 ">
+        <div class="flex">
+            <div class="border-r pr-6">
+                <p class="py-2 font-semibold ">Pilih Kategori :</p>
 
 
-
-        <div class="flex gap-2 mb-4">
-            <button type="button"
-                class="px-3 py-1   border {{ $type==='feature' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                wire:click="$set('type','feature')">Feature</button>
-            <button type="button"
-                class="px-3 py-1   border {{ $type==='analysis' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                wire:click="$set('type','analysis')">Analysis</button>
-            <button type="button"
-                class="px-3 py-1   border {{ $type==='ngopini' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                wire:click="$set('type','ngopini')">Ngopini</button>
+                <div class="flex gap-2 mb-4">
+                    <button type="button"
+                        class="px-3 py-1   border {{ $type==='feature' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        wire:click="$set('type','feature')">Feature</button>
+                    <button type="button"
+                        class="px-3 py-1   border {{ $type==='analysis' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        wire:click="$set('type','analysis')">Analysis</button>
+                    <button type="button"
+                        class="px-3 py-1   border {{ $type==='ngopini' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        wire:click="$set('type','ngopini')">Ngopini</button>
+                </div>
+            </div>
+            <div class="pl-6">
+                <p class="py-2 font-semibold "> Pilih Bahasa</p>
+                <div class="flex gap-2 mb-6">
+                    <button type="button"
+                        class="px-3 py-1   border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        wire:click="$set('lang','en')">EN</button>
+                    <button type="button"
+                        class="px-3 py-1   border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
+                        wire:click="$set('lang','id')">ID</button>
+                </div>
+            </div>
         </div>
 
 
-        <div class="flex gap-2 mb-6">
-            <button type="button"
-                class="px-3 py-1   border {{ $lang==='en' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                wire:click="$set('lang','en')">EN</button>
-            <button type="button"
-                class="px-3 py-1   border {{ $lang==='id' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50' }}"
-                wire:click="$set('lang','id')">ID</button>
-        </div>
 
 
-        <div class="space-y-6">
+        <div class="space-y-6 mt-4">
 
 
             <div>
@@ -87,25 +94,16 @@
 
         tinymce.init({
           selector:'#desc_editor',
-          height:300,
-          min_height:200,
-          max_height:480,
+          height:260,
+          min_height:180,
+          max_height:420,
           base_url:base,
           suffix:'.min',
           license_key:'gpl',
-          plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
-          menubar:'file edit view insert format tools table',
-          toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
+          plugins:'advlist anchor autolink link lists image media table code preview',
+          menubar:false,
+          toolbar:'undo redo | italic bold | image media | bullist numlist | table',
           toolbar_mode:'sliding',
-          style_formats:[
-            {title:'Text Styles',items:[
-              {title:'Paragraph',format:'p'},
-              {title:'Headings',items:[{title:'H1',format:'h1'},{title:'H2',format:'h2'},{title:'H3',format:'h3'},{title:'H4',format:'h4'},{title:'H5',format:'h5'},{title:'H6',format:'h6'}]},
-              {title:'Inline',items:[{title:'Bold',inline:'b'},{title:'Italic',inline:'i'},{title:'Underline',inline:'u'},{title:'Strikethrough',inline:'strike'}]}
-            ]}
-          ],
-          block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
-          toolbar_sticky:true,
           promotion:false,
           branding:false,
           statusbar:true,
@@ -126,82 +124,15 @@
             if(meta.filetype!=='image') return;
             const routePrefix='/laravel-filemanager?type=image';
 
-            const openPopup=(url,w=980,h=600)=>{
-              const sl = window.screenLeft ?? window.screenX;
-              const st = window.screenTop ?? window.screenY;
-              const ww = window.innerWidth || document.documentElement.clientWidth || screen.width;
-              const wh = window.innerHeight|| document.documentElement.clientHeight|| screen.height;
-              const zoom = ww / window.screen.availWidth;
-              const left = (ww - w) / 2 / zoom + sl;
-              const top  = (wh - h) / 2 / zoom + st;
-              const features=[
-                'toolbar=no','location=no','status=no','menubar=no',
-                'scrollbars=yes','resizable=yes',
-                `width=${w}`,`height=${h}`,`top=${top}`,`left=${left}`
-              ].join(',');
-              const win=window.open(url,'LFM_Popup',features);
-              if(win&&win.focus) win.focus();
-              return win;
-            };
-
-            const oldSetUrl=window.SetUrl;
-            let restored=false;
-            let popupRef=null;
-            let poll=null;
-
-            const restore=()=>{
-              if(restored) return; restored=true;
-              if(poll) clearInterval(poll);
-              if(oldSetUrl){ window.SetUrl=oldSetUrl; }
-              else { try{ delete window.SetUrl }catch(e){ window.SetUrl=undefined } }
-              window.removeEventListener('message', onMessage, false);
-            };
-
-            const onMessage=(ev)=>{
-              const data=ev?.data||{};
-              const action=data.mceAction || ev?.mceAction;
-              if(action==='fileSelected'){
-                const f=data.file || (data.files && data.files[0]) || {};
-                if(f && f.url){
-                  cb(f.url,{alt:f.name||''});
-                  try{ popupRef && popupRef.close && popupRef.close(); }catch(e){}
-                  restore();
-                }
-              }
-            };
-            window.addEventListener('message', onMessage, false);
-
+            const popup=window.open(routePrefix,'LFM','width=980,height=600');
             window.SetUrl=(items)=>{
-              try{
-                const arr=Array.isArray(items)?items:(items?[items]:[]);
-                const f=arr[0]||{};
-                if(f.url) cb(f.url,{alt:f.name||''});
-              }finally{
-                try{ popupRef && popupRef.close && popupRef.close(); }catch(e){}
-                restore();
-              }
+              const f=(Array.isArray(items)?items:[items])[0]||{};
+              if(f.url) cb(f.url,{alt:f.name||''});
+              try{ popup.close(); }catch(e){}
             };
-
-            popupRef=openPopup(routePrefix,980,600);
-            poll=setInterval(()=>{ if(!popupRef || popupRef.closed){ restore(); } }, 700);
-            setTimeout(()=>restore(), 180000);
-          },
-
-       init_instance_callback:(editor)=>{
-  const handle=editor.getContainer().querySelector('.tox-statusbar__resize-handle');
-  if(handle){
-    handle.style.marginLeft='auto';
-    handle.style.marginRight='4px';
-    handle.style.cursor='se-resize';
-  }
-}
-
+          }
         });
-
-        window.addEventListener('set-desc', (e)=>{
-          const ed=tinymce.get('desc_editor'); if(ed) ed.setContent(e.detail?.content||'');
-        });
-      ">
+    ">
                     <textarea id="desc_editor"></textarea>
                 </div>
                 @error('description_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
@@ -230,8 +161,8 @@
           suffix:'.min',
           license_key:'gpl',
           plugins:'advlist anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code fullscreen insertdatetime help preview',
-          menubar:'file edit view insert format tools table',
-          toolbar:'undo redo | styles | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code removeformat | fullscreen preview',
+          menubar:false,
+          toolbar:'undo redo | italic bold | image media | bullist numlist | table ',
           toolbar_mode:'sliding',
           block_formats:'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
           toolbar_sticky:true,
@@ -333,6 +264,9 @@
       ">
                     <textarea id="content_editor"></textarea>
                 </div>
+
+
+
                 @error('content_en') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
                 @error('content_id') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
             </div>

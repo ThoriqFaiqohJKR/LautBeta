@@ -3,103 +3,222 @@
 namespace App\Livewire\Cms;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class IndexResource extends Component
 {
+    use WithPagination;
+
+    public string $data = 'all';
+    public string $type = 'all';
     public string $publikasi = 'all';
-    public string $sort = 'latest';
     public string $q = '';
+    public string $sort = 'latest';
 
-    public string $databasePublikasi = 'all';
-    public string $databaseSort = 'latest';
-    public string $databaseSearch = '';
-
-    public string $galleryPublikasi = 'all';
-    public string $gallerySort = 'latest';
-    public string $galleryType = 'all';
-    public string $galleryQ = '';
+    public int $page = 1;
+    public int $page_gallery = 1; // pagination terpisah untuk gallery
+    public int $perPage = 10;
+    public int $total = 0;
 
     protected $queryString = [
-        'publikasi'         => ['except' => 'all'],
-        'sort'              => ['except' => 'latest'],
-        'q'                 => ['except' => ''],
-        'databasePublikasi' => ['except' => 'all'],
-        'databaseSort'      => ['except' => 'latest'],
-        'databaseSearch'    => ['except' => ''],
-        'galleryPublikasi'  => ['except' => 'all'],
-        'gallerySort'       => ['except' => 'latest'],
-        'galleryType'       => ['except' => 'all'],
-        // galleryQ sengaja tidak dimasukkan agar tidak berat saat ngetik
+        'data'         => ['except' => 'all'],
+        'type'         => ['except' => 'all'],
+        'publikasi'    => ['except' => 'all'],
+        'q'            => ['except' => ''],
+        'sort'         => ['except' => 'latest'],
+        'page'         => ['except' => 1],
+        'page_gallery' => ['except' => 1],
+        'perPage'      => ['except' => 10],
     ];
 
-    private function localeCols(): array
+    public function updated($field)
     {
-        $title = app()->getLocale() === 'id' ? 'title_id' : 'title_en';
-        $desc  = app()->getLocale() === 'id' ? 'description_id' : 'description_en';
-        return [$title, $desc];
+        // Reset kedua paginator saat filter berubah
+        if (in_array($field, ['data', 'type', 'publikasi', 'q', 'sort', 'perPage'])) {
+            $this->page = 1;
+            $this->page_gallery = 1;
+        }
     }
 
-    private function applySort($q, string $sort)
+    private function localeColumns(): array
     {
-        return match ($sort) {
-            'oldest' => $q->orderBy('tanggal_publikasi')->orderBy('id'),
-            'az'     => $q->orderBy('title')->orderByDesc('id'),
-            'za'     => $q->orderBy('title', 'desc')->orderByDesc('id'),
-            default  => $q->orderByDesc('tanggal_publikasi')->orderByDesc('id'),
+        $locale = request()->route('locale') ?? app()->getLocale();
+        return [
+            'title'       => $locale === 'id' ? 'title_id' : 'title_en',
+            'description' => $locale === 'id' ? 'description_id' : 'description_en',
+        ];
+    }
+
+    private function baseReportsQuery()
+    {
+        $cols = $this->localeColumns();
+
+        $q = DB::table('report')
+            ->select(
+                'id',
+                'slug',
+                'image',
+                'tanggal_publikasi',
+                'publikasi',
+                'created_at',
+                'updated_at',
+                DB::raw("{$cols['title']} as title"),
+                DB::raw("{$cols['description']} as description")
+            )
+            ->where('status', 'on');
+
+        if ($this->publikasi !== 'all') $q->where('publikasi', $this->publikasi);
+
+        if ($this->q !== '') {
+            $s = '%' . $this->q . '%';
+            $q->where(function ($w) use ($cols, $s) {
+                $w->where($cols['title'], 'like', $s)
+                    ->orWhere($cols['description'], 'like', $s)
+                    ->orWhere('slug', 'like', $s);
+            });
+        }
+
+        return $q;
+    }
+
+    private function baseGalleryQuery()
+    {
+        $q = DB::table('gallery')
+            ->select('id', 'filename', 'type', 'publikasi', 'path', 'caption', 'created_at', 'updated_at');
+
+        if ($this->publikasi !== 'all') $q->where('publikasi', $this->publikasi);
+        if ($this->type !== 'all') $q->where('type', $this->type);
+
+        if ($this->q !== '') {
+            $s = '%' . $this->q . '%';
+            $q->where(function ($w) use ($s) {
+                $w->where('filename', 'like', $s)
+                    ->orWhere('caption', 'like', $s);
+            });
+        }
+
+        return $q;
+    }
+
+    public function lastPage(): int
+    {
+        return max(1, (int) ceil($this->total / $this->perPage));
+    }
+
+    public function goToPage($page)
+    {
+        $this->page = max(1, min((int)$page, $this->lastPage()));
+    }
+
+    public function prevPage()
+    {
+        $this->goToPage($this->page - 1);
+    }
+
+    public function nextPage()
+    {
+        $this->goToPage($this->page + 1);
+    }
+
+    public function deleteReport($id)
+    {
+        $gallery = DB::table('gallery')->where('report_id', $id)->get(['id', 'path']);
+        foreach ($gallery as $g) {
+            if ($g->path && Storage::exists($g->path)) Storage::delete($g->path);
+            DB::table('gallery')->where('id', $g->id)->delete();
+        }
+        DB::table('report')->where('id', $id)->delete();
+
+        // reset pagination reports ke halaman 1 jika perlu
+        $this->page = 1;
+
+        session()->flash('success', 'Report dihapus');
+    }
+
+    public function deleteGallery($id)
+    {
+        $g = DB::table('gallery')->where('id', $id)->first();
+        if (!$g) {
+            session()->flash('success', 'Data tidak ditemukan');
+            return;
+        }
+
+        // Hapus file utama gallery jika ada
+        if (!empty($g->path) && Storage::exists($g->path)) {
+            Storage::delete($g->path);
+        }
+
+        // Hapus semua gambar yang terkait di tabel gallery_image (jika ada)
+        $images = DB::table('gallery_image')->where('gallery_id', $id)->get(['id', 'path']);
+        foreach ($images as $img) {
+            if (!empty($img->path) && Storage::exists($img->path)) {
+                Storage::delete($img->path);
+            }
+            DB::table('gallery_image')->where('id', $img->id)->delete();
+        }
+
+        // Hapus record gallery
+        DB::table('gallery')->where('id', $id)->delete();
+
+        // Reset gallery pagination (atau atur ke halaman terakhir yg valid jika mau)
+        $this->page_gallery = 1;
+
+        $this->emit('galleryDeleted'); // opsional: untuk event JS/notify
+        session()->flash('success', 'Gallery dan gambar terkait berhasil dihapus');
+    }
+
+    public function getReports()
+    {
+        $q = $this->baseReportsQuery();
+
+        $this->total = (int) $q->count();
+
+        $q = match ($this->sort) {
+            'oldest' => $q->orderBy('updated_at', 'asc')->orderBy('id', 'asc'),
+            'az'     => $q->orderBy('title', 'asc'),
+            'za'     => $q->orderBy('title', 'desc'),
+            default  => $q->orderByDesc('updated_at')->orderByDesc('id'),
         };
+
+        return $q->skip(($this->page - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get();
+    }
+
+    public function getGallery()
+    {
+        $q = $this->baseGalleryQuery();
+
+        if ($this->sort === 'az') $q->orderBy('filename', 'asc');
+        elseif ($this->sort === 'za') $q->orderBy('filename', 'desc');
+
+        // paginate(perPage, columns, pageName, page)
+        return $q->paginate($this->perPage, ['*'], 'page_gallery', $this->page_gallery);
     }
 
     public function render()
     {
-        [$title, $desc] = $this->localeCols();
+        $reports = collect();
+        $gallery = collect();
 
-        $escape = fn(string $s) => '%' . str_replace(['%', '_'], ['\\%', '\\_'], trim($s)) . '%';
+        if ($this->data !== 'gallery') {
+            $reports = $this->getReports();
+        }
 
-        $reportQ = DB::table('report')
-            ->select(
-                'id',
-                'slug',
-                'tanggal_publikasi',
-                'publikasi',
-                DB::raw("$title as title"),
-                DB::raw("$desc as description")
-            )
-            ->when($this->publikasi !== 'all', fn($q) => $q->where('publikasi', $this->publikasi))
-            ->when($this->q !== '', function ($q) use ($title, $desc, $escape) {
-                $s = $escape($this->q);
-                $q->where(fn($w) => $w
-                    ->where($title, 'like', $s)
-                    ->orWhere($desc, 'like', $s)
-                    ->orWhere('slug', 'like', $s));
-            });
+        if ($this->data !== 'report') {
+            $gallery = $this->getGallery();
+        }
 
-        $databaseQ = DB::table('database')
-            ->select('id', 'slug', 'tanggal_publikasi', 'publikasi', DB::raw("$title as title"))
-            ->when($this->databasePublikasi !== 'all', fn($q) => $q->where('publikasi', $this->databasePublikasi))
-            ->when($this->databaseSearch !== '', function ($q) use ($title, $escape) {
-                $s = $escape($this->databaseSearch);
-                $q->where(fn($w) => $w
-                    ->where($title, 'like', $s)
-                    ->orWhere('slug', 'like', $s));
-            });
-
-        $galleryQ = DB::table('gallery')
-            ->select('id', 'slug', 'tanggal_publikasi', 'publikasi', 'type', DB::raw("$title as title"))
-            ->when($this->galleryPublikasi !== 'all', fn($q) => $q->where('publikasi', $this->galleryPublikasi))
-            ->when($this->galleryType !== 'all', fn($q) => $q->where('type', $this->galleryType))
-            ->when($this->galleryQ !== '', function ($q) use ($title, $escape) {
-                $s = $escape($this->galleryQ);
-                $q->where(fn($w) => $w
-                    ->where($title, 'like', $s)
-                    ->orWhere('slug', 'like', $s)
-                    ->orWhere('type', 'like', $s));
-            });
-
-        $reports   = $this->applySort($reportQ, $this->sort)->limit(50)->get();
-        $databases = $this->applySort($databaseQ, $this->databaseSort)->limit(50)->get();
-        $galleries = $this->applySort($galleryQ, $this->gallerySort)->limit(50)->get();
-
-        return view('livewire.cms.index-resource', compact('reports', 'databases', 'galleries'));
+        return view('livewire.cms.index-resource', [
+            'resource'     => $reports,
+            'gallery'      => $gallery,
+            'page'         => $this->page,
+            'page_gallery' => $this->page_gallery,
+            'perPage'      => $this->perPage,
+            'lastPage'     => $this->lastPage(),
+            'total'        => $this->total,
+        ]);
     }
 }

@@ -15,7 +15,8 @@ class PreviewLiteracy extends Component
     {
         $id = (int) request()->route('id');
 
-        $row = DB::table('case_report')
+        // === AMBIL DATA DARI TABEL literacy (bukan case_report) ===
+        $row = DB::table('literacy')
             ->select([
                 'id',
                 'title_id',
@@ -28,26 +29,41 @@ class PreviewLiteracy extends Component
                 'tanggal_publikasi',
                 'publikasi',
                 'status',
+                'type',
             ])
             ->where('id', $id)
             ->first();
 
         if (!$row) abort(404);
 
+        // === HANDLE LOCALE ===
         $locale = app()->getLocale();
-        $title = $locale === 'id' ? ($row->title_id ?? $row->title_en) : ($row->title_en ?? $row->title_id);
-        $description = $locale === 'id' ? ($row->description_id ?? $row->description_en) : ($row->description_en ?? $row->description_id);
-        $content = $locale === 'id' ? ($row->content_id ?? $row->content_en) : ($row->content_en ?? $row->content_id);
 
+        $title = $locale === 'id'
+            ? ($row->title_id ?: $row->title_en)
+            : ($row->title_en ?: $row->title_id);
+
+        $description = $locale === 'id'
+            ? ($row->description_id ?: $row->description_en)
+            : ($row->description_en ?: $row->description_id);
+
+        $content = $locale === 'id'
+            ? ($row->content_id ?: $row->content_en)
+            : ($row->content_en ?: $row->content_id);
+
+        // === SET ITEM UNTUK DITAMPILKAN ===
         $this->item = [
-            'id' => $row->id,
-            'title' => $title,
-            'description' => $description,
-            'content' => $content,
-            'image_url' => $row->image ? Storage::url($row->image) : null,
+            'id'                => $row->id,
+            'title'             => $title,
+            'description'       => $description,
+            'content'           => $content,
+            'image_url'         => $row->image ? Storage::url($row->image) : null,
             'tanggal_publikasi' => $row->tanggal_publikasi,
-            'tahun' => $row->tanggal_publikasi ? Carbon::parse($row->tanggal_publikasi)->format('Y') : null,
-            'publikasi' => $row->publikasi, // <- penting
+            'tahun'             => $row->tanggal_publikasi
+                ? Carbon::parse($row->tanggal_publikasi)->format('Y')
+                : null,
+            'publikasi'         => $row->publikasi,
+            'type'              => $row->type,
         ];
     }
 

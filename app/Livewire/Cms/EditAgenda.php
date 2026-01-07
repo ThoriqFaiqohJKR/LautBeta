@@ -12,7 +12,7 @@ class EditAgenda extends Component
 {
     use WithFileUploads;
 
-    public int $id;
+    public int|string $id = 0;
     public string $lang = 'en';
     public string $type;
 
@@ -29,10 +29,17 @@ class EditAgenda extends Component
     public $image = null;
     public ?string $imagePreview = null;
 
-    public function mount(int $id): void
+
+    public $file_id = null;
+    public $file_en = null;
+    public ?string $current_file_id = null;
+    public ?string $current_file_en = null;
+
+    public function mount($id): void
     {
-        $this->id = $id;
-        $data = DB::table('agenda')->find($id);
+        $this->id = (int) $id;
+
+        $data = DB::table('agenda')->find($this->id);
         if (!$data) abort(404);
 
         $this->type              = $data->type;
@@ -47,10 +54,23 @@ class EditAgenda extends Component
         $this->status            = $data->status;
         $this->slug              = $data->slug;
         $this->imagePreview      = $data->image ? Storage::url($data->image) : null;
+
+
+        $this->current_file_id = $data->file_id ?? null;
+        $this->current_file_en = $data->file_en ?? null;
+
+
+        $this->file_id = null;
+        $this->file_en = null;
     }
 
     protected function rules(): array
     {
+
+        $fileRules = $this->type === 'activity'
+            ? ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240']
+            : ['nullable'];
+
         return [
             'title_en'          => ['required', 'string', 'max:255'],
             'title_id'          => ['required', 'string', 'max:255'],
@@ -62,7 +82,15 @@ class EditAgenda extends Component
             'publikasi'         => ['required', 'in:draf,publish'],
             'status'            => ['required', 'in:on,off'],
             'image'             => ['nullable', File::image()->max(5 * 1024)],
+            'file_id'           => $fileRules,
+            'file_en'           => $fileRules,
         ];
+    }
+
+
+    public function updatedLang($value)
+    {
+        $this->resetValidation();
     }
 
     public function update(): void
@@ -82,14 +110,55 @@ class EditAgenda extends Component
             'updated_at'        => now(),
         ];
 
+
         if ($this->image) {
-            $dir = "agenda/{$this->type}";
-            $path = $this->image->store($dir, 'public');
+            $path = $this->image->store("agenda/{$this->type}", 'public');
             $data['image'] = $path;
             $this->imagePreview = Storage::url($path);
         }
 
-        DB::table('agenda')->where('id', $this->id)->update($data);
+
+        if ($this->type === 'activity') {
+
+            if ($this->file_id) {
+                $original = pathinfo($this->file_id->getClientOriginalName(), PATHINFO_FILENAME);
+                $ext      = $this->file_id->getClientOriginalExtension();
+                $clean    = \Illuminate\Support\Str::slug($original) . '-' . time() . '.' . $ext;
+
+                $newPath = $this->file_id->storeAs('agenda/files', $clean, 'public');
+                $data['file_id'] = $newPath;
+
+                if ($this->current_file_id && Storage::disk('public')->exists($this->current_file_id)) {
+                    try {
+                        Storage::disk('public')->delete($this->current_file_id);
+                    } catch (\Exception $e) {
+                    }
+                }
+
+                $this->current_file_id = $newPath;
+            }
+
+            if ($this->file_en) {
+                $original = pathinfo($this->file_en->getClientOriginalName(), PATHINFO_FILENAME);
+                $ext      = $this->file_en->getClientOriginalExtension();
+                $clean    = \Illuminate\Support\Str::slug($original) . '-' . time() . '.' . $ext;
+
+                $newPath = $this->file_en->storeAs('agenda/files', $clean, 'public');
+                $data['file_en'] = $newPath;
+
+                if ($this->current_file_en && Storage::disk('public')->exists($this->current_file_en)) {
+                    try {
+                        Storage::disk('public')->delete($this->current_file_en);
+                    } catch (\Exception $e) {
+                    }
+                }
+
+                $this->current_file_en = $newPath;
+            }
+        }
+
+
+        DB::table('agenda')->where('id', (int) $this->id)->update($data);
 
         session()->flash('success', 'Agenda berhasil diperbarui.');
     }

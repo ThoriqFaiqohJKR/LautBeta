@@ -1,35 +1,32 @@
 <div>
-    {{-- The best athlete wants his opponent at his best. --}}
+    {{-- The Master doesn't talk, he acts. --}}
     <div>
-        <div class="w-full aspect-[3/1] overflow-hidden">
-            <img src="{{ $item['image_url'] ?? asset('img/news.png') }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover object-center" />
+
+        <div class="w-full aspect-[3/1] bg-white flex items-center justify-center overflow-hidden">
+            <img src="{{ $item['image_url']  }}"
+                alt="{{ $item['title'] }}"
+                class="max-h-full max-w-full object-center" />
         </div>
 
-        <div class="px-4 sm:px-6 lg:max-w-2xl mx-auto py-10">
-            <div class="gap-2 flex mb-4">
-                <a href="{{ route('cms.page.index.literacy', ['locale' => app()->getLocale()]) }}">
-                    <p class="text-xl hover:underline">Page Literacy </p>
-                </a>
-                <p> > </p>
-                <p class="text-xl text-blue-700">Edit Literacy</p>
-            </div>
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-4">
+        <div class="px-4 sm:px-6 lg:max-w-2xl mx-auto py-12">
+
+            <h1 class="text-2xl sm:text-3xl md:text-4xl  text-center mb-6">
                 {{ $item['title'] }}
             </h1>
 
-            <div class="flex items-center justify-center gap-3 text-sm text-slate-600 mb-8">
-                <span>
-                    {{ $item['tanggal_publikasi'] ? \Illuminate\Support\Carbon::parse($item['tanggal_publikasi'])->format('Y') : '—' }}
-                </span>
-                <span>•</span>
-                <span class="uppercase">
-                    {{ $item['publikasi'] }}
-                </span>
-            </div>
 
-            <div class="prose mx-auto text-gray-700">
+            @if(!empty($item['description']))
+            <div class="prose mx-auto text-left text-gray-700 mb-8 leading-snug font-semibold">
+                {!! $item['description'] !!}
+            </div>
+            @endif
+
+
+            <div class="prose mx-auto text-left text-gray-700 leading-snug">
                 {!! $item['content'] !!}
             </div>
+
+
         </div>
     </div>
 

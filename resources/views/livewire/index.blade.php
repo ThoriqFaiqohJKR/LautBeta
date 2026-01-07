@@ -1,29 +1,41 @@
-<div>
-    {{-- If you look to others for fulfillment, you will never truly be fulfilled. --}}
+<div
+    x-data="{
+        popup:false,
+        popupImgs:[],
+        popupIdx:0,
+        popupTitle:'',
+        popupDesc:'',
+
+        openPopup(imgs, index){
+            this.popupImgs = imgs
+            this.popupIdx  = index
+            this.popup     = true
+            document.documentElement.classList.add('overflow-hidden')
+        },
+
+        closePopup(){
+            this.popup = false
+            document.documentElement.classList.remove('overflow-hidden')
+        }
+    }">
+
     <main class="flex-grow">
-        <!-- Hero Image -->
-        <div class="w-full overflow-hidden shadow-lg flex ">
+
+        <div class="relative w-full aspect-[2.5/1] bg-white flex items-center justify-center overflow-hidden">
+
             <img
                 src="{{ asset('img/index.jpg') }}"
-                class="w-full h-auto md:h-full object-contain md:object-cover md:object-top"
+                class="w-full h-full object-contain md:object-cover object-top"
                 alt="Index Image" />
 
-            <div class="flex absolute  items-center py-82 px-24 text-xl font-bold justify-between">
-                <div class="max-w-4xl">
+            <div class="absolute inset-0 flex items-center justify-center px-6 text-white">
+                <div class="max-w-3xl text-center text-xl font-semibold">
                     <p>Situs ini akan fokus pada isu-isu pesisir, laut, dan pulau-pulau kecil serta berbagai dinamikanya.</p>
                 </div>
-                <!--<div>
-                    <img
-                        src="{{ asset('img/index.png') }}"
-                        class="w-full h-auto md:h-full object-contain md:object-cover md:object-top"
-                        alt="Overlay Image" />
-                </div>-->
             </div>
 
-            <div>
-
-            </div>
         </div>
+
 
 
         <section class="max-w-6xl mx-auto py-10 px-4 sm:px-10  ">
@@ -163,168 +175,135 @@
             </div>
 
         </section>
-
+        <!-- INFOGRAFIK -->
         <section class="px-4 sm:px-12 lg:px-52 py-24">
+
             <p class="text-sm tracking-widest text-slate-600 mb-4">INFOGRAFIK</p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
 
+                <!-- ITEM 0 -->
+                <div class="max-w-lg w-full sm:w-auto">
+                    <div
+                        class="w-full aspect-[4/5] bg-gray-300 overflow-hidden relative"
+                        x-data="{ idx: 0, imgs: {{ json_encode($infographics[0]['images']) }} }">
 
-                @if(isset($infographics[0]))
-                <div class="col-span-1 sm:col-span-2"
-                    x-data="{
-        idx: 0,
-        open: false,
-        popupIdx: 0,
-        imgs: {{ json_encode($infographics[0]['images']) }}
-    }">
-
-                    <!-- MAIN IMAGE -->
-                    <div class="w-full aspect-[4/5] bg-gray-200 overflow-hidden relative">
-
-                        <img :src="imgs[idx]"
+                        <!-- Gambar -->
+                        <img
+                            :src="imgs[idx]"
                             class="w-full h-full object-cover cursor-pointer"
-                            @click="open = true; popupIdx = idx">
+                            @click="openPopup(imgs, idx)">
 
                         <!-- PREV -->
                         <button
                             x-show="idx > 0"
                             @click.stop="idx--"
-                            class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2">
-                            ‹
+                            class="absolute left-1 top-1/2 -translate-y-1/2 bg-black/70 p-1 rounded-full text-white flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                                class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
                         </button>
 
                         <!-- NEXT -->
                         <button
                             x-show="idx < imgs.length - 1"
                             @click.stop="idx++"
-                            class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2">
-                            ›
+                            class="absolute right-1 top-1/2 -translate-y-1/2 bg-black/70 p-1 rounded-full text-white flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                                class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
 
                     </div>
-
-                    <!-- POPUP -->
-                    <div x-show="open" x-cloak
-                        class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-6"
-                        @click.self="open = false">
-
-                        <div class="relative max-w-4xl w-full flex justify-center"
-                            x-data="{
-            startX: 0,
-            endX: 0,
-            handleTouchStart(e) { this.startX = e.touches[0].clientX },
-            handleTouchEnd(e) {
-                this.endX = e.changedTouches[0].clientX;
-                let diff = this.endX - this.startX;
-                if (Math.abs(diff) > 50) {
-                    if (diff < 0) popupIdx = (popupIdx + 1) % imgs.length;
-                    else popupIdx = (popupIdx - 1 + imgs.length) % imgs.length;
-                }
-            }
-        }"
-                            @touchstart="handleTouchStart($event)"
-                            @touchend="handleTouchEnd($event)">
-
-                            <!-- WRAPPER GAMBAR -->
-                            <div class="relative py-6">
-
-                                <!-- GAMBAR (NO ROUNDED) -->
-                                <img
-                                    :src="imgs[popupIdx]"
-                                    class="max-w-full max-h-[80vh] object-contain">
-
-                                <!-- BUTTON KIRI (desktop only) -->
-                                <button
-                                    @click.stop="popupIdx = (popupIdx - 1 + imgs.length) % imgs.length"
-                                    class="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2
-           bg-black/70 hover:bg-black/80 text-white p-1 rounded-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5">
-                                        <path stroke="white" stroke-width="2.5" stroke-linecap="round"
-                                            stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                                    </svg>
-                                </button>
-
-                                <button
-                                    @click.stop="popupIdx = (popupIdx + 1) % imgs.length"
-                                    class="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2
-           bg-black/70 hover:bg-black/80 text-white p-1 rounded-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-2 w-2">
-                                        <path stroke="white" stroke-width="2.5" stroke-linecap="round"
-                                            stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </button>
-
-
-                            </div>
-                        </div>
-                    </div>
-
-
                 </div>
 
 
-                @endif
+                <!-- ITEM 1 & 2 -->
+                <div class="flex flex-col gap-5 w-full sm:w-auto">
 
-
-                {{-- ================== KANAN (2 & 3) ================== --}}
-                <div class="flex flex-col gap-4">
-
-                    {{-- INFOGRAFIK 2 --}}
+                    <!-- ITEM 1 -->
                     @if(isset($infographics[1]))
-                    <div x-data="{ idx: 0, imgs: {{ json_encode($infographics[1]['images']) }} }">
+                    <div
+                        class="w-full sm:w-62 aspect-[4/5] bg-gray-300 overflow-hidden relative"
+                        x-data="{ idx: 0, imgs: {{ json_encode($infographics[1]['images']) }} }">
 
-                        <div class="w-full aspect-[4/5] bg-gray-200  overflow-hidden relative">
+                        <img
+                            :src="imgs[idx]"
+                            class="w-full h-full object-cover cursor-pointer"
+                            @click="openPopup(imgs, idx)">
 
+                        <!-- PREV -->
+                        <button
+                            x-show="idx > 0"
+                            @click.stop="idx--"
+                            class="absolute left-1 top-1/2 -translate-y-1/2 bg-black/70 p-1 rounded-full text-white flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                                class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
 
-                            <img :src="imgs[idx]" class="w-full h-full object-cover">
-
-                            <!-- PREV -->
-                            <button @click="idx = (idx - 1 + imgs.length) % imgs.length"
-                                class="absolute left-2 top-1/2 -translate-y-1/2
-                        bg-black/40 text-white px-2 py-1  text-sm">
-                                ‹
-                            </button>
-
-                            <!-- NEXT -->
-                            <button @click="idx = (idx + 1) % imgs.length"
-                                class="absolute right-2 top-1/2 -translate-y-1/2
-                        bg-black/40 text-white px-2 py-1  text-sm">
-                                ›
-                            </button>
-
-                        </div>
-
+                        <!-- NEXT -->
+                        <button
+                            x-show="idx < imgs.length - 1"
+                            @click.stop="idx++"
+                            class="absolute right-1 top-1/2 -translate-y-1/2 bg-black/70 p-1 rounded-full text-white flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                                class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
 
                     </div>
                     @endif
 
 
-                    {{-- INFOGRAFIK 3 --}}
+                    <!-- ITEM 2 -->
                     @if(isset($infographics[2]))
-                    <div x-data="{ idx: 0, imgs: {{ json_encode($infographics[2]['images']) }} }">
+                    <div
+                        class="w-full sm:w-62 aspect-[4/5] bg-gray-300 overflow-hidden relative"
+                        x-data="{ idx: 0, imgs: {{ json_encode($infographics[2]['images']) }} }">
 
-                        <div class="w-full aspect-[4/5] bg-gray-200  overflow-hidden relative">
+                        <img
+                            :src="imgs[idx]"
+                            class="w-full h-full object-cover cursor-pointer"
+                            @click="openPopup(imgs, idx)">
 
+                        <!-- PREV -->
+                        <button
+                            x-show="idx > 0"
+                            @click.stop="idx--"
+                            class="absolute left-1 top-1/2 -translate-y-1/2 bg-black/70 p-1 rounded-full text-white flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                                class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
 
-                            <img :src="imgs[idx]" class="w-full h-full object-cover">
-
-                            <!-- PREV -->
-                            <button @click="idx = (idx - 1 + imgs.length) % imgs.length"
-                                class="absolute left-2 top-1/2 -translate-y-1/2
-                        bg-black/40 text-white px-2 py-1  text-sm">
-                                ‹
-                            </button>
-
-                            <!-- NEXT -->
-                            <button @click="idx = (idx + 1) % imgs.length"
-                                class="absolute right-2 top-1/2 -translate-y-1/2
-                        bg-black/40 text-white px-2 py-1  text-sm">
-                                ›
-                            </button>
-
-                        </div>
-
+                        <!-- NEXT -->
+                        <button
+                            x-show="idx < imgs.length - 1"
+                            @click.stop="idx++"
+                            class="absolute right-1 top-1/2 -translate-y-1/2 bg-black/70 p-1 rounded-full text-white flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                                class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
 
                     </div>
                     @endif
@@ -332,10 +311,150 @@
                 </div>
 
             </div>
+
+            <!-- POPUP -->
+            <div
+                x-data="{
+            popup: true,
+            infoIdx: 0,
+            popupIdx: 0,
+            infographics: infographicsData,
+            get popupImgs() {
+                return this.infographics[this.infoIdx].images
+            },
+            get popupTitle() {
+                return this.infographics[this.infoIdx].title
+            },
+            get popupDesc() {
+                return this.infographics[this.infoIdx].desc
+            },
+            nextInfo() {
+                if (this.infoIdx < this.infographics.length - 1) {
+                    this.infoIdx++
+                    this.popupIdx = 0
+                }
+            },
+            prevInfo() {
+                if (this.infoIdx > 0) {
+                    this.infoIdx--
+                    this.popupIdx = 0
+                }
+            },
+            closePopup() {
+                this.popup = false
+            }
+        }"
+                x-show="popup"
+                x-transition
+                @click.self="closePopup()"
+                class="fixed inset-0 bg-black/80 z-[999] flex items-center justify-center">
+
+                <button @click="closePopup()"
+                    class="absolute top-3 right-6 bg-black/80 hover:bg-black/90
+               w-9 h-9 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                        class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <button
+
+                    @click.stop="prevInfo()"
+                    class="absolute left-6 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black/90
+                   p-3 rounded-full text-white z-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                        class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                <button
+
+                    @click.stop="nextInfo()"
+                    class="absolute right-6 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black/90
+                   p-3 rounded-full text-white z-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                        class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                <div class="bg-white max-w-5xl w-full h-[90vh] flex overflow-hidden relative">
+
+                    <button
+
+                        @click.stop="prevInfo()"
+                        class="absolute -left-14 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black/90
+                       p-3 rounded-full text-white z-20">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                            class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+
+                    <button
+
+                        @click.stop="nextInfo()"
+                        class="absolute -right-14 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black/90
+                       p-3 rounded-full text-white z-20">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                            class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+
+                    <div class="w-[480px] h-full bg-white border-r border-slate-200 overflow-hidden relative flex items-center">
+
+                        <button
+                            x-show="popupIdx > 0"
+                            @click.stop="popupIdx--"
+                            class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80
+                           p-2 rounded-full text-white z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                                class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+
+                        <img :src="popupImgs[popupIdx]" class="w-full h-full object-cover">
+
+                        <button
+                            x-show="popupIdx < popupImgs.length - 1"
+                            @click.stop="popupIdx++"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80
+                           p-2 rounded-full text-white z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="white"
+                                class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+
+                    </div>
+
+                    <div class="flex-1 p-6 overflow-y-auto bg-white">
+                        <h2 class="text-xl font-semibold mb-4" x-text="popupTitle"></h2>
+                        <p class="text-sm text-gray-700 leading-relaxed" x-text="popupDesc"></p>
+                    </div>
+
+                </div>
+
+            </div>
         </section>
-
-
-
-
+    </main>
 
 </div>

@@ -5,98 +5,100 @@ namespace App\Livewire\Cms;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rules\File as FileRule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\File;
 use Illuminate\Support\Str;
 
 class AddLiteracy extends Component
 {
     use WithFileUploads;
 
+    private const TABLE = 'literacy';
+
     public string $lang = 'en';
+    public string $type = 'infografik';
 
     public string $title_en = '';
     public string $title_id = '';
     public string $description_en = '';
     public string $description_id = '';
+    public string $content_en = '';
+    public string $content_id = '';
     public ?string $tanggal_publikasi = null;
     public string $publikasi = 'draf';
     public string $status = 'on';
+    public ?string $slug = null;
 
     public $image = null;
     public ?string $imagePreview = null;
 
-    public $file_en_upload = null;
-    public $file_id_upload = null;
+    protected $messages = [
+        'title_en.required_without' => 'Minimal isi salah satu judul: EN atau ID.',
+        'title_id.required_without' => 'Minimal isi salah satu judul: EN atau ID.',
+    ];
 
     protected function rules(): array
     {
         return [
-            'lang'              => ['required', 'in:en,id'],
-            'title_en'          => ['required_without:title_id', 'string', 'max:255'],
-            'title_id'          => ['required_without:title_en', 'string', 'max:255'],
+            'title_en'          => ['required', 'string', 'max:255', 'required_without:title_id'],
+            'title_id'          => ['required', 'string', 'max:255', 'required_without:title_en'],
             'description_en'    => ['required', 'string'],
             'description_id'    => ['required', 'string'],
+            'content_en'        => ['required', 'string'],
+            'content_id'        => ['required', 'string'],
+            'type'              => ['required', 'in:journal,infografik'],
             'tanggal_publikasi' => ['required', 'date'],
             'publikasi'         => ['required', 'in:draf,publish'],
-            'status'            => ['required', 'in:on,off'],
-
-            'image'             => ['required', FileRule::image()->max(5 * 1024)],
-
-            'file_en_upload'    => ['nullable', FileRule::types(['pdf', 'doc', 'docx', 'ppt', 'pptx'])->max(20 * 1024)],
-            'file_id_upload'    => ['nullable', FileRule::types(['pdf', 'doc', 'docx', 'ppt', 'pptx'])->max(20 * 1024)],
+            'image'             => ['required', File::image()->max(5 * 1024)],
         ];
-    }
-
-    public function updatedImage(): void
-    {
-        if ($this->image && method_exists($this->image, 'temporaryUrl')) {
-            $this->imagePreview = $this->image->temporaryUrl();
-        }
     }
 
     public function save()
     {
         $this->validate();
 
-        if (!$this->file_en_upload && !$this->file_id_upload) {
-            $this->addError('file_en_upload', 'Upload minimal salah satu file (EN atau ID).');
-            $this->addError('file_id_upload', 'Upload minimal salah satu file (EN atau ID).');
-            return;
-        }
-
         $data = [
             'title_en'          => $this->title_en ?: null,
             'title_id'          => $this->title_id ?: null,
             'description_en'    => $this->description_en ?: null,
             'description_id'    => $this->description_id ?: null,
+            'content_en'        => $this->content_en ?: null,
+            'content_id'        => $this->content_id ?: null,
             'tanggal_publikasi' => $this->tanggal_publikasi,
             'publikasi'         => $this->publikasi,
-            'status'            => $this->status,
-            'slug'              => Str::slug($this->title_id ?: $this->title_en),
+            'status'            => 'on',
+            'type'              => $this->type,
+            'slug'              => Str::slug($this->title_id),
             'created_at'        => now(),
             'updated_at'        => now(),
         ];
 
-        // Simpan image (required)
-        $data['image'] = $this->image->store('literacy/journal/images', 'public');
-
-        // Simpan file EN / ID
-        if ($this->file_en_upload) {
-            $path = $this->file_en_upload->store('literacy/journal/files/en', 'public');
-            $data['file_en'] = Storage::url($path);
+        if ($this->image) {
+            $path = $this->image->store("literacy/{$this->type}", 'public');
+            $data['image'] = $path;
+            $this->imagePreview = Storage::url($path);
         }
 
-        if ($this->file_id_upload) {
-            $path = $this->file_id_upload->store('literacy/journal/files/id', 'public');
-            $data['file_id'] = Storage::url($path);
-        }
-
-        DB::table('journal')->insert($data);
+        DB::table(self::TABLE)->insert($data);
 
         return redirect()
             ->route('cms.page.index.literacy', ['locale' => app()->getLocale()])
-            ->with('success', 'Jurnal berhasil disimpan.');
+            ->with('success', 'literacy berhasil disimpan.');
+    }
+
+    private function resetForm(): void
+    {
+        $this->lang = 'en';
+        $this->type = 'journal';
+        $this->title_en = $this->title_id = '';
+        $this->description_en = $this->description_id = '';
+        $this->content_en = $this->content_id = '';
+        $this->tanggal_publikasi = null;
+        $this->publikasi = 'draf';
+        $this->status = 'on';
+        $this->slug = null;
+        $this->image = null;
+        $this->imagePreview = null;
     }
 
     public function render()
